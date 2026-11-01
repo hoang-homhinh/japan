@@ -123,3 +123,21 @@ b,strong,.btn,.lesson-title,.tile .lab{font-weight:800}
 .t-rev .tn{background:var(--sky)}.t-new .tn{background:var(--accent)}.t-kan .tn{background:var(--gold)}.t-gram .tn{background:var(--ok)}
 .toast{border-radius:14px;font-weight:700}
 .todo{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+
+/* ---- Hội thoại: bong bóng chat, câu đang đọc tô sáng ---- */
+.tlines{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.tline{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:start;scroll-margin:120px}
+.tline .tname{font-family:var(--jp);font-size:.85rem;color:var(--muted);min-width:3.6em;padding-top:12px;text-align:right}
+.tline .tbub{background:var(--card);border:2px solid var(--line);border-radius:4px 16px 16px 16px;padding:8px 12px;box-shadow:0 3px 0 var(--line);display:flex;flex-direction:column;gap:2px;transition:border-color .2s,background .2s,transform .2s}
+.tline.me{grid-template-columns:auto minmax(0,1fr) auto}
+.tline.me .tbub{background:var(--sky-soft);border-color:color-mix(in srgb,var(--sky) 35%,var(--line));border-radius:16px 4px 16px 16px}
+.tline.me .tname{color:var(--sky);font-weight:700}
+.tline .tkana{font-size:1.25rem;line-height:1.5}
+.tline .tjp{font-size:1.05rem;color:var(--muted)}
+.tline .tvi{font-size:.9rem;color:var(--muted)}
+.tline.now .tbub{border-color:var(--accent);background:var(--accent-soft);transform:translateX(3px)}
+.tline.myturn .tbub{border-color:var(--ok);background:var(--ok-soft)}
+.tline.myturn .tbub::after{content:"🎤 Đến lượt bạn đọc to!";font-size:.82rem;font-weight:800;color:var(--ok)}
+.tctl .btn{min-width:150px}
+@media (max-width:520px){.tline{grid-template-columns:minmax(0,1fr) auto}.tline .tname{grid-column:1/-1;text-align:left;padding:0 4px}.tline .tkana{font-size:1.15rem}}
+@media (max-width:700px){.tchips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;scroll-snap-type:x proximity}.tchips::-webkit-scrollbar{display:none}.tchips .chip{flex:none;scroll-snap-align:start}}

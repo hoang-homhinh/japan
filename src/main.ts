@@ -20,7 +20,7 @@ document.documentElement.style.setProperty("--pen-oops", `url("${penguinDataURI(
 initStore();
 bindEvents();
 // mở thẳng một tab qua đường link, vd …/#particle (tiện để ghim tab hay dùng)
-const VIEWS = ["today", "vocab", "kanji", "match", "learn", "particle", "notes", "exam", "review", "account"];
+const VIEWS = ["today", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
 const startView = location.hash.slice(1);
 setView(VIEWS.includes(startView) ? startView : "today");
 window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (VIEWS.includes(h) && h !== view) setView(h); });

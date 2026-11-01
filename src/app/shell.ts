@@ -13,11 +13,12 @@ import * as review from "../views/review";
 import * as particle from "../views/particle";
 import * as exam from "../views/exam";
 import * as account from "../views/account";
+import * as talk from "../views/talk";
 
 export let view = "today";
 
-const NAV_GROUPS: any = { today: ["today"], words: ["vocab", "kanji", "match"], gram: ["learn", "particle", "notes"], exam: ["exam"], review: ["review"] };
-const SUB_NAME: any = { vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", learn: "Mẫu câu", particle: "Trợ từ", notes: "Sổ ngữ pháp" };
+const NAV_GROUPS: any = { today: ["today"], words: ["vocab", "kanji", "match"], gram: ["learn", "talk", "particle", "notes"], exam: ["exam"], review: ["review"] };
+const SUB_NAME: any = { vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", learn: "Mẫu câu", talk: "Hội thoại", particle: "Trợ từ", notes: "Sổ ngữ pháp" };
 export const navGroupOf = (v: string) => Object.keys(NAV_GROUPS).find(g => NAV_GROUPS[g].includes(v)) || v;
 const LASTSUB: any = {};
 try { Object.assign(LASTSUB, JSON.parse(localStorage.getItem(LS_KEY + "_sub") || "{}")); } catch (e) {}
@@ -28,18 +29,19 @@ function renderSubnav(v: string) {
   box.innerHTML = subs.length > 1 ? subs.map((s: string) => `<button class="subi" data-view="${s}" aria-pressed="${s === v}">${esc(SUB_NAME[s] || s)}</button>`).join("") : "";
   box.hidden = subs.length < 2;
 }
-const DAILY_GOAL = { gram: 4, pt: 10, ex: 10 };
+const DAILY_GOAL = { gram: 4, pt: 10, ex: 10, talk: 1 };
 export function dailyPanel(vocabLeft: number) {
   const d = dailyGet();
   const rows = [
     { k: "vocab", ico: "語", t: "Từ vựng + kanji", sub: vocabLeft ? `còn ${vocabLeft} lượt` : "xong ✓", done: !vocabLeft, btn: "dStart", bl: "Học" },
     { k: "gram", ico: "文", t: "1 mẫu ngữ pháp", sub: `${Math.min(d.gram, DAILY_GOAL.gram)}/${DAILY_GOAL.gram} câu thay thế đúng`, done: d.gram >= DAILY_GOAL.gram, btn: "dGram", bl: "Học" },
+    { k: "talk", ico: "話", t: "1 đoạn hội thoại", sub: (d.talk || 0) >= DAILY_GOAL.talk ? "xong ✓" : "nghe + đọc nhẩm theo", done: (d.talk || 0) >= DAILY_GOAL.talk, btn: "dTalk", bl: "Đọc" },
     { k: "pt", ico: "助", t: "10 câu trợ từ", sub: `${Math.min(d.pt, DAILY_GOAL.pt)}/${DAILY_GOAL.pt}`, done: d.pt >= DAILY_GOAL.pt, btn: "dPt", bl: "Luyện" },
     { k: "ex", ico: "試", t: "10 câu luyện thi N5", sub: `${Math.min(d.ex, DAILY_GOAL.ex)}/${DAILY_GOAL.ex}`, done: d.ex >= DAILY_GOAL.ex, btn: "dEx", bl: "Luyện" },
   ];
   const n = rows.filter(r => r.done).length;
-  return `<section class="panel span12"><h3>Việc hôm nay · ${n}/4</h3><div class="todo">${rows.map(r => `<div class="td${r.done ? " done" : ""}"><span class="tdi">${r.done ? "✓" : r.ico}</span><div><b>${esc(r.t)}</b><div class="tip">${r.sub}</div></div>${r.done ? "" : `<button class="btn ghost" id="${r.btn}">${r.bl}</button>`}</div>`).join("")}</div>
-    <div class="tip">Thứ tự gợi ý: từ vựng → ngữ pháp → trợ từ → luyện thi. Hôm bận chỉ cần làm dòng đầu.</div></section>`;
+  return `<section class="panel span12"><h3>Việc hôm nay · ${n}/${rows.length}</h3><div class="todo">${rows.map(r => `<div class="td${r.done ? " done" : ""}"><span class="tdi">${r.done ? "✓" : r.ico}</span><div><b>${esc(r.t)}</b><div class="tip">${r.sub}</div></div>${r.done ? "" : `<button class="btn ghost" id="${r.btn}">${r.bl}</button>`}</div>`).join("")}</div>
+    <div class="tip">Thứ tự gợi ý: từ vựng → ngữ pháp → hội thoại → trợ từ → luyện thi. Hôm bận chỉ cần làm dòng đầu.</div></section>`;
 }
 export function examCountdown() {
   if (!S.progress.examDate) return "";
@@ -47,10 +49,10 @@ export function examCountdown() {
   return d >= 0 ? `<span class="pill">試 ${d === 0 ? "Hôm nay thi!" : "Còn " + d + " ngày tới kỳ thi"}</span>` : "";
 }
 
-const VIEW_NAME: any = { today: "Hôm nay", learn: "Ngữ pháp", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", review: "Ôn sổ câu", notes: "Sổ ngữ pháp", particle: "Trợ từ", exam: "Luyện thi N5", account: "Tài khoản & sao lưu" };
+const VIEW_NAME: any = { today: "Hôm nay", learn: "Ngữ pháp", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", review: "Ôn sổ câu", notes: "Sổ ngữ pháp", particle: "Trợ từ", talk: "Hội thoại", exam: "Luyện thi N5", account: "Tài khoản & sao lưu" };
 const RENDER: any = {
   today: () => today.renderToday(), learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
-  match: () => match.renderMatch(), particle: () => particle.renderParticles(), exam: () => exam.renderExam(), account: () => account.renderAccount(), review: () => review.openReview(),
+  match: () => match.renderMatch(), particle: () => particle.renderParticles(), exam: () => exam.renderExam(), account: () => account.renderAccount(), talk: () => talk.renderTalk(), review: () => review.openReview(),
 };
 export function setView(v: string) {
   if (!RENDER[v]) v = "review";
@@ -58,6 +60,7 @@ export function setView(v: string) {
   $$(".navi,.bni").forEach(b => b.setAttribute("aria-selected", String(navGroupOf(b.dataset.view) === navGroupOf(v))));
   $$(".gear").forEach(b => b.setAttribute("aria-pressed", String(v === "account")));
   renderSubnav(v);
+  talk.leaveTalk(); // dừng phát hội thoại khi đổi tab
   if ("speechSynthesis" in window && v !== "exam") speechSynthesis.cancel();
   const c = $("#crumb"); if (c) c.textContent = VIEW_NAME[v] || "";
   RENDER[v]();
@@ -83,6 +86,8 @@ export function bindEvents() {
     const t = e.target.closest("button");
     if (!t) { const r = e.target.closest(".cover-m .vrow,.cover-w .vrow"); if (r) r.classList.toggle("peek"); return; }
     if (match.onClick(t)) return;
+    if (view === "talk" && talk.onClick(t)) return;
+    if (t.id === "dTalk") return setView("talk");
     if (t.dataset.view) { const v = t.dataset.view; if (t.classList.contains("navi") || t.classList.contains("bni")) return setView(LASTSUB[navGroupOf(v)] || v); return setView(v); }
     if (t.dataset.say) return say(t.dataset.say);
     if (view === "particle" && particle.ptClick(t)) return;

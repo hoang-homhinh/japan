@@ -59,6 +59,10 @@ export function mergeProgress(local: any, rem: any) {
   }
   if (Object.keys(setT).length) P.setT = setT;
   P.ex = mergeEx(local.ex, rem.ex);
+  // hội thoại đã đọc: id → {n: số lần, d: ngày gần nhất}
+  const tk: any = Object.assign({}, rem.talk || {});
+  for (const [k, v] of Object.entries<any>(local.talk || {})) { const o = tk[k]; tk[k] = o ? { n: Math.max(v.n || 0, o.n || 0), d: (v.d || "") > (o.d || "") ? v.d : o.d } : v; }
+  if (Object.keys(tk).length) P.talk = tk;
   P.daily = mergeDaily(local.daily, rem.daily);
   // mới: danh sách câu đã xoá (id → thời điểm), giữ 1000 mục gần nhất
   const del = Object.assign({}, rem.delSent || {});
@@ -84,7 +88,7 @@ function mergeDaily(l: any, r: any) {
   const ld = (l || {}).d || "", rd = (r || {}).d || "";
   if (!l || !r || ld !== rd) return ld >= rd ? l : r;
   const o: any = Object.assign({}, r, l);
-  for (const k of ["gram", "pt", "ex"]) o[k] = Math.max(l[k] || 0, r[k] || 0);
+  for (const k of ["gram", "pt", "ex", "talk"]) o[k] = Math.max(l[k] || 0, r[k] || 0);
   return o;
 }
 // đổi một cài đặt đồng bộ (upto / exAll / examDate) kèm thời điểm đổi để gộp đúng giữa các máy
