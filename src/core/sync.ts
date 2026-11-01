@@ -3,9 +3,17 @@
 import { createClient } from "@supabase/supabase-js";
 import { LS_KEY, S, applyData, mergeData, setChangeHook } from "./store";
 
-const URL_ = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const KEY_ = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-export const sb: any = URL_ && KEY_ ? createClient(URL_, KEY_) : null;
+// nhận cả tên biến do tích hợp Supabase của Vercel tạo (NEXT_PUBLIC_…)
+const ENV: any = import.meta.env;
+const URL_ = String(ENV.VITE_SUPABASE_URL || ENV.NEXT_PUBLIC_SUPABASE_URL || "").trim();
+const KEY_ = String(ENV.VITE_SUPABASE_ANON_KEY || ENV.NEXT_PUBLIC_SUPABASE_ANON_KEY || ENV.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "").trim();
+// cấu hình sai (vd dán nhầm khoá vào ô URL) → không làm sập app, chỉ báo trong ⚙ Tài khoản
+export const configError = URL_ && !/^https:\/\/[^\s]+$/.test(URL_)
+  ? "VITE_SUPABASE_URL phải là Project URL dạng https://xxxx.supabase.co (đang là: " + URL_.slice(0, 12) + "…). Có thể bạn dán nhầm khoá vào ô này."
+  : URL_ && !KEY_ ? "Thiếu VITE_SUPABASE_ANON_KEY." : "";
+let client: any = null;
+if (URL_ && KEY_ && !configError) { try { client = createClient(URL_, KEY_); } catch (e) { client = null; } }
+export const sb: any = client;
 export const hasSupabase = () => !!sb;
 
 // status: local (không cấu hình) · out (chưa đăng nhập) · syncing · ok · pending · error · offline

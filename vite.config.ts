@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  // NEXT_PUBLIC_: tên biến do tích hợp Supabase trên Vercel tạo (chỉ chứa URL + khoá anon công khai)
+  envPrefix: ["VITE_", "NEXT_PUBLIC_"],
   build: { target: "es2022", chunkSizeWarningLimit: 2500 },
   plugins: [
     VitePWA({

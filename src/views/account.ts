@@ -1,6 +1,6 @@
 // Tài khoản & sao lưu: đăng nhập email + mật khẩu (Supabase), trạng thái đồng bộ, xuất / nhập file sao lưu
 import { S, exportJSON, importBackup } from "../core/store";
-import { hasSupabase, resetPassword, signIn, signOut, signUp, sync, syncNow, updatePassword } from "../core/sync";
+import { configError, hasSupabase, resetPassword, signIn, signOut, signUp, sync, syncNow, updatePassword } from "../core/sync";
 import { $, dayStr, esc, toast } from "../core/util";
 
 let mode = "in"; // in | up | forgot
@@ -29,7 +29,9 @@ function counts() {
 export function renderAccount() {
   const u = sync.user;
   let auth = "";
-  if (!hasSupabase()) {
+  if (!hasSupabase() && configError) {
+    auth = `<div class="res bad">Cấu hình đồng bộ bị sai: ${esc(configError)} App vẫn chạy và lưu trên máy này.</div>`;
+  } else if (!hasSupabase()) {
     auth = `<p class="tip">Bản này chưa gắn máy chủ đồng bộ (thiếu <code>VITE_SUPABASE_URL</code> / <code>VITE_SUPABASE_ANON_KEY</code>). Mọi thứ vẫn chạy, chỉ là dữ liệu nằm trên máy này. Dùng “Xuất sao lưu” để chuyển sang máy khác.</p>`;
   } else if (sync.recovery) {
     auth = `<form class="acc" autocomplete="on">
