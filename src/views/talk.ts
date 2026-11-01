@@ -112,7 +112,7 @@ export function renderTalk() {
       ${done[D.id] ? `<span class="tip">Đã luyện ${done[D.id].n} lần</span>` : ""}
       ${ds.length > 1 ? `<button class="btn ghost" id="tNext">Đoạn tiếp →</button>` : ""}</div>
   </section>`;
-  ctrl();
+  ctrl(); scrollLessonChip();
 }
 
 export function onClick(t: any): boolean {
