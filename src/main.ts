@@ -38,7 +38,18 @@ initSync(refreshView);
 // PWA (autoUpdate): trình duyệt chỉ kiểm tra bản mới khi tải trang. App để mở lâu / mở lại từ nền trên điện thoại
 // thì không tải lại trang → hỏi máy chủ mỗi khi quay lại app; bản mới cài ngầm, lần mở sau dùng bản mới.
 if ("serviceWorker" in navigator) {
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") navigator.serviceWorker.getRegistration().then(r => r && r.update()).catch(() => {});
+  const checkUpdate = () => navigator.serviceWorker.getRegistration().then(r => r && r.update()).catch(() => {});
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkUpdate(); });
+  checkUpdate();
+  // bản mới đã cài xong và nắm quyền trang → tải lại 1 lần để dùng code mới ngay (lần cài đầu tiên thì không cần)
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloaded) return;
+    reloaded = true;
+    // đang gõ dở thì đợi rời trang/ẩn app mới tải lại, tránh mất chữ
+    const typing = [...document.querySelectorAll("input,textarea")].some((el: any) => el.value);
+    if (typing) document.addEventListener("visibilitychange", () => { if (document.hidden) location.reload(); }, { once: true });
+    else location.reload();
   });
 }
