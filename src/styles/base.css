@@ -1,0 +1,28 @@
+/* Màu, phông, nền — sáng/tối (giữ nguyên bản cũ) */
+/* Layout: indigo "藍" sidebar with kanji-glyph nav (bottom bar on phones) + wide content column; Hôm nay = dashboard grid */
+:root{
+  --paper:#EEF1F6; --card:#FFFFFF; --ink:#1B2440; --muted:#5A6480; --line:#D6DCE7;
+  --accent:#C2552A; --accent-ink:#FFFFFF; --accent-soft:#F7E4DA; --grid:#E3E8F1;
+  --ok:#2C7A57; --ok-soft:#DDF0E6; --bad:#B03737; --bad-soft:#F7DFDF;
+  --side:#1F2B52; --side-2:#2A3864; --side-ink:#EEF1F8; --side-muted:#A9B3D1;
+  --gold:#D9A441; --sky:#3E7CB1; --sky-soft:#DCE8F4;
+  --jp:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --vi:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#11141D; --card:#191E2B; --ink:#E5E9F3; --muted:#98A1B9; --line:#2B3245;
+  --accent:#E57B4E; --accent-ink:#1A0F08; --accent-soft:#3B2318; --grid:#232A3A;
+  --ok:#5DC28F; --ok-soft:#173326; --bad:#EE7B7B; --bad-soft:#3A1C1C;
+  --side:#0E1222; --side-2:#1A2038; --side-ink:#E5E9F3; --side-muted:#8E98B6; --gold:#E2B55A; --sky:#6FA6D6; --sky-soft:#18283A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11141D; --card:#191E2B; --ink:#E5E9F3; --muted:#98A1B9; --line:#2B3245;
+  --accent:#E57B4E; --accent-ink:#1A0F08; --accent-soft:#3B2318; --grid:#232A3A;
+  --ok:#5DC28F; --ok-soft:#173326; --bad:#EE7B7B; --bad-soft:#3A1C1C;
+  --side:#0E1222; --side-2:#1A2038; --side-ink:#E5E9F3; --side-muted:#8E98B6; --gold:#E2B55A; --sky:#6FA6D6; --sky-soft:#18283A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--vi);font-size:15px;line-height:1.55}
+body{background-image:radial-gradient(1200px 500px at 100% -10%,var(--accent-soft),transparent 60%);background-attachment:fixed}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}

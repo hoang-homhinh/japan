@@ -1,0 +1,125 @@
+/* ================= Giao diện "ペンちゃん": phong cách Nhật (giấy washi · chàm 藍 · son 朱 · hoa anh đào 桜) + linh vật chim cánh cụt =================
+   Nạp sau cùng, chỉ ghi đè màu/phông/hình dạng; bố cục giữ nguyên. */
+:root{
+  --paper:#FBF6EC; --card:#FFFFFF; --ink:#1E2A44; --muted:#69708A; --line:#EADFCB; --grid:#F2E9D8;
+  --accent:#E2543B; --accent-ink:#FFFFFF; --accent-soft:#FDE6DF; --accent-d:#B63E28;
+  --ok:#4E9A3E; --ok-soft:#E4F2DB; --bad:#D6453D; --bad-soft:#FBE2DF;
+  --side:#1F3A5F; --side-2:#2C4C78; --side-ink:#F3F6FB; --side-muted:#B5C3DA; --side-d:#142843;
+  --gold:#E8B04B; --sky:#3F7FBF; --sky-soft:#E1ECF7; --sakura:#F4B6C2; --sakura-soft:#FCE9EE;
+  --vi:"Nunito","Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --jp:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --r:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#11151E; --card:#1A202D; --ink:#E8ECF4; --muted:#9AA3BA; --line:#2C3448; --grid:#232A3A;
+  --accent:#F07A5E; --accent-ink:#1A0F08; --accent-soft:#3A2119; --accent-d:#B9533C;
+  --ok:#78C468; --ok-soft:#1A3320; --bad:#F08079; --bad-soft:#3A1C1C;
+  --side:#0F1C30; --side-2:#1B2D4B; --side-ink:#E8ECF4; --side-muted:#91A0BC; --side-d:#081221;
+  --gold:#EBBE62; --sky:#76A9DA; --sky-soft:#18283A; --sakura:#E59AAB; --sakura-soft:#33212A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11151E; --card:#1A202D; --ink:#E8ECF4; --muted:#9AA3BA; --line:#2C3448; --grid:#232A3A;
+  --accent:#F07A5E; --accent-ink:#1A0F08; --accent-soft:#3A2119; --accent-d:#B9533C;
+  --ok:#78C468; --ok-soft:#1A3320; --bad:#F08079; --bad-soft:#3A1C1C;
+  --side:#0F1C30; --side-2:#1B2D4B; --side-ink:#E8ECF4; --side-muted:#91A0BC; --side-d:#081221;
+  --gold:#EBBE62; --sky:#76A9DA; --sky-soft:#18283A; --sakura:#E59AAB; --sakura-soft:#33212A; color-scheme:dark}
+
+/* nền giấy washi: thớ giấy mờ + góc hoa anh đào */
+body{
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(900px 420px at 100% -8%,var(--sakura-soft),transparent 62%),
+    radial-gradient(760px 380px at -12% 108%,color-mix(in srgb,var(--sky) 12%,transparent),transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .45 0 0 0 0 .3 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-attachment:fixed;
+  font-weight:500;
+}
+b,strong,.btn,.lesson-title,.tile .lab{font-weight:800}
+
+/* tiêu đề mục: chữ số kanji như con dấu hanko đỏ */
+.step h2 .k{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 4px;border-radius:7px;background:var(--accent);color:#fff;font-size:1rem;box-shadow:0 2px 0 var(--accent-d);transform:rotate(-4deg)}
+.step h2{font-size:1.05rem;align-items:center}
+
+/* nút: bo tròn, có độ nổi, nhấn thì lún xuống */
+.btn{border:0;border-radius:14px;padding:10px 18px;font-size:.92rem;background:var(--side);color:#fff;box-shadow:0 4px 0 var(--side-d);transition:transform .08s,box-shadow .08s,filter .15s}
+.btn.accent{background:var(--accent);color:#fff;box-shadow:0 4px 0 var(--accent-d)}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.btn:hover:not(:disabled){filter:brightness(1.06)}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--side-d)}
+.btn.accent:active:not(:disabled){box-shadow:0 1px 0 var(--accent-d)}
+.btn.ghost:active:not(:disabled){box-shadow:0 0 0 var(--line)}
+.btn:disabled{opacity:.5;box-shadow:none}
+.hero .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.4);box-shadow:none}
+
+.chip{border:2px solid var(--line);border-radius:999px;padding:5px 14px;font-weight:700;background:var(--card)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.subi[aria-pressed="true"]{border-bottom-width:3px}
+
+/* thẻ, ô: bo lớn, viền dày, bóng dưới như giấy dán */
+.card,.tile,.panel,.drill,.prompt,.kcard,.pgcard,.pgpair,.xcard,.pgl,.note,.more,.tw,.vlist,.td,.ptwork,.pgsent{border-width:2px;border-radius:var(--r)}
+.tile,.panel,.card,.kcard,.pgcard,.pgpair,.xcard,.drill,.prompt{box-shadow:0 3px 0 var(--line)}
+.tile:hover{box-shadow:0 6px 0 var(--line)}
+.ex{border-width:2px;border-radius:14px}
+.trap{border-radius:0 12px 12px 0}
+
+/* lựa chọn trả lời */
+.opt,.xopt,.sopt,.mt,.mbc{border-width:2px;border-radius:14px;box-shadow:0 3px 0 var(--line);transition:transform .08s,box-shadow .08s}
+.opt:active:not(:disabled),.xopt:active:not(:disabled),.sopt:active:not(:disabled),.mt:active:not(:disabled),.mbc:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.opt.right,.xopt.right,.sopt.right{box-shadow:0 3px 0 color-mix(in srgb,var(--ok) 60%,transparent)}
+.opt.wrong,.xopt.wrong,.sopt.wrong{box-shadow:0 3px 0 color-mix(in srgb,var(--bad) 60%,transparent)}
+.row input,textarea{border-width:2px;border-radius:12px;background:var(--card)}
+
+/* thanh tiến độ dày, bo tròn */
+.bar{height:10px;border-radius:999px}
+.bar i{border-radius:999px;background:linear-gradient(90deg,var(--accent),#F39A7E)}
+.sidefoot .bar i{background:linear-gradient(90deg,var(--gold),#F5D58A)}
+
+/* ô báo đúng/sai: ペンちゃん đứng cạnh */
+.res{border-radius:14px;padding:10px 12px;font-weight:600}
+.res.ok:not(.withpen),.res.bad:not(.withpen){background-repeat:no-repeat;background-size:34px;background-position:8px center;padding-left:50px;min-height:46px}
+.res.ok:not(.withpen){background-image:var(--pen-happy)}
+.res.bad:not(.withpen){background-image:var(--pen-oops)}
+.res.withpen{display:flex;gap:10px;align-items:center}
+.res.withpen>svg{flex:none}
+.res.withpen>div{min-width:0}
+
+/* linh vật */
+.pen{display:block;overflow:visible}
+.pen-happy,.pen-cheer{animation:penhop .6s ease}
+.pen-oops{animation:penwob .5s ease}
+.pen-hi{transform-origin:50% 90%;animation:penhi 2.6s ease-in-out infinite}
+@keyframes penhop{0%{transform:translateY(0)}35%{transform:translateY(-8px)}70%{transform:translateY(0)}85%{transform:translateY(-2px)}100%{transform:none}}
+@keyframes penwob{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(5deg)}}
+@keyframes penhi{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pen{filter:drop-shadow(0 0 1.5px rgba(255,255,255,.55))}}
+:root[data-theme="dark"] .pen{filter:drop-shadow(0 0 1.5px rgba(255,255,255,.55))}
+.pensay{display:flex;align-items:flex-end;gap:10px}
+.pensay .bubble{position:relative;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:8px 14px;display:flex;flex-direction:column;margin-bottom:22px;box-shadow:0 3px 0 var(--line)}
+.pensay .bubble::before{content:"";position:absolute;left:-9px;bottom:12px;width:14px;height:14px;background:var(--card);border-left:2px solid var(--line);border-bottom:2px solid var(--line);transform:rotate(45deg)}
+.pensay .bubble .jp{font-size:1.2rem;font-weight:600;color:var(--accent)}
+
+/* logo = ペンちゃん */
+.logo.logo-pen{background:#fff;padding:1px;overflow:hidden;box-shadow:0 4px 0 var(--accent-d)}
+.logo.logo-pen svg{width:100%;height:100%}
+.logo.sm.logo-pen{box-shadow:0 2px 0 var(--accent-d)}
+
+/* hero Hôm nay: chàm + sóng seigaiha + ペンちゃん */
+.hero{border-radius:24px;background:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='28' viewBox='0 0 56 28'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='1.4'%3E%3Ccircle cx='28' cy='28' r='26'/%3E%3Ccircle cx='28' cy='28' r='18'/%3E%3Ccircle cx='28' cy='28' r='10'/%3E%3Ccircle cx='0' cy='14' r='26'/%3E%3Ccircle cx='56' cy='14' r='26'/%3E%3C/g%3E%3C/svg%3E"),
+  linear-gradient(135deg,var(--side) 0%,var(--side-2) 60%,color-mix(in srgb,var(--accent) 70%,var(--side-2)) 135%);
+  box-shadow:0 6px 0 var(--side-d),0 16px 30px rgba(31,58,95,.22);padding-right:170px}
+.hero .big-k{right:150px;opacity:.1}
+.hero-pen{position:absolute;right:22px;bottom:10px;pointer-events:none}
+.hero .hi{font-weight:600}
+@media (max-width:700px){.hero{padding-right:18px;padding-top:96px}.hero-pen{right:auto;left:14px;top:8px;bottom:auto}.hero-pen svg{width:84px;height:84px}.hero .big-k{right:12px}}
+
+/* sidebar: thêm vệt hoa anh đào */
+.side{background-image:radial-gradient(260px 200px at 110% 105%,color-mix(in srgb,var(--sakura) 30%,transparent),transparent 70%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24' viewBox='0 0 48 24'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.06' stroke-width='1.2'%3E%3Ccircle cx='24' cy='24' r='22'/%3E%3Ccircle cx='24' cy='24' r='15'/%3E%3Ccircle cx='24' cy='24' r='8'/%3E%3Ccircle cx='0' cy='12' r='22'/%3E%3Ccircle cx='48' cy='12' r='22'/%3E%3C/g%3E%3C/svg%3E")}
+.navi,.bni{font-weight:700}
+.navi .ico,.bni .ico{border-radius:12px}
+
+/* nhãn bài / huy hiệu */
+.ptl,.ptb,.cue{border-radius:999px;font-weight:700}
+.tile .tn{border-radius:14px;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.t-rev .tn{background:var(--sky)}.t-new .tn{background:var(--accent)}.t-kan .tn{background:var(--gold)}.t-gram .tn{background:var(--ok)}
+.toast{border-radius:14px;font-weight:700}
+.todo{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
