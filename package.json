@@ -9,7 +9,8 @@
     "dev": "node scripts/build-content.mjs && vite",
     "build": "node scripts/build-content.mjs && tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "strokes": "node scripts/fetch-strokes.mjs"
   },
   "devDependencies": {
     "typescript": "^7.0.2",
