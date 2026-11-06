@@ -1,5 +1,6 @@
 // Lưu trạng thái học: localStorage (khoá datcau_v1 như bản cũ) + móc đồng bộ (core/sync.ts)
 import { $, $$, GOAL, addDays, clone, dayStr } from "./util";
+import { mergePath } from "./path";
 
 export const LS_KEY = "datcau_v1";
 export const S: any = { progress: { days: [], counts: {}, drills: {}, last: null }, sentences: [] };
@@ -64,6 +65,8 @@ export function mergeProgress(local: any, rem: any) {
   for (const [k, v] of Object.entries<any>(local.talk || {})) { const o = tk[k]; tk[k] = o ? { n: Math.max(v.n || 0, o.n || 0), d: (v.d || "") > (o.d || "") ? v.d : o.d } : v; }
   if (Object.keys(tk).length) P.talk = tk;
   P.daily = mergeDaily(local.daily, rem.daily);
+  // hành trình N5: hợp bước đã xong, dấu ga sớm nhất (xem core/path.ts)
+  const pa = mergePath(local.path, rem.path); if (pa) P.path = pa;
   // mới: danh sách câu đã xoá (id → thời điểm), giữ 1000 mục gần nhất
   const del = Object.assign({}, rem.delSent || {});
   for (const [k, v] of Object.entries<any>(local.delSent || {})) del[k] = Math.max(v, del[k] || 0);
