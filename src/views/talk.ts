@@ -133,6 +133,6 @@ export function onClick(t: any): boolean {
   return false;
 }
 export function leaveTalk() { stop(); }
-export function openTalkForLesson(n: number) { if (LESSON_NS.includes(n)) { tS.l = n; tS.id = ""; save(); } }
+export function openTalkForLesson(n: number, id = "") { if (LESSON_NS.includes(n)) { tS.l = n; tS.id = id; save(); } }
 // trượt dải "Bài" tới bài đang chọn (điện thoại)
 export function scrollLessonChip() { const b: any = document.querySelector('.tchips [aria-pressed="true"]'); if (b) b.scrollIntoView({ inline: "center", block: "nearest" }); }

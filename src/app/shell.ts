@@ -16,6 +16,8 @@ import * as account from "../views/account";
 import * as talk from "../views/talk";
 import * as library from "../views/library";
 import * as journey from "../views/journey";
+import * as station from "../views/station";
+import * as player from "../views/player";
 
 export let view = "today";
 
@@ -56,7 +58,7 @@ const VIEW_NAME: any = { library: "Thư viện", reviewq: "Ôn tập", journey: 
 const RENDER: any = {
   library: () => library.renderLibrary(),
   // tạm thời cho tới Task 7/11: journey → Thư viện, reviewq → Sổ câu
-  journey: () => journey.renderJourney(), reviewq: () => review.openReview(),
+  journey: () => journey.renderJourney(), station: () => station.renderStation(), player: () => player.renderPlayer(), reviewq: () => review.openReview(),
   today: () => today.renderToday(), learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
   match: () => match.renderMatch(), particle: () => particle.renderParticles(), exam: () => exam.renderExam(), account: () => account.renderAccount(), talk: () => talk.renderTalk(), review: () => review.openReview(),
 };
@@ -92,10 +94,12 @@ export function bindEvents() {
     const t = e.target.closest("button");
     if (!t) { const r = e.target.closest(".cover-m .vrow,.cover-w .vrow"); if (r) r.classList.toggle("peek"); return; }
     if (view === "journey" && journey.onClick(t)) return;
+    if (t.dataset.station) return station.openStation(+t.dataset.station);
+    if (view === "station" && station.onClick(t)) return;
     if (match.onClick(t)) return;
     if (view === "talk" && talk.onClick(t)) return;
     if (t.id === "dTalk") return setView("talk");
-    if (t.dataset.view) { const v = t.dataset.view; if (t.classList.contains("navi") || t.classList.contains("bni")) return setView(LASTSUB[navGroupOf(v)] || v); return setView(v); }
+    if (t.dataset.view) { const v = t.dataset.view; if (t.classList.contains("navi") || t.classList.contains("bni")) return setView(NO_SUBNAV.has(navGroupOf(v)) ? v : LASTSUB[navGroupOf(v)] || v); return setView(v); }
     if (t.dataset.say) return say(t.dataset.say);
     if (view === "particle" && particle.ptClick(t)) return;
     if (view === "exam" && exam.exClick(t)) return;
