@@ -39,3 +39,8 @@ test("gradeTrack pt right schedules later", () => {
   expect(S.progress.pt.p001.c).toBe(1);
   expect(S.progress.pt.p001.next > dayStr()).toBe(true);
 });
+test("peeking at the review does not use up the daily backlog", () => {
+  seedDue(0); S.progress.path = { start: 13, st: {}, goal: 1, sound: true };
+  expect(buildReview(T, 15, 10, false)).toHaveLength(10);
+  expect(buildReview(T)).toHaveLength(10);
+});

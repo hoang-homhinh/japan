@@ -21,7 +21,7 @@ function srsQ(id: string, k: number): Q | null {
   return k % 2 ? listenQ(li, i, Math.random) : meaningQ(li, i, Math.random);
 }
 
-export function buildReview(today = dayStr(), cap = 15, oldPerDay = 10): Q[] {
+export function buildReview(today = dayStr(), cap = 15, oldPerDay = 10, commit = true): Q[] {
   const out: Q[] = [];
   // 1) đến hạn: từ/kanji, rồi câu trợ từ và câu thi đã sai
   const due = Object.entries<any>(srsAll()).filter(([, v]) => (v.next || "") <= today).sort((a, b) => (a[1].next || "").localeCompare(b[1].next || ""));
@@ -41,6 +41,6 @@ export function buildReview(today = dayStr(), cap = 15, oldPerDay = 10): Q[] {
     for (let i = 0; li >= 0 && i < VFLAT[li].length && room > 0; i++) if (!srs(vid(li, i))) { out.push(meaningQ(li, i, Math.random)); room--; took++; }
     for (const ch of s.kanji) { if (room <= 0) break; if (!srs(kid(ch))) { const q = kanjiReadQ(ch, Math.random); if (q) { out.push(q); room--; took++; } } }
   }
-  if (took) { fed[today] = (fed[today] || 0) + took; saveProgress(); }
+  if (took && commit) { fed[today] = (fed[today] || 0) + took; saveProgress(); }
   return out;
 }

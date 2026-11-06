@@ -21,9 +21,9 @@ document.documentElement.style.setProperty("--pen-oops", `url("${penguinDataURI(
 
 initStore();
 bindEvents();
-export const HOME = "library"; // Task 7 đổi thành "journey"
+export const HOME = "journey";
 // mở thẳng một tab qua đường link, vd …/#particle (tiện để ghim tab hay dùng)
-const VIEWS = ["library", "reviewq", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
+const VIEWS = ["journey", "stamps", "library", "reviewq", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
 const startView = location.hash.slice(1);
 setView(VIEWS.includes(startView) ? startView : HOME);
 window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (VIEWS.includes(h) && h !== view) setView(h); });

@@ -15,6 +15,7 @@ import * as exam from "../views/exam";
 import * as account from "../views/account";
 import * as talk from "../views/talk";
 import * as library from "../views/library";
+import * as journey from "../views/journey";
 
 export let view = "today";
 
@@ -55,7 +56,7 @@ const VIEW_NAME: any = { library: "Thư viện", reviewq: "Ôn tập", journey: 
 const RENDER: any = {
   library: () => library.renderLibrary(),
   // tạm thời cho tới Task 7/11: journey → Thư viện, reviewq → Sổ câu
-  journey: () => library.renderLibrary(), reviewq: () => review.openReview(),
+  journey: () => journey.renderJourney(), reviewq: () => review.openReview(),
   today: () => today.renderToday(), learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
   match: () => match.renderMatch(), particle: () => particle.renderParticles(), exam: () => exam.renderExam(), account: () => account.renderAccount(), talk: () => talk.renderTalk(), review: () => review.openReview(),
 };
@@ -90,6 +91,7 @@ export function bindEvents() {
   document.addEventListener("click", (e: any) => {
     const t = e.target.closest("button");
     if (!t) { const r = e.target.closest(".cover-m .vrow,.cover-w .vrow"); if (r) r.classList.toggle("peek"); return; }
+    if (view === "journey" && journey.onClick(t)) return;
     if (match.onClick(t)) return;
     if (view === "talk" && talk.onClick(t)) return;
     if (t.id === "dTalk") return setView("talk");

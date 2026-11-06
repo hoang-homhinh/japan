@@ -18,3 +18,61 @@
   animation:stkdraw .5s ease forwards;animation-delay:calc(var(--i) * .45s)}
 @keyframes stkdraw{to{stroke-dashoffset:0}}
 @media (prefers-reduced-motion: reduce){.strokes .stk-ink path{animation:none;stroke-dashoffset:0}}
+
+/* ---- Màn Hành trình ---- */
+.onboard{margin-top:22px;display:flex;flex-direction:column;gap:16px;max-width:640px}
+.onboard .bubble b{font-size:1.1rem}
+.onboard select{font:inherit;padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.jhead{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.jstat{display:flex;align-items:baseline;gap:4px;padding:8px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line)}
+.jstat b{font-size:1.3rem;font-variant-numeric:tabular-nums}
+.jstat span{font-size:.8rem;color:var(--muted)}
+.jhead .btn{margin-left:auto}
+
+.routemap{position:relative;margin:18px auto 0;max-width:520px;padding-bottom:150px;perspective:900px}
+.rails{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.rails path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.rail-bed{stroke:color-mix(in srgb,var(--ink) 12%,transparent);stroke-width:26}
+.rail-ties{stroke:color-mix(in srgb,var(--ink) 28%,transparent);stroke-width:18;stroke-dasharray:3 9}
+.rail-line{stroke:var(--line-n5);stroke-width:5}
+
+/* khối sân ga: mặt trên là biển ga, hai lớp bóng đặc tạo độ dày, nghiêng nhẹ theo góc nhìn */
+.platform{all:unset;box-sizing:border-box;position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-50%) rotateX(16deg);transform-style:preserve-3d;
+  width:132px;cursor:pointer;border-radius:12px;background:var(--card);
+  box-shadow:0 2px 0 var(--line),0 7px 0 color-mix(in srgb,var(--ink) 22%,var(--card)),0 16px 20px rgba(10,20,40,.18);transition:transform .15s}
+.platform:hover{transform:translate(-50%,-54%) rotateX(16deg)}
+.platform:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+.pf-top{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;border-top:5px solid var(--line-n5)}
+.pf-code{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.78rem;border:3px solid var(--line-n5);color:var(--ink);background:var(--card)}
+.pf-name{font-family:var(--jp);font-weight:700;font-size:1.05rem;color:var(--ink);white-space:nowrap}
+.pf-stamp{position:absolute;right:-10px;top:-12px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:1rem;
+  background:var(--card);border:2px solid var(--bad);box-shadow:0 0 0 2px var(--card);transform:rotate(-12deg)}
+.pf-lock{position:absolute;right:8px;top:-10px;font-size:.9rem}
+.st-locked{filter:grayscale(1);background:color-mix(in srgb,var(--card) 70%,var(--paper))}
+.st-locked .pf-name,.st-locked .pf-code{color:var(--muted)}
+.st-locked .pf-top{border-top-color:var(--line)}
+.st-locked .pf-code{border-color:var(--line)}
+.st-passed .pf-code{border-style:dashed}
+.st-current{width:156px;z-index:2;box-shadow:0 0 0 4px color-mix(in srgb,var(--line-n5) 35%,transparent),0 2px 0 var(--line),0 8px 0 var(--line-n5-d),0 18px 26px rgba(0,120,120,.28)}
+.st-current .pf-code{background:var(--line-n5);color:#fff}
+.st-stamped .pf-code{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* tàu + Pen-chan đỗ cạnh ga đang đi; mở màn: lăn từ ga trước tới */
+.train{position:absolute;left:var(--x);top:var(--y);transform:translate(-50%,-118%);display:flex;align-items:flex-end;gap:2px;pointer-events:none;z-index:3}
+.train .car{font-size:1.9rem;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25))}
+.train.arrive{animation:trainin 1.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes trainin{from{top:var(--from);opacity:0}to{top:var(--y);opacity:1}}
+@media (prefers-reduced-motion: reduce){.train.arrive{animation:none}}
+
+/* biển "Tiếp tục" cố định đáy, kiểu biển tên ga */
+.continue{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;flex-direction:column;gap:10px;max-width:520px;margin:0 auto;
+  padding:12px;border-radius:16px;background:var(--card);border:1px solid var(--line);box-shadow:0 12px 30px rgba(10,20,40,.18)}
+.sign{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:12px;align-items:center;padding-top:8px;border-top:6px solid var(--line-n5);border-radius:4px}
+.sign-code{grid-row:1/3;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-weight:800;border:4px solid var(--line-n5);background:var(--card)}
+.sign-name{display:flex;align-items:baseline;gap:8px}
+.sign-name b{font-family:var(--jp);font-size:1.5rem;font-weight:700}
+.sign-name small{color:var(--muted)}
+.sign-step{font-size:.88rem;color:var(--muted)}
+.btn.big{font-size:1.05rem;padding:14px 18px;border-radius:14px}
+@media (max-width:860px){.continue{bottom:calc(84px + env(safe-area-inset-bottom,0px))}.routemap{padding-bottom:210px}}
+@media (max-width:420px){.platform{width:118px}.st-current{width:138px}.pf-name{font-size:.95rem}}
