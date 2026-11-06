@@ -152,6 +152,7 @@ export function streak() {
 }
 export const dueList = () => { const t = dayStr(); return S.sentences.filter((s: any) => (s.next || "") <= t); };
 export function renderStats() {
+  if (typeof document === "undefined") return; // chạy trong test (node) không có giao diện
   const n = S.progress.counts[dayStr()] || 0, st = streak();
   $("#streak").textContent = st + " ngày liên tiếp";
   $("#todayTxt").textContent = "Hôm nay " + n + " lượt đúng";
