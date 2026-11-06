@@ -5,7 +5,7 @@ import { STATIONS } from "./route";
 import { PT_DRILLS } from "../content/drills";
 
 const rnd = () => 0.42;
-beforeEach(() => { S.progress = { upto: 13 }; });
+beforeEach(() => { S.progress = { upto: 13, days: [], counts: {}, drills: {} }; });
 
 test("step 1 is the a-dialogue", () => {
   expect(buildStep(13, 1).qs).toEqual([{ kind: "dialogue", id: "13a" }]);

@@ -1,7 +1,7 @@
 import { S, mergeProgress } from "./store";
 import { currentStation, getPart, markStepDone, mergePath, nextStep, setPart, stampStation, stationStatus } from "./path";
 
-beforeEach(() => { S.progress = { upto: 13 }; });
+beforeEach(() => { S.progress = { upto: 13, days: [], counts: {}, drills: {} }; });
 
 test("new learner starts at upto", () => {
   expect(currentStation()).toBe(13);

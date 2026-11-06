@@ -24,11 +24,11 @@ const lessonIdx = (n: number) => VOCAB.findIndex((L: any) => L.n === n);
 const PARTS = ["は", "が", "を", "に", "で", "へ", "と", "も"];
 
 // ---- từ vựng ----
-function meaningQ(li: number, i: number, rnd: Rnd): Q {
+export function meaningQ(li: number, i: number, rnd: Rnd): Q {
   const w = VFLAT[li][i];
   return { kind: "mcq", prompt: "Từ này nghĩa là gì?", jp: w[0], say: w[0], ...choices(w[3], VFLAT[li].map((x: any) => x[3]), rnd), track: { type: "srs", id: vid(li, i) } };
 }
-function listenQ(li: number, i: number, rnd: Rnd): Q {
+export function listenQ(li: number, i: number, rnd: Rnd): Q {
   const w = VFLAT[li][i];
   return { kind: "listen", say: w[0], ...choices(w[0], VFLAT[li].map((x: any) => x[0]), rnd), track: { type: "srs", id: vid(li, i) } };
 }
@@ -66,7 +66,7 @@ function patternQs(P: any, all: string[], rnd: Rnd): Q[] {
 }
 
 // ---- kanji ----
-function kanjiReadQ(ch: string, rnd: Rnd): Q | null {
+export function kanjiReadQ(ch: string, rnd: Rnd): Q | null {
   const k = KMAP[ch]; if (!k?.ex?.length) return null;
   const [word, read] = k.ex[0];
   const pool = [...kjWrongReads(read), ...k.ex.slice(1).map((e: any) => e[1])];
