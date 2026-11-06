@@ -3,25 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Đặt câu mỗi ngày</title>
+<title>Hành trình N5</title>
 <meta name="description" content="Học tiếng Nhật N5 mỗi ngày: từ vựng, kanji, ngữ pháp Minna no Nihongo Bài 1–25, trợ từ, luyện thi.">
 <meta name="theme-color" content="#1F3A5F">
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Klee+One:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&family=Zen+Kaku+Gothic+New:wght@500;700&family=Klee+One:wght@600&display=swap">
 </head>
 <body>
 <div class="shell">
   <aside class="side" aria-label="Điều hướng">
-    <div class="brand"><span class="logo">文</span><div><b>文をつくろう</b><small>Đặt câu mỗi ngày</small></div></div>
+    <div class="brand"><span class="logo">文</span><div><b>Hành trình N5</b><small>Tuyến tàu tiếng Nhật</small></div></div>
     <nav class="nav" role="tablist">
-      <button class="navi" role="tab" aria-selected="true" data-view="today"><span class="ico">今</span><span class="lbl">Hôm nay</span></button>
-      <button class="navi" role="tab" aria-selected="false" data-view="vocab"><span class="ico">語</span><span class="lbl">Từ vựng</span></button>
-      <button class="navi" role="tab" aria-selected="false" data-view="learn"><span class="ico">文</span><span class="lbl">Ngữ pháp</span></button>
-      <button class="navi" role="tab" aria-selected="false" data-view="exam"><span class="ico">試</span><span class="lbl">Luyện thi</span></button>
-      <button class="navi" role="tab" aria-selected="false" data-view="review"><span class="ico">復</span><span class="lbl">Sổ câu</span><span class="n dueN"></span></button>
+      <button class="navi" role="tab" aria-selected="true" data-view="journey"><span class="ico">🚃</span><span class="lbl">Hành trình</span></button>
+      <button class="navi" role="tab" aria-selected="false" data-view="reviewq"><span class="ico">↻</span><span class="lbl">Ôn tập</span><span class="n dueN"></span></button>
+      <button class="navi" role="tab" aria-selected="false" data-view="library"><span class="ico">📚</span><span class="lbl">Thư viện</span></button>
     </nav>
     <button class="navi acc-link" aria-selected="false" data-view="account"><span class="ico">⚙</span><span class="lbl">Tài khoản &amp; sao lưu</span></button>
     <div class="sidefoot">
@@ -32,7 +30,7 @@
   </aside>
   <div class="content">
     <header class="topbar">
-      <div class="tb-l"><span class="logo sm">文</span><span class="crumb" id="crumb">Hôm nay</span></div>
+      <div class="tb-l"><span class="logo sm">文</span><span class="crumb" id="crumb">Hành trình</span></div>
       <div class="tb-r"><span class="pill" id="streak2">🔥 0</span><span class="pill" id="today2">0 lượt</span><button class="pill gear" data-view="account" aria-label="Tài khoản &amp; sao lưu" title="Tài khoản &amp; sao lưu" aria-pressed="false"><i></i>⚙</button></div>
     </header>
     <div class="subnav" id="subnav" role="tablist" hidden></div>
@@ -40,11 +38,9 @@
   </div>
 </div>
 <nav class="bottomnav" role="tablist" aria-label="Điều hướng">
-      <button class="bni" role="tab" aria-selected="true" data-view="today"><span class="ico">今</span><span class="lbl">Hôm nay</span></button>
-      <button class="bni" role="tab" aria-selected="false" data-view="vocab"><span class="ico">語</span><span class="lbl">Từ vựng</span></button>
-      <button class="bni" role="tab" aria-selected="false" data-view="learn"><span class="ico">文</span><span class="lbl">Ngữ pháp</span></button>
-      <button class="bni" role="tab" aria-selected="false" data-view="exam"><span class="ico">試</span><span class="lbl">Luyện thi</span></button>
-      <button class="bni" role="tab" aria-selected="false" data-view="review"><span class="ico">復</span><span class="lbl">Sổ câu</span><span class="n dueN2"></span></button>
+      <button class="bni" role="tab" aria-selected="true" data-view="journey"><span class="ico">🚃</span><span class="lbl">Hành trình</span></button>
+      <button class="bni" role="tab" aria-selected="false" data-view="reviewq"><span class="ico">↻</span><span class="lbl">Ôn tập</span><span class="n dueN2"></span></button>
+      <button class="bni" role="tab" aria-selected="false" data-view="library"><span class="ico">📚</span><span class="lbl">Thư viện</span></button>
 </nav>
 <div class="toast" id="toast" hidden></div>
 <script type="module" src="/src/main.ts"></script>

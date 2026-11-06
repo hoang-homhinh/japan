@@ -10,6 +10,8 @@ import { bindEvents, refreshView, setView, view } from "./app/shell";
 import { syncLabel } from "./views/account";
 import { $$ } from "./core/util";
 import "./styles/theme.css";
+import "./styles/tokens.css";
+import "./styles/journey.css";
 import { penguin, penguinDataURI } from "./core/mascot";
 
 // ペンちゃん: logo + hình nhỏ cạnh mọi ô báo đúng/sai (.res) qua biến CSS
@@ -19,10 +21,11 @@ document.documentElement.style.setProperty("--pen-oops", `url("${penguinDataURI(
 
 initStore();
 bindEvents();
+export const HOME = "library"; // Task 7 đổi thành "journey"
 // mở thẳng một tab qua đường link, vd …/#particle (tiện để ghim tab hay dùng)
-const VIEWS = ["today", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
+const VIEWS = ["library", "reviewq", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
 const startView = location.hash.slice(1);
-setView(VIEWS.includes(startView) ? startView : "today");
+setView(VIEWS.includes(startView) ? startView : HOME);
 window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (VIEWS.includes(h) && h !== view) setView(h); });
 
 // hình chữ cổ nạp sau (file lớn); xong thì vẽ lại tab đang có thẻ kanji

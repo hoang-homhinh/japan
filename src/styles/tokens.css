@@ -1,0 +1,56 @@
+/* ================= Hành trình N5 — ngôn ngữ biển báo nhà ga Nhật =================
+   Biển tên ga trắng, dải màu tuyến, số hiệu ga, bảng giờ tàu. Nạp SAU theme.css: chỉ ghi đè biến
+   (màn cũ trong Thư viện tự theo) + nền + chữ. Phần riêng của hành trình ở journey.css. */
+:root{
+  --ink:#1C2230; --muted:#5B6577; --line:#D3DAE2; --grid:#E3E8EE;
+  --paper:#EEF2F5; --card:#FFFFFF;
+  --line-n5:#00A0A0; --line-n5-d:#007A7A; --line-n5-soft:#D9F1F1;
+  --accent:#1659C7; --accent-d:#0E3F94; --accent-ink:#FFFFFF; --accent-soft:#E2EBFA;
+  --gold:#F2B300; --gold-d:#B98700; --gold-soft:#FFF4D1;
+  --ok:#008C8C; --ok-soft:#D9F1F1; --bad:#D7263D; --bad-soft:#FBE4E7;
+  --side:#1C2230; --side-2:#2B3345; --side-d:#0F141F; --side-ink:#F2F5F8; --side-muted:#A6B0C2;
+  --sky:#1659C7; --sky-soft:#E2EBFA; --sakura:transparent; --sakura-soft:transparent;
+  --vi:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --jp:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --brush:"Klee One","Hiragino Mincho ProN","Yu Mincho",serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ink:#E8EDF4; --muted:#9AA6B8; --line:#2A3446; --grid:#1E2636;
+  --paper:#121826; --card:#1A2232;
+  --line-n5:#2CC4C4; --line-n5-d:#169C9C; --line-n5-soft:#11302F;
+  --accent:#4C8DF0; --accent-d:#2C66C4; --accent-ink:#0B1220; --accent-soft:#16264A;
+  --gold:#F6C33A; --gold-d:#B98700; --gold-soft:#3A2F0E;
+  --ok:#2CC4C4; --ok-soft:#11302F; --bad:#F06478; --bad-soft:#3A1720;
+  --side:#0B1019; --side-2:#1A2232; --side-d:#05080E; --side-ink:#E8EDF4; --side-muted:#8A96AA; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ink:#E8EDF4; --muted:#9AA6B8; --line:#2A3446; --grid:#1E2636;
+  --paper:#121826; --card:#1A2232;
+  --line-n5:#2CC4C4; --line-n5-d:#169C9C; --line-n5-soft:#11302F;
+  --accent:#4C8DF0; --accent-d:#2C66C4; --accent-ink:#0B1220; --accent-soft:#16264A;
+  --gold:#F6C33A; --gold-d:#B98700; --gold-soft:#3A2F0E;
+  --ok:#2CC4C4; --ok-soft:#11302F; --bad:#F06478; --bad-soft:#3A1720;
+  --side:#0B1019; --side-2:#1A2232; --side-d:#05080E; --side-ink:#E8EDF4; --side-muted:#8A96AA; color-scheme:dark}
+
+/* nền sân ga: lạnh, sạch; một dải gạch dẫn đường (vàng) mờ ở mép trái */
+body{background:var(--paper);background-image:none;font-family:var(--vi);font-weight:500;letter-spacing:.005em}
+.content{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 10%,transparent) 0 6px,transparent 6px) left top/100% 100% no-repeat}
+h1,h2,h3,.crumb{font-family:var(--vi);font-weight:800;letter-spacing:-.01em}
+.kbig,.ancnow,.kcard .kbig{font-family:var(--brush)}
+
+/* biển con số hanko cũ → ô số kiểu biển ga */
+.step h2 .k{transform:none;border-radius:6px;background:var(--ink);color:var(--paper);box-shadow:none;font-family:var(--jp)}
+
+/* điều hướng: sidebar mực tối như mặt biển chỉ dẫn, mục đang chọn có dải màu tuyến */
+.side{background:var(--side);background-image:none}
+.navi[aria-selected="true"]{background:var(--side-2);box-shadow:inset 4px 0 0 var(--line-n5)}
+.navi[aria-selected="true"] .ico,.bni[aria-selected="true"] .ico{background:var(--line-n5);color:#fff}
+@media (max-width:860px){.bottomnav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.btn{background:var(--ink);box-shadow:0 3px 0 var(--side-d)}
+.btn.accent{background:var(--accent);box-shadow:0 4px 0 var(--accent-d)}
+.btn.accent:active:not(:disabled){box-shadow:0 1px 0 var(--accent-d)}
+.chip[aria-pressed="true"]{border-color:var(--line-n5);background:var(--line-n5-soft)}
+.bar i{background:var(--line-n5)}
+.res.ok{color:var(--ok)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}

@@ -14,18 +14,20 @@ import * as particle from "../views/particle";
 import * as exam from "../views/exam";
 import * as account from "../views/account";
 import * as talk from "../views/talk";
+import * as library from "../views/library";
 
 export let view = "today";
 
-const NAV_GROUPS: any = { today: ["today"], words: ["vocab", "kanji", "match"], gram: ["learn", "talk", "particle", "notes"], exam: ["exam"], review: ["review"] };
-const SUB_NAME: any = { vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", learn: "Mẫu câu", talk: "Hội thoại", particle: "Trợ từ", notes: "Sổ ngữ pháp" };
+const NAV_GROUPS: any = { journey: ["journey", "station", "player", "stamps"], reviewq: ["reviewq", "review"], library: ["library", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam"] };
+const NO_SUBNAV = new Set(["journey"]);
+const SUB_NAME: any = { library: "Tất cả", reviewq: "Ôn hôm nay", review: "Sổ câu", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", learn: "Mẫu câu", talk: "Hội thoại", particle: "Trợ từ", notes: "Sổ ngữ pháp" };
 export const navGroupOf = (v: string) => Object.keys(NAV_GROUPS).find(g => NAV_GROUPS[g].includes(v)) || v;
 const LASTSUB: any = {};
 try { Object.assign(LASTSUB, JSON.parse(localStorage.getItem(LS_KEY + "_sub") || "{}")); } catch (e) {}
 function renderSubnav(v: string) {
   const g = navGroupOf(v), box = $("#subnav"); if (!box) return;
   LASTSUB[g] = v; try { localStorage.setItem(LS_KEY + "_sub", JSON.stringify(LASTSUB)); } catch (e) {}
-  const subs = NAV_GROUPS[g] || [];
+  const subs = NO_SUBNAV.has(g) ? [] : NAV_GROUPS[g] || [];
   box.innerHTML = subs.length > 1 ? subs.map((s: string) => `<button class="subi" data-view="${s}" aria-pressed="${s === v}">${esc(SUB_NAME[s] || s)}</button>`).join("") : "";
   box.hidden = subs.length < 2;
 }
@@ -49,8 +51,11 @@ export function examCountdown() {
   return d >= 0 ? `<span class="pill">試 ${d === 0 ? "Hôm nay thi!" : "Còn " + d + " ngày tới kỳ thi"}</span>` : "";
 }
 
-const VIEW_NAME: any = { today: "Hôm nay", learn: "Ngữ pháp", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", review: "Ôn sổ câu", notes: "Sổ ngữ pháp", particle: "Trợ từ", talk: "Hội thoại", exam: "Luyện thi N5", account: "Tài khoản & sao lưu" };
+const VIEW_NAME: any = { library: "Thư viện", reviewq: "Ôn tập", journey: "Hành trình", station: "Ga", player: "Đang học", stamps: "Sổ dấu ga", today: "Hôm nay", learn: "Ngữ pháp", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", review: "Ôn sổ câu", notes: "Sổ ngữ pháp", particle: "Trợ từ", talk: "Hội thoại", exam: "Luyện thi N5", account: "Tài khoản & sao lưu" };
 const RENDER: any = {
+  library: () => library.renderLibrary(),
+  // tạm thời cho tới Task 7/11: journey → Thư viện, reviewq → Sổ câu
+  journey: () => library.renderLibrary(), reviewq: () => review.openReview(),
   today: () => today.renderToday(), learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
   match: () => match.renderMatch(), particle: () => particle.renderParticles(), exam: () => exam.renderExam(), account: () => account.renderAccount(), talk: () => talk.renderTalk(), review: () => review.openReview(),
 };
