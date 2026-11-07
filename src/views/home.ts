@@ -53,7 +53,7 @@ export function renderHome() {
   </div>
   <aside class="m-col">
     ${reviewCard(due, br, today)}
-    <section class="m-card"><div class="m-ch"><h2>Mức thành thạo</h2><button class="lnk" data-view="stamps">Chi tiết</button></div>
+    <section class="m-card"><div class="m-ch"><h2>Mức thành thạo</h2><button class="lnk" data-view="analytics">Chi tiết</button></div>
       ${[["Từ vựng", m.vocab.p, `${m.vocab.done}/${m.vocab.total}`], ["Kanji", m.kanji.p, `${m.kanji.done}/${m.kanji.total}`], ["Ngữ pháp", m.grammar.p, `${m.grammar.done}/${m.grammar.total}`], ["Trợ từ", m.particle.p, m.particle.total ? pct(m.particle.p) + "%" : "—"], ["Nghe", m.listening.p, m.listening.total ? pct(m.listening.p) + "%" : "—"]]
         .map(([t, p, v]) => `<div class="mbar"><span style="text-align:left;font:13px var(--vi);color:var(--ink)">${t}</span><div class="t" role="img" aria-label="${t} ${pct(p as number)}%"><i style="width:${pct(p as number)}%"></i></div><span>${v}</span></div>`).join("")}</section>
     <section class="m-card"><div class="m-ch"><h2>Sổ dấu</h2><span>${stamps}/25</span></div>

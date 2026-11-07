@@ -14,6 +14,9 @@ import "./styles/michi.css";
 import { icon, peng } from "./core/brand";
 import { openCmd } from "./views/cmdk";
 import { openStation } from "./views/station";
+import { applyTheme } from "./core/theme";
+
+applyTheme();
 
 // logo chim cánh cụt + icon nét mảnh cho menu
 $$(".logo").forEach(el => { el.innerHTML = peng(30, "Michi"); });
@@ -23,7 +26,7 @@ initStore();
 bindEvents();
 export const HOME = "home";
 // mở thẳng một tab qua đường link, vd …/#particle (tiện để ghim tab hay dùng)
-const VIEWS = ["home", "journey", "stamps", "library", "reviewq", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
+const VIEWS = ["home", "analytics", "journey", "stamps", "library", "reviewq", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
 const startView = location.hash.slice(1);
 setView(VIEWS.includes(startView) ? startView : HOME);
 window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (VIEWS.includes(h) && h !== view) setView(h); });
