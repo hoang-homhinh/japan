@@ -94,7 +94,7 @@ export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random, opt: 
   if (step === 1) {
     if (!plus) return { qs: [{ kind: "dialogue", id: `${n}a` }], partTotal: 1, part: 0 };
     const qs: Q[] = [];
-    if (canListen) { qs.push({ kind: "dialogue-blind", id: `${n}a` }); for (const g of plus.gist) qs.push({ kind: "mcq", prompt: g.q, opts: g.opts, a: g.a }); }
+    if (canListen) { qs.push({ kind: "dialogue-blind", id: `${n}a` }); for (const g of plus.gist) { const opts = shuffle(g.opts, rnd); qs.push({ kind: "mcq", prompt: g.q, opts, a: opts.indexOf(g.opts[g.a]) }); } }
     qs.push({ kind: "dialogue", id: `${n}a` }, { kind: "phrases", id: `${n}a`, keep: plus.keep });
     return { qs, partTotal: 1, part: 0 };
   }
