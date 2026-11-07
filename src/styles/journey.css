@@ -29,7 +29,7 @@
 .jstat span{font-size:.8rem;color:var(--muted)}
 .jhead .btn{margin-left:auto}
 
-.routemap{position:relative;margin:18px auto 0;max-width:520px;padding-bottom:150px;perspective:900px}
+.routemap{position:relative;margin:18px auto 0;max-width:520px;overflow-x:clip;padding-bottom:150px;perspective:900px}
 .rails{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .rails path{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round}
 .rail-bed{stroke:color-mix(in srgb,var(--ink) 12%,transparent);stroke-width:26}

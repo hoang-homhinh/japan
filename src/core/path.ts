@@ -10,6 +10,10 @@ export type PathState = { start: number; st: Record<string, StationProgress>; go
 
 export const PASS = 0.7;
 
+// chỉ đọc (không tạo bản ghi) — dùng cho màn cài đặt, âm thanh…
+export function peekPath(): PathState {
+  return S.progress.path || { start: Math.min(Math.max(S.progress.upto || 13, 1), 25), st: {}, goal: 1, sound: true };
+}
 export function pathState(): PathState {
   const p = S.progress;
   if (!p.path) p.path = { start: Math.min(Math.max(p.upto || 13, 1), 25), st: {}, goal: 1, sound: true };
@@ -80,7 +84,9 @@ export function mergePath(a: any, b: any): any {
   const newer = (a.t || 0) >= (b.t || 0) ? a : b;
   const fed: Record<string, number> = {};
   for (const [d, v] of [...Object.entries(a.oldFed || {}), ...Object.entries(b.oldFed || {})]) fed[d] = Math.max(fed[d] || 0, v as number);
-  const out: any = { start: Math.max(a.start || 1, b.start || 1), st, goal: newer.goal ?? 1, sound: newer.sound ?? true };
+  // ga bắt đầu: bên đặt sau (có t mới hơn) thắng; bên chưa từng đặt (không có t) thua
+  const startSrc = (a.t || 0) === (b.t || 0) ? (a.start >= b.start ? a : b) : newer;
+  const out: any = { start: startSrc.start || 1, st, goal: newer.goal ?? 1, sound: newer.sound ?? true };
   if (newer.t) out.t = newer.t;
   if (Object.keys(fed).length) out.oldFed = Object.fromEntries(Object.entries(fed).sort().slice(-14));
   return out;

@@ -3,6 +3,7 @@
 import { stationOf } from "./route";
 
 export function stampSVG(n: number, size = 120, date = ""): string {
+  if (!/^\d{4}-\d\d-\d\d$/.test(date)) date = ""; // dữ liệu đồng bộ/sao lưu lạ không được chèn vào SVG
   const s = stationOf(n), ink = n % 2 ? "#00A0A0" : "#1C3F7A", id = `st${n}-`;
   return `<svg class="stampsvg" viewBox="0 0 120 120" width="${size}" height="${size}" role="img" aria-label="Con dấu ga ${s.code} ${s.name}">
   <defs>

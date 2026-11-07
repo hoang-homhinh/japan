@@ -166,7 +166,7 @@ function renderMatch(){
   }else{
     scopeRow="";
     info=nLv?`Bạn đã học ${nLv} ${V?"từ":"chữ"}. Mỗi phiên lấy ngẫu nhiên tối đa ${M_LEARNED} cặp, ưu tiên ${V?"từ":"chữ"} chưa thuộc và hay sai.`
-      :`Chưa có ${V?"từ":"chữ"} nào đã học. Học ở tab <button class="lnk" data-view="today">Hôm nay</button> trước, hoặc chọn “Theo bài”.`;
+      :`Chưa có ${V?"từ":"chữ"} nào đã học. Học ở <button class="lnk" data-view="journey">Hành trình</button> trước, hoặc chọn “Theo bài”.`;
   }
   $("#main").innerHTML=`
   <div class="chips">${segBtns("mk",MS.kind,[["v","Từ vựng"],["k","Kanji"]])}</div>

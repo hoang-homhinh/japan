@@ -13,3 +13,6 @@ test("odd and even stations use different ink", () => {
 test("stamp ids are unique per station so filters do not clash", () => {
   expect(stampSVG(3)).not.toEqual(stampSVG(3).replace(/st3-/g, "st4-"));
 });
+test("a malformed stamp date is not written into the SVG", () => {
+  expect(stampSVG(1, 120, "2026-<img src=x onerror=alert(1)>")).not.toContain("onerror");
+});

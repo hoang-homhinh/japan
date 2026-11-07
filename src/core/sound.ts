@@ -1,10 +1,10 @@
 // Âm thanh nhỏ bằng Web Audio (không cần file): nhạc báo tàu chạy khi xong một lượt, chuông khi đúng liên tiếp.
 // Giai điệu tự soạn (không dùng nhạc của JR). Tắt khi người học tắt âm hoặc trình duyệt không có Web Audio.
-import { pathState } from "./path";
+import { peekPath } from "./path";
 
 let ctx: any = null;
 function ac(): any {
-  if (!pathState().sound) return null;
+  if (!peekPath().sound) return null;
   const AC = (globalThis as any).AudioContext || (globalThis as any).webkitAudioContext;
   if (!AC) return null;
   try { ctx = ctx || new AC(); if (ctx.state === "suspended") ctx.resume(); return ctx; } catch (e) { return null; }

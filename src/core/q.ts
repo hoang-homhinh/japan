@@ -11,3 +11,14 @@ export type Q =
   | { kind: "particle"; drill: string }                                    // id trong PT_DRILLS
   | { kind: "kanji-intro"; ch: string }
   | { kind: "exam"; id: string };                                          // id trong EXAM_BANK
+
+// câu có chấm điểm (thẻ giới thiệu / hội thoại thì không)
+export const isGradable = (q: Q) => !["dialogue", "word-intro", "pattern-intro", "kanji-intro"].includes(q.kind);
+// trượt bài kiểm tra: câu sai thuộc bước nào để khuyên ôn lại (examKind = loại đề của câu exam)
+export function adviceStep(q: Q, examKind = ""): number {
+  if (q.kind === "particle") return 4;
+  if (q.kind === "build") return 3;
+  if (q.kind === "exam") return /^ch_/.test(examKind) ? 1 : 3;
+  if ((q.kind === "mcq" || q.kind === "listen") && q.track?.id?.[0] === "k") return 5;
+  return 2;
+}

@@ -32,6 +32,7 @@ function onboardHTML() {
 export function renderJourney() {
   if (!S.progress.path) { $("#main").innerHTML = onboardHTML(); return; }
   const P = pathState(), cur = currentStation(), st = stationOf(cur), step = nextStep(cur);
+  const goal = Math.min(Math.max(Number(P.goal) || 1, 1), 3); // giá trị đồng bộ lạ không chèn vào trang
   const stamps = Object.values(P.st).filter(s => s.stamp).length;
   const due = buildReview(undefined, 15, 10, false).length;
   const node = (n: number) => {

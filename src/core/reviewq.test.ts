@@ -44,3 +44,7 @@ test("peeking at the review does not use up the daily backlog", () => {
   expect(buildReview(T, 15, 10, false)).toHaveLength(10);
   expect(buildReview(T)).toHaveLength(10);
 });
+test("an unknown particle id in saved progress is skipped, not shown", () => {
+  seedDue(0); S.progress.pt = { zzz999: { w: 1, c: 0, next: "2026-11-01" } };
+  expect(buildReview(T).some((q: any) => q.kind === "particle")).toBe(false);
+});

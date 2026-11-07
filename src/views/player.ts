@@ -9,8 +9,8 @@ import { ancientHTML, tipHTML, vPic } from "../core/cards";
 import { gradeTrack, introduce } from "../core/grade";
 import { kanaToRomaji, norm, showKana } from "../core/kana";
 import { penguin, penLine } from "../core/mascot";
-import { STEP_NAMES, getPart, markStepDone, nextStep, currentStation, setPart, stampStation, type StepNo } from "../core/path";
-import type { Q } from "../core/q";
+import { pathState, STEP_NAMES, getPart, markStepDone, nextStep, currentStation, setPart, stampStation, type StepNo } from "../core/path";
+import { adviceStep, isGradable, type Q } from "../core/q";
 import { buildReview } from "../core/reviewq";
 import { stationOf } from "../core/route";
 import { buildStep } from "../core/steps";
@@ -22,6 +22,8 @@ import { say, speakSeq } from "../core/tts";
 import { $, esc, toast } from "../core/util";
 import { setView } from "../app/shell";
 import { showStampMoment } from "./stamps";
+import { openStation } from "./station";
+import { canListen } from "../core/tts";
 
 type Item = { q: Q; retry?: boolean };
 type Run = { mode: "step" | "review"; n: number; step: StepNo; part: number; partTotal: number; skip?: boolean; then?: { n: number; step: StepNo };
@@ -34,27 +36,29 @@ const EX = new Map<string, any>(EXAM_BANK.map((q: any) => [q.id, q]));
 const PT = new Map<string, any>(PT_DRILLS.map((d: any) => [d.id, d]));
 const PBTN = ["は", "が", "を", "に", "へ", "で", "と", "から", "まで", "より", "も", "の", "や", "×"];
 const shuffle = <T,>(a: T[]): T[] => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-const kindOf = (q: Q) => q.kind === "exam" ? "exam" : q.kind;
-const STEP_OF_KIND: Record<string, number> = { mcq: 2, listen: 2, match: 2, build: 3, particle: 4, exam: 3 };
 
 // ---- bắt đầu ----
 function begin(run: Omit<Run, "pos" | "ans" | "ok" | "firstOk" | "firstTotal" | "combo" | "wrongByKind">) {
-  R = { ...run, pos: 0, ans: null, ok: null, firstOk: 0, firstTotal: run.items.length, combo: 0, wrongByKind: {} };
+  R = { ...run, pos: 0, ans: null, ok: null, firstOk: 0, firstTotal: run.items.filter(it => isGradable(it.q)).length, combo: 0, wrongByKind: {} };
   setView("player");
 }
 export function startStep(n: number, step: StepNo, opts?: { skip?: boolean }) {
-  const b = buildStep(n, step);
-  if (step === 2 && b.partTotal === 0) { markStepDone(n, 2); toast("Từ của ga này bạn đã học hết, bước Từ mới tự hoàn thành."); setView("station"); return; }
-  if (!b.qs.length) { markStepDone(n, step); setView("station"); return; }
+  const b = buildStep(n, step, Math.random, { listen: canListen() });
+  if (step === 2 && b.partTotal === 0) { markStepDone(n, 2); toast("Từ của ga này bạn đã học hết, bước Từ mới tự hoàn thành."); openStation(n); return; }
+  if (!b.qs.length) { markStepDone(n, step); openStation(n); return; }
   begin({ mode: "step", n, step, part: b.part, partTotal: b.partTotal, skip: opts?.skip, items: b.qs.map(q => ({ q })) });
 }
 export function startReview(then?: { n: number; step: StepNo }) {
-  const qs = buildReview();
+  const qs = buildReview(undefined, 15, 10, true, canListen());
   if (!qs.length) { if (then) return startStep(then.n, then.step); toast("Hôm nay không còn câu nào cần ôn."); return; }
   begin({ mode: "review", n: then?.n || 0, step: then?.step || 1, part: 0, partTotal: 1, then, items: qs.map(q => ({ q })) });
 }
 // nút "Tiếp tục hành trình": ôn trước (nếu có), rồi bước kế của ga đang đi
-export function startContinue() { const n = currentStation(); startReview({ n, step: nextStep(n) }); }
+export function startContinue() {
+  const n = currentStation();
+  if (n === 25 && pathState().st[25]?.stamp) { toast("Bạn đã đi hết tuyến N5! Ôn tập và luyện thi trong Thư viện."); setView("stamps"); return; }
+  startReview({ n, step: nextStep(n) });
+}
 
 // ---- vẽ ----
 function rail() {
@@ -171,7 +175,7 @@ function answer(ok: boolean) {
   const it = R!.items[R!.pos], q = it.q;
   R!.ok = ok;
   if (!it.retry && ok) R!.firstOk++;
-  if (ok) { R!.combo++; if ([3, 5, 10].includes(R!.combo)) playChime(R!.combo as 3 | 5 | 10); } else { R!.combo = 0; R!.wrongByKind[kindOf(q)] = (R!.wrongByKind[kindOf(q)] || 0) + 1; }
+  if (ok) { R!.combo++; if ([3, 5, 10].includes(R!.combo)) playChime(R!.combo as 3 | 5 | 10); } else { R!.combo = 0; const st = String(adviceStep(q, q.kind === "exam" ? EX.get(q.id)?.k : "")); R!.wrongByKind[st] = (R!.wrongByKind[st] || 0) + 1; }
   // ghi lịch ôn
   if (q.kind === "mcq" || q.kind === "listen" || q.kind === "build") { if (q.track) gradeTrack(q.track, ok, strength(q)); }
   if (q.kind === "particle") gradeTrack({ type: "pt", id: q.drill }, ok);
@@ -204,13 +208,13 @@ function finish() {
     const pass = stampStation(n, score);
     if (pass) return showStampMoment(n, score);
     const worst = Object.entries(run.wrongByKind).sort((a, b) => b[1] - a[1])[0];
-    const back = worst ? STEP_OF_KIND[worst[0]] || 2 : 2;
+    const back = worst ? +worst[0] : 2;
     return summary("Chưa qua ga lần này", `Đúng ${Math.round(score * 100)}% (cần 70%). Nên ôn lại bước ${back} — ${STEP_NAMES[back]} rồi thử lại.`, run, back);
   }
   if (step === 3) { const p = getPart(n, 3) + 1; if (p >= run.partTotal) markStepDone(n, 3); else setPart(n, 3, p); }
   else if (step === 2) { if (buildStep(n, 2).partTotal === 0) markStepDone(n, 2); }
   else markStepDone(n, step);
-  summary(`Xong ${STEP_NAMES[step]}${run.partTotal > 1 ? ` · lượt ${run.part + 1}/${run.partTotal}` : ""}`, `Đúng ${run.firstOk}/${run.firstTotal} câu ngay lần đầu.`, run);
+  summary(`Xong ${STEP_NAMES[step]}${run.partTotal > 1 ? ` · lượt ${run.part + 1}/${run.partTotal}` : ""}`, run.firstTotal ? `Đúng ${run.firstOk}/${run.firstTotal} câu ngay lần đầu.` : "Đã xong phần này.", run);
 }
 function summary(title: string, sub: string, run: Run, back?: number) {
   setView("player");

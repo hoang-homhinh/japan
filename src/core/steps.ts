@@ -85,7 +85,8 @@ function particleIds(n: number, want: number, rnd: Rnd): string[] {
   return [...exact, ...before].slice(0, want).map((d: any) => d.id);
 }
 
-export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random): { qs: Q[]; partTotal: number; part: number } {
+export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random, opt: { listen?: boolean } = {}): { qs: Q[]; partTotal: number; part: number } {
+  const canListen = opt.listen !== false;
   const li = lessonIdx(n), L = LESSONS.find((x: any) => x.n === n), st = stationOf(n);
   if (step === 1) return { qs: [{ kind: "dialogue", id: `${n}a` }], partTotal: 1, part: 0 };
 
@@ -95,7 +96,7 @@ export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random): { qs
     if (!lots.length) return { qs: [], partTotal: 0, part: 0 };
     const ids: number[] = lots[0], qs: Q[] = [];
     for (const i of ids) qs.push({ kind: "word-intro", vid: vid(li, i), w: VFLAT[li][i] }, meaningQ(li, i, rnd));
-    for (const i of shuffle(ids, rnd)) qs.push(listenQ(li, i, rnd));
+    if (canListen) for (const i of shuffle(ids, rnd)) qs.push(listenQ(li, i, rnd));
     qs.push({ kind: "match", pairs: ids.map(i => [VFLAT[li][i][3], VFLAT[li][i][0], vid(li, i)] as [string, string, string]) });
     return { qs, partTotal: lots.length, part: 0 };
   }
@@ -130,7 +131,7 @@ export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random): { qs
   }
   for (const id of particleIds(n, 2, rnd)) qs.push({ kind: "particle", drill: id });
   const listen = shuffle(EXAM_BANK.filter((q: any) => /^ch_/.test(q.k) && q.l <= n), rnd).sort((a: any, b: any) => b.l - a.l)[0];
-  if (listen) qs.push({ kind: "exam", id: listen.id });
+  if (listen && canListen) qs.push({ kind: "exam", id: listen.id });
   while (qs.length < 10) { const i = Math.floor(rnd() * VFLAT[li].length); qs.push(meaningQ(li, (i + qs.length) % VFLAT[li].length, rnd)); }
   return { qs: shuffle(qs, rnd).slice(0, 12), partTotal: 1, part: 0 };
 }

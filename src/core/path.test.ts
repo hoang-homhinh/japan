@@ -1,5 +1,5 @@
 import { S, mergeProgress } from "./store";
-import { currentStation, getPart, markStepDone, mergePath, nextStep, setPart, stampStation, stationStatus } from "./path";
+import { peekPath, currentStation, getPart, markStepDone, mergePath, nextStep, setPart, stampStation, stationStatus } from "./path";
 
 beforeEach(() => { S.progress = { upto: 13, days: [], counts: {}, drills: {} }; });
 
@@ -47,4 +47,12 @@ test("mergeProgress keeps journey progress from both devices", () => {
 test("same-day journey rounds from two devices keep the larger count", () => {
   const P = mergeProgress({ daily: { d: "2026-11-06", gram: 0, pt: 0, ex: 0, path: 1 } }, { daily: { d: "2026-11-06", gram: 0, pt: 0, ex: 0, path: 3 } });
   expect(P.daily.path).toBe(3);
+});
+test("a device that only read the path does not override the learner's start", () => {
+  const m = mergePath({ start: 13, st: {}, goal: 1, sound: true }, { start: 5, st: { "5": { steps: [1], stamp: "2026-11-01" } }, goal: 1, sound: true, t: 100 });
+  expect(m.start).toBe(5);
+});
+test("peeking at the path does not create one", () => {
+  expect(peekPath().start).toBe(13);
+  expect(S.progress.path).toBeUndefined();
 });

@@ -46,3 +46,9 @@ test("every mcq has its answer among options", () => {
   for (const step of [2, 3, 5, 6] as const) for (const q of buildStep(13, step, rnd).qs as any[])
     if (q.kind === "mcq" || q.kind === "listen") { expect(q.opts[q.a]).toBeDefined(); expect(new Set(q.opts).size).toBe(q.opts.length); }
 });
+test("without a Japanese voice there are no listening questions", () => {
+  expect(buildStep(13, 2, rnd, { listen: false }).qs.some(q => q.kind === "listen")).toBe(false);
+  const ck = buildStep(13, 6, rnd, { listen: false }).qs;
+  expect(ck.some((q: any) => q.kind === "exam" && /^c/.test(q.id))).toBe(false);
+  expect(ck.length).toBeGreaterThanOrEqual(10);
+});

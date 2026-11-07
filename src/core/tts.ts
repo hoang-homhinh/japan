@@ -19,4 +19,10 @@ function speakSeq(list){
   try{speechSynthesis.cancel();list.forEach(([t,p])=>{const u=new SpeechSynthesisUtterance(String(t).replace(/[ 　]/g,""));u.lang="ja-JP";u.rate=.9;u.pitch=p||1;if(jaVoice)u.voice=jaVoice;speechSynthesis.speak(u);});}catch(e){}
 }
 
-export { pickVoice, say, speakSeq };
+// có đọc được tiếng Nhật không: không có speechSynthesis → không; danh sách giọng đã có mà không có giọng ja → không
+function canListen(){
+  if(typeof window==="undefined"||!("speechSynthesis" in window)) return false;
+  try{ const vs=speechSynthesis.getVoices(); return !vs.length || vs.some(v=>/^ja/i.test(v.lang)); }catch(e){ return true; }
+}
+
+export { pickVoice, say, speakSeq, canListen };
