@@ -59,7 +59,7 @@ export function renderAccount() {
       ${msg ? `<div class="res ${msgOk ? "ok" : "bad"}">${esc(msg)}</div>` : ""}
     </div>
   </section>
-  <section class="step"><h2><span class="k">旅</span>Hành trình<span class="hint">cài đặt học mỗi ngày</span></h2>
+  <section class="step"><h2><span class="k">道</span>Lộ trình<span class="hint">cài đặt học mỗi ngày</span></h2>
     <div class="card" style="margin-top:0">
       <div class="row" style="align-items:center;flex-wrap:wrap"><span>Mỗi ngày học</span>${[1, 2, 3].map(g => `<button class="chip" data-goal="${g}" aria-pressed="${peekPath().goal === g}">${g} lượt</button>`).join("")}</div>
       <div class="row" style="align-items:center;flex-wrap:wrap"><span>Âm thanh (nhạc tàu, chuông)</span><button class="chip" data-sound="1" aria-pressed="${peekPath().sound}">${peekPath().sound ? "Bật" : "Tắt"}</button></div>

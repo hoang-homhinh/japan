@@ -62,7 +62,8 @@ const VIEW_NAME: any = { home: "Tổng quan", library: "Thư viện", reviewq: "
 const RENDER: any = {
   library: () => library.renderLibrary(),
   home: () => home.renderHome(), journey: () => journey.renderJourney(), station: () => station.renderStation(), player: () => player.renderPlayer(), stamps: () => stamps.renderStamps(), reviewq: () => reviewq.renderReviewTab(),
-  today: () => setView("home"), // màn cũ đã thay bằng Hành trình learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
+  today: () => setView("home"), // màn "Hôm nay" cũ đã thay bằng Tổng quan
+  learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
   match: () => match.renderMatch(), particle: () => particle.renderParticles(), exam: () => exam.renderExam(), account: () => account.renderAccount(), talk: () => talk.renderTalk(), review: () => review.openReview(),
 };
 export function setView(v: string) {
