@@ -14,6 +14,6 @@ const TOOLS: [string, string, string, string][] = [
 ];
 
 export function renderLibrary() {
-  $("#main").innerHTML = `<p class="lead-lib">Công cụ để tra và luyện thêm. Lộ trình học chính nằm ở <button class="lnk" data-view="journey">Hành trình</button>.</p>
+  $("#main").innerHTML = `<p class="lead-lib">Công cụ để tra và luyện thêm. Lộ trình học chính nằm ở <button class="lnk" data-view="journey">Lộ trình</button>.</p>
   <div class="libgrid">${TOOLS.map(([v, ico, t, d]) => `<button class="libcard" data-view="${v}"><span class="libico">${ico}</span><span class="libt">${esc(t)}</span><span class="libd">${esc(d)}</span></button>`).join("")}</div>`;
 }
