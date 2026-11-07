@@ -85,6 +85,9 @@ test("bước 3: có câu ghép về chính mình", () => {
   for (const [jp] of Object.values(PLUS[13].mine).flat()) expect(built, jp).toContain(jp.replace(/。$/, ""));
 });
 test("bài chưa có nội dung mới giữ cách cũ", () => {
-  expect(buildStep(12, 1).qs).toEqual([{ kind: "dialogue", id: "12a" }]);
-  expect(buildStep(12, 2, rnd).qs.some(q => q.kind === "match")).toBe(true);
+  const p = PLUS[12]; delete PLUS[12];
+  try {
+    expect(buildStep(12, 1).qs).toEqual([{ kind: "dialogue", id: "12a" }]);
+    expect(buildStep(12, 2, rnd).qs.some(q => q.kind === "match")).toBe(true);
+  } finally { if (p) PLUS[12] = p; }
 });
