@@ -7,7 +7,7 @@ import { LESSONS } from "../content/lessons";
 import { PT_DRILLS } from "../content/drills";
 import { ancientHTML, tipHTML, vPic } from "../core/cards";
 import { gradeTrack, introduce } from "../core/grade";
-import { kanaToRomaji, norm, showKana } from "../core/kana";
+import { kanaToRomaji, norm, pvText, showKana } from "../core/kana";
 import { penguin, penLine } from "../core/mascot";
 import { pathState, STEP_NAMES, getPart, markStepDone, nextStep, currentStation, setPart, stampStation, type StepNo } from "../core/path";
 import { adviceStep, isGradable, type Q } from "../core/q";
@@ -81,10 +81,29 @@ function body(q: Q): string {
         <div class="pdlg">${D.lines.map((x: any, i: number) => { const r = D.roles[x.s] || {}; return `<div class="pdl${x.s === D.me ? " me" : ""}" data-dl="${i}"><span class="pdn">${esc(r.name || x.s)}</span><div><div class="jp">${esc(x.kana)}</div><div class="tip">${esc(x.vi)}</div></div>${sayBtn(x.kana)}</div>`; }).join("")}</div>
         <button class="btn accent big" id="pNext">Đã nghe xong →</button></div>`;
     }
+    case "dialogue-blind": {
+      const D = DIALOGUES.find((d: any) => d.id === q.id); if (!D) return `<p>Chưa có hội thoại.</p>`;
+      return `<div class="pcard"><p class="tip">Nghe lần 1 · chưa xem chữ</p><p class="pprompt">${esc(D.t)}</p><p class="tip">${esc(D.scene)}</p>
+        <p>Nghe 1–2 lần và đoán chuyện gì đang xảy ra. Không cần hiểu hết từng chữ. Sau đó trả lời 3 câu hỏi ngắn.</p>
+        <div class="row"><button class="btn accent" id="pDlgPlay">▶ Nghe cả đoạn</button></div>
+        <button class="btn big" id="pNext">Đã nghe, trả lời câu hỏi →</button></div>`;
+    }
+    case "phrases": {
+      const D = DIALOGUES.find((d: any) => d.id === q.id); if (!D) return "";
+      return `<div class="pcard"><p class="tip">Đem dùng được ngay</p><p class="pprompt">${q.keep.length} câu nên thuộc lòng</p>
+        <div class="pex">${q.keep.map(i => D.lines[i]).filter(Boolean).map((x: any) => `<div class="pexl">${sayBtn(x.kana)}<div><div class="jp">${esc(x.kana)}</div><div class="tip">${esc(x.vi)}</div></div></div>`).join("")}</div>
+        <p class="tip">Bấm nghe từng câu và đọc nhẩm theo 2–3 lần.</p><button class="btn accent big" id="pNext">Xong, sang bước tiếp →</button></div>`;
+    }
+    case "type":
+      return `<div class="pcard"><p class="pprompt">Tự nhớ lại: gõ từ này bằng kana hoặc romaji</p><div class="pmean">${esc(q.vi)}</div>
+        <div class="row"><input id="pType" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ví dụ: teishoku" ${R!.ok !== null ? "disabled" : ""}></div><div class="tip" id="pPv"></div>
+        ${R!.ok === null ? `<div class="row"><button class="btn accent" id="pCheck">Kiểm tra</button></div>` : ""}</div>`;
     case "word-intro": {
-      const w = q.w;
+      const w = q.w, P = q.plus;
       return `<div class="pcard pintro"><p class="tip">Từ mới</p><div class="pword">${vPic(w)}<span class="jp">${esc(w[0])}</span>${w[1] ? `<span class="pk2 jp">${esc(w[1])}</span>` : ""}${sayBtn(w[0], true)}</div>
-        <div class="ro">${esc(w[2])}</div><div class="pmean">${esc(w[3])}</div>${w[4] ? `<div class="pnote">${esc(w[4])}</div>` : ""}
+        <div class="ro">${esc(w[2])}</div><div class="pmean">${esc(w[3])}</div>
+        ${P ? `<div class="pexl pwex">${sayBtn(P.ex[0])}<div><div class="jp">${esc(P.ex[0])}</div><div class="tip">${esc(P.ex[1])}</div></div></div><div class="pmemo"><b>Mẹo nhớ</b>${esc(P.tip)}</div>`
+          : (w[4] ? `<div class="pnote">${esc(w[4])}</div>` : "")}
         <button class="btn accent big" id="pNext">Đã nhớ, tiếp →</button></div>`;
     }
     case "pattern-intro": {
@@ -145,6 +164,7 @@ function feedback(): string {
   if (!ok) {
     if (q.kind === "mcq" || q.kind === "listen") ans = q.opts[q.a];
     if (q.kind === "build") ans = q.answer.join(" ");
+    if (q.kind === "type") ans = q.answers[0];
     if (q.kind === "particle") { const d = PT.get(q.drill); ans = d.a.join(" / "); }
     if (q.kind === "exam") { const e = EX.get(q.id); ans = e.opts[e.a]; }
   }
@@ -166,18 +186,19 @@ export function renderPlayer() {
     if (q.kind === "listen") say(q.say);
     if (q.kind === "mcq" && q.say && /Từ này/.test(q.prompt)) say(q.say);
   }
-  if (q.kind === "build" && R.typed) ($("#pType") as any)?.focus();
+  if ((q.kind === "build" && R.typed) || (q.kind === "type" && R.ok === null)) ($("#pType") as any)?.focus();
+  if (q.kind === "type" && R.ok !== null) say(q.say);
 }
 
 // ---- chấm ----
-function strength(q: Q): 1 | 2 | 3 { if (R!.mode === "review" || R!.step === 6) return 3; return q.kind === "listen" || q.kind === "match" ? 2 : 1; }
+function strength(q: Q): 1 | 2 | 3 { if (R!.mode === "review" || R!.step === 6) return 3; return q.kind === "listen" || q.kind === "match" || q.kind === "type" ? 2 : 1; }
 function answer(ok: boolean) {
   const it = R!.items[R!.pos], q = it.q;
   R!.ok = ok;
   if (!it.retry && ok) R!.firstOk++;
   if (ok) { R!.combo++; if ([3, 5, 10].includes(R!.combo)) playChime(R!.combo as 3 | 5 | 10); } else { R!.combo = 0; const st = String(adviceStep(q, q.kind === "exam" ? EX.get(q.id)?.k : "")); R!.wrongByKind[st] = (R!.wrongByKind[st] || 0) + 1; }
   // ghi lịch ôn
-  if (q.kind === "mcq" || q.kind === "listen" || q.kind === "build") { if (q.track) gradeTrack(q.track, ok, strength(q)); }
+  if (q.kind === "mcq" || q.kind === "listen" || q.kind === "build" || q.kind === "type") { if (q.track) gradeTrack(q.track, ok, strength(q)); }
   if (q.kind === "particle") gradeTrack({ type: "pt", id: q.drill }, ok);
   if (q.kind === "exam") gradeTrack({ type: "ex", id: q.id }, ok);
   if (!ok && !it.retry) R!.items.push({ q, retry: true });
@@ -231,9 +252,9 @@ export function onClick(t: any): boolean {
   if (!R) return false;
   const q = R.items[R.pos]?.q;
   if (t.id === "pQuit") { R = null; setView("journey"); return true; }
-  if (t.id === "pNext") { if (q && (q.kind === "dialogue" || q.kind === "word-intro" || q.kind === "pattern-intro" || q.kind === "kanji-intro") && R.ok === null) { next(); return true; } if (R.ok !== null) next(); return true; }
+  if (t.id === "pNext") { if (q && (q.kind === "dialogue" || q.kind === "dialogue-blind" || q.kind === "phrases" || q.kind === "word-intro" || q.kind === "pattern-intro" || q.kind === "kanji-intro") && R.ok === null) { next(); return true; } if (R.ok !== null) next(); return true; }
   if (t.id === "pReplay") { const s = $(".pkstroke"); if (s && q?.kind === "kanji-intro") s.innerHTML = strokeSVG(q.ch, 150) + `<button class="lnk" id="pReplay">↻ Xem lại nét</button>`; return true; }
-  if (t.id === "pDlgPlay" && q?.kind === "dialogue") { const D = DIALOGUES.find((d: any) => d.id === q.id); speakSeq(D.lines.map((x: any) => [x.kana, (D.roles[x.s] || {}).g === "f" ? 1.3 : 0.85])); return true; }
+  if (t.id === "pDlgPlay" && (q?.kind === "dialogue" || q?.kind === "dialogue-blind")) { const D = DIALOGUES.find((d: any) => d.id === q.id); speakSeq(D.lines.map((x: any) => [x.kana, (D.roles[x.s] || {}).g === "f" ? 1.3 : 0.85])); return true; }
   if (t.id === "pExPlay" && q?.kind === "exam") { const e = EX.get(q.id); const parts: any[] = []; if (e.intro) parts.push([e.intro, 1]); (e.script || []).forEach((x: any) => parts.push([x[1], x[0] === "F" ? 1.3 : 0.8])); if (e.line) parts.push([e.line, 1.2]); if (e.q && e.k === "ch_kadai") parts.push([e.q, 1]); speakSeq(parts); return true; }
   if (R.ok !== null) return t.dataset.pa !== undefined || t.dataset.pp !== undefined;
   if (t.dataset.pa !== undefined && q) {
@@ -246,6 +267,11 @@ export function onClick(t: any): boolean {
   if (t.dataset.tp !== undefined) { R.build = [...(R.build || []), t.dataset.tp]; renderPlayer(); return true; }
   if (t.dataset.tu !== undefined) { R.build = (R.build || []).filter(x => x !== t.dataset.tu); renderPlayer(); return true; }
   if (t.id === "pTypeT") { R.typed = !R.typed; renderPlayer(); return true; }
+  if (t.id === "pCheck" && q?.kind === "type") {
+    const got = showKana(($("#pType") as any)?.value || "");
+    if (!got.trim()) { toast("Hãy gõ từ trước."); return true; }
+    answer(q.answers.some(a => norm(a) === norm(got))); return true;
+  }
   if (t.id === "pCheck" && q?.kind === "build") {
     const want = q.answer.join("");
     const got = R.typed ? showKana(($("#pType") as any)?.value || "") : (R.build || []).map(i => q.tokens[+i]).join("");
@@ -273,3 +299,6 @@ export function onKey(e: any): boolean {
 }
 // cửa cho kiểm thử tự động (chỉ khi URL có ?e2e): đọc trạng thái lượt học và tra đáp án
 if (typeof location !== "undefined" && location.search.includes("e2e")) (globalThis as any).__player = () => ({ R, ex: (id: string) => EX.get(id), pt: (id: string) => PT.get(id) });
+
+// xem trước kana khi gõ romaji ở câu "tự nhớ lại"
+if (typeof document !== "undefined") document.addEventListener("input", e => { const t = e.target as any; if (t?.id === "pType" && R?.items[R.pos]?.q.kind === "type") { const pv = $("#pPv"); if (pv) pv.textContent = pvText(t.value); } });
