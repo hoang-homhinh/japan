@@ -154,9 +154,10 @@ export const dueList = () => { const t = dayStr(); return S.sentences.filter((s:
 export function renderStats() {
   if (typeof document === "undefined") return; // chạy trong test (node) không có giao diện
   const n = S.progress.counts[dayStr()] || 0, st = streak();
-  $("#streak").textContent = st + " ngày liên tiếp";
-  $("#todayTxt").textContent = "Hôm nay " + n + " lượt đúng";
-  $("#todayBar").style.width = Math.min(100, n / GOAL * 100) + "%";
+  const a = $("#streak"), b = $("#todayTxt"), c = $("#todayBar");
+  if (a) a.textContent = st + " ngày liên tiếp";
+  if (b) b.textContent = "Hôm nay " + n + " lượt đúng";
+  if (c) c.style.width = Math.min(100, n / GOAL * 100) + "%";
   ($("#streak2") || {}).textContent = "🔥 " + st; ($("#today2") || {}).textContent = n + " lượt";
   const d = dueList().length; $$(".dueN,.dueN2").forEach(e => e.textContent = d ? d : "");
 }

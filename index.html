@@ -3,45 +3,48 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Hành trình N5</title>
+<title>Michi · Tiếng Nhật theo lộ trình</title>
 <meta name="description" content="Học tiếng Nhật N5 mỗi ngày: từ vựng, kanji, ngữ pháp Minna no Nihongo Bài 1–25, trợ từ, luyện thi.">
-<meta name="theme-color" content="#1F3A5F">
+<meta name="theme-color" content="#F6F7F9">
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;800&family=Zen+Kaku+Gothic+New:wght@500;700&family=Klee+One:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 </head>
 <body>
 <div class="shell">
   <aside class="side" aria-label="Điều hướng">
-    <div class="brand"><span class="logo">文</span><div><b>Hành trình N5</b><small>Tuyến tàu tiếng Nhật</small></div></div>
+    <div class="brand"><span class="logo"></span><div><b>Michi</b><small>Tiếng Nhật theo lộ trình</small></div></div>
+    <div class="lvsel" title="N4–N1 sắp có"><span class="lvb">N5</span><span>Tuyến N5</span><span class="lvs">N4–N1 sắp có</span></div>
     <nav class="nav" role="tablist">
-      <button class="navi" role="tab" aria-selected="true" data-view="journey"><span class="ico">🚃</span><span class="lbl">Hành trình</span></button>
-      <button class="navi" role="tab" aria-selected="false" data-view="reviewq"><span class="ico">↻</span><span class="lbl">Ôn tập</span><span class="n dueN"></span></button>
-      <button class="navi" role="tab" aria-selected="false" data-view="library"><span class="ico">📚</span><span class="lbl">Thư viện</span></button>
+      <button class="navi" role="tab" aria-selected="true" data-view="home"><span class="ico" data-i="home"></span><span class="lbl">Tổng quan</span></button>
+      <button class="navi" role="tab" aria-selected="false" data-view="journey"><span class="ico" data-i="map"></span><span class="lbl">Lộ trình</span></button>
+      <button class="navi" role="tab" aria-selected="false" data-view="reviewq"><span class="ico" data-i="rev"></span><span class="lbl">Ôn tập</span><span class="n revN"></span></button>
+      <button class="navi" role="tab" aria-selected="false" data-view="exam"><span class="ico" data-i="exam"></span><span class="lbl">Luyện thi</span></button>
+      <div class="navsep">Tài liệu</div>
+      <button class="navi" role="tab" aria-selected="false" data-view="library"><span class="ico" data-i="book"></span><span class="lbl">Thư viện</span><span class="n dueN"></span></button>
+      <button class="navi" role="tab" aria-selected="false" data-view="stamps"><span class="ico" data-i="medal"></span><span class="lbl">Thành tích</span></button>
     </nav>
-    <button class="navi acc-link" aria-selected="false" data-view="account"><span class="ico">⚙</span><span class="lbl">Tài khoản &amp; sao lưu</span></button>
-    <div class="sidefoot">
-      <div class="flame"><span class="fl">🔥</span><span id="streak">0 ngày</span></div>
-      <div class="sidetip" id="todayTxt">Hôm nay 0 lượt đúng</div>
-      <span class="bar wide"><i id="todayBar"></i></span>
-    </div>
+    <button class="navi me" aria-selected="false" data-view="account"><span class="av">HO</span><span class="lbl"><b>Tài khoản</b><small id="streak">0 ngày liên tiếp</small></span><span class="ico" data-i="gear"></span></button>
   </aside>
   <div class="content">
     <header class="topbar">
-      <div class="tb-l"><span class="logo sm">文</span><span class="crumb" id="crumb">Hành trình</span></div>
-      <div class="tb-r"><span class="pill" id="streak2">🔥 0</span><span class="pill" id="today2">0 lượt</span><button class="pill gear" data-view="account" aria-label="Tài khoản &amp; sao lưu" title="Tài khoản &amp; sao lưu" aria-pressed="false"><i></i>⚙</button></div>
+      <div class="tb-l"><span class="logo sm"></span><div><h1 class="crumb" id="crumb">Tổng quan</h1><div class="crumbsub" id="crumbSub"></div></div></div>
+      <div class="tb-r"><button class="search" id="cmdOpen" aria-label="Tìm kiếm (Ctrl K)"><span class="ico" data-i="search"></span><span class="lbl">Tìm từ, kanji, mẫu câu</span><kbd>Ctrl K</kbd></button></div>
     </header>
     <div class="subnav" id="subnav" role="tablist" hidden></div>
     <main id="main"></main>
   </div>
 </div>
 <nav class="bottomnav" role="tablist" aria-label="Điều hướng">
-      <button class="bni" role="tab" aria-selected="true" data-view="journey"><span class="ico">🚃</span><span class="lbl">Hành trình</span></button>
-      <button class="bni" role="tab" aria-selected="false" data-view="reviewq"><span class="ico">↻</span><span class="lbl">Ôn tập</span><span class="n dueN2"></span></button>
-      <button class="bni" role="tab" aria-selected="false" data-view="library"><span class="ico">📚</span><span class="lbl">Thư viện</span></button>
+  <button class="bni" role="tab" aria-selected="true" data-view="home"><span class="ico" data-i="home"></span><span class="lbl">Tổng quan</span></button>
+  <button class="bni" role="tab" aria-selected="false" data-view="journey"><span class="ico" data-i="map"></span><span class="lbl">Lộ trình</span></button>
+  <button class="bni" role="tab" aria-selected="false" data-view="reviewq"><span class="ico" data-i="rev"></span><span class="lbl">Ôn tập</span><span class="n revN"></span></button>
+  <button class="bni" role="tab" aria-selected="false" data-view="exam"><span class="ico" data-i="exam"></span><span class="lbl">Luyện thi</span></button>
+  <button class="bni" role="tab" aria-selected="false" data-view="library"><span class="ico" data-i="book"></span><span class="lbl">Thư viện</span></button>
 </nav>
+<span hidden id="todayTxt"></span><span hidden><i id="todayBar"></i></span>
 <div class="toast" id="toast" hidden></div>
 <script type="module" src="/src/main.ts"></script>
 </body>

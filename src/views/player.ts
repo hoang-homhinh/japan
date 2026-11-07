@@ -24,6 +24,7 @@ import { setView } from "../app/shell";
 import { showStampMoment } from "./stamps";
 import { openStation } from "./station";
 import { canListen } from "../core/tts";
+import { icon } from "../core/brand";
 
 type Item = { q: Q; retry?: boolean };
 type Run = { mode: "step" | "review"; n: number; step: StepNo; part: number; partTotal: number; skip?: boolean; then?: { n: number; step: StepNo };
@@ -69,7 +70,7 @@ function head() {
   const s = R!.mode === "review" ? "Ôn tập" : `${stationOf(R!.n).code} · Bước ${R!.step} — ${STEP_NAMES[R!.step]}${R!.partTotal > 1 ? ` · lượt ${R!.part + 1}/${R!.partTotal}` : ""}`;
   return `<div class="phead"><button class="lnk" id="pQuit">✕ Dừng</button><span>${esc(s)}</span><span class="pcount">${Math.min(R!.pos + 1, R!.items.length)}/${R!.items.length}</span></div>${rail()}`;
 }
-const sayBtn = (t: string, big = false) => `<button class="say${big ? " saybig" : ""}" data-say="${esc(t)}" aria-label="Nghe">🔊</button>`;
+const sayBtn = (t: string, big = false) => `<button class="say${big ? " saybig" : ""}" data-say="${esc(t)}" aria-label="Nghe">${icon("vol", big ? 22 : 16)}</button>`;
 const optBtns = (opts: string[], jp: boolean) => `<div class="popts">${opts.map((o, i) => `<button class="popt${jp ? " jp" : ""}" data-pa="${i}"><span class="pk">${i + 1}</span>${esc(o)}</button>`).join("")}</div>`;
 
 function body(q: Q): string {
@@ -77,7 +78,7 @@ function body(q: Q): string {
     case "dialogue": {
       const D = DIALOGUES.find((d: any) => d.id === q.id); if (!D) return `<p>Chưa có hội thoại.</p>`;
       return `<div class="pcard"><p class="pprompt">${esc(D.t)}</p><p class="tip">${esc(D.scene)}</p>
-        <div class="row"><button class="btn accent" id="pDlgPlay">▶ Nghe cả đoạn</button></div>
+        <div class="row"><button class="btn" id="pDlgPlay">${icon("play", 14)} Nghe cả đoạn</button></div>
         <div class="pdlg">${D.lines.map((x: any, i: number) => { const r = D.roles[x.s] || {}; return `<div class="pdl${x.s === D.me ? " me" : ""}" data-dl="${i}"><span class="pdn">${esc(r.name || x.s)}</span><div><div class="jp">${esc(x.kana)}</div><div class="tip">${esc(x.vi)}</div></div>${sayBtn(x.kana)}</div>`; }).join("")}</div>
         <button class="btn accent big" id="pNext">Đã nghe xong →</button></div>`;
     }
@@ -143,7 +144,7 @@ function body(q: Q): string {
       const e = EX.get(q.id); if (!e) return `<p>Không tìm thấy câu.</p>`;
       const listen = /^ch_/.test(e.k);
       return `<div class="pcard"><p class="pprompt">${listen ? "Nghe rồi chọn" : "Chọn đáp án đúng"}</p>
-        ${listen ? `<div class="pcenter"><button class="btn accent" id="pExPlay">🔊 Nghe</button></div>${e.sit ? `<p>${esc(e.sit)}</p>` : ""}${e.q ? `<div class="pjp jp">${esc(e.q)}</div>` : ""}`
+        ${listen ? `<div class="pcenter"><button class="btn" id="pExPlay">${icon("vol", 16)} Nghe</button></div>${e.sit ? `<p>${esc(e.sit)}</p>` : ""}${e.q ? `<div class="pjp jp">${esc(e.q)}</div>` : ""}`
           : `<div class="pjp jp">${esc(e.q || "").replace("（　）", `<span class="pblank">？</span>`)}</div>`}
         ${optBtns(e.opts, true)}</div>`;
     }
@@ -172,11 +173,11 @@ function feedback(): string {
   if (q.kind === "exam") why = EX.get(q.id).why || "";
   if (q.kind === "mcq" && q.why) why = q.why;
   return `<div class="psheet ${ok ? "ok" : "bad"}" role="status">${penguin(ok ? "happy" : "oops", 54)}<div class="psb"><b class="jp">${L[0]}</b> ${esc(L[1])}
-    ${ans ? `<div>Đáp án: <b class="jp">${esc(ans)}</b></div>` : ""}${why ? `<div class="tip">${esc(why)}</div>` : ""}${R!.combo >= 3 && ok ? `<div class="pcombo">🔥 ${R!.combo} câu đúng liên tiếp</div>` : ""}</div>
+    ${ans ? `<div>Đáp án: <b class="jp">${esc(ans)}</b></div>` : ""}${why ? `<div class="tip">${esc(why)}</div>` : ""}${R!.combo >= 3 && ok ? `<div class="pcombo">${R!.combo} câu đúng liên tiếp</div>` : ""}</div>
     <button class="btn ${ok ? "accent" : ""} big" id="pNext">Tiếp →</button></div>`;
 }
 export function renderPlayer() {
-  if (!R) { setView("journey"); return; }
+  if (!R) { setView("home"); return; }
   if (R.pos >= R.items.length) return finish();
   const q = R.items[R.pos].q;
   if (q.kind === "match" && !R.match) { const ix = q.pairs.map((_, i) => i); R.match = { sel: null, done: new Set(), miss: new Set(), L: shuffle(ix), R: shuffle(ix) }; }
@@ -241,8 +242,8 @@ function summary(title: string, sub: string, run: Run, back?: number) {
   setView("player");
   $("#main").innerHTML = `<div class="player"><div class="pcard pdone">${penguin(back ? "oops" : "cheer", 96)}<h2>${esc(title)}</h2><p>${esc(sub)}</p>
     <div class="row" style="flex-wrap:wrap;justify-content:center">
-      ${back ? `<button class="btn accent big" data-step-go="${run.n}:${back}">Ôn lại bước ${back}</button>` : `<button class="btn accent big" id="jContinue">▶ Tiếp tục hành trình</button>`}
-      ${run.n ? `<button class="btn ghost" data-station="${run.n}">Về ga ${stationOf(run.n).code}</button>` : ""}<button class="btn ghost" data-view="journey">Bản đồ</button></div></div></div>`;
+      ${back ? `<button class="btn accent big" data-step-go="${run.n}:${back}">Ôn lại bước ${back}</button>` : `<button class="btn big" id="jContinue">Học tiếp</button>`}
+      ${run.n ? `<button class="btn ghost" data-station="${run.n}">Về ga ${stationOf(run.n).code}</button>` : ""}<button class="btn ghost" data-view="home">Tổng quan</button></div></div></div>`;
 }
 
 // ---- sự kiện ----
@@ -251,7 +252,7 @@ export function onClick(t: any): boolean {
   if (t.dataset.stepGo) { const [n, s] = t.dataset.stepGo.split(":").map(Number); startStep(n, s as StepNo); return true; }
   if (!R) return false;
   const q = R.items[R.pos]?.q;
-  if (t.id === "pQuit") { R = null; setView("journey"); return true; }
+  if (t.id === "pQuit") { const n = R.n; R = null; if (n) openStation(n); else setView("home"); return true; }
   if (t.id === "pNext") { if (q && (q.kind === "dialogue" || q.kind === "dialogue-blind" || q.kind === "phrases" || q.kind === "word-intro" || q.kind === "pattern-intro" || q.kind === "kanji-intro") && R.ok === null) { next(); return true; } if (R.ok !== null) next(); return true; }
   if (t.id === "pReplay") { const s = $(".pkstroke"); if (s && q?.kind === "kanji-intro") s.innerHTML = strokeSVG(q.ch, 150) + `<button class="lnk" id="pReplay">↻ Xem lại nét</button>`; return true; }
   if (t.id === "pDlgPlay" && (q?.kind === "dialogue" || q?.kind === "dialogue-blind")) { const D = DIALOGUES.find((d: any) => d.id === q.id); speakSeq(D.lines.map((x: any) => [x.kana, (D.roles[x.s] || {}).g === "f" ? 1.3 : 0.85])); return true; }

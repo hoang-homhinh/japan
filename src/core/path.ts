@@ -93,4 +93,4 @@ export function mergePath(a: any, b: any): any {
 }
 
 // tên 6 bước của một ga (theo thứ tự)
-export const STEP_NAMES = ["", "Nghe chuyện ở ga", "Từ mới", "Mẫu câu", "Trợ từ trong câu", "Kanji của ga", "Kiểm tra qua ga"];
+export const STEP_NAMES = ["", "Hội thoại", "Từ mới", "Mẫu câu", "Trợ từ", "Kanji", "Kiểm tra"];
