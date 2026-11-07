@@ -44,3 +44,7 @@ test("mergeProgress keeps journey progress from both devices", () => {
   expect(P.path.st["13"].steps).toEqual([1]);
   expect(P.path.st["14"].steps).toEqual([2]);
 });
+test("same-day journey rounds from two devices keep the larger count", () => {
+  const P = mergeProgress({ daily: { d: "2026-11-06", gram: 0, pt: 0, ex: 0, path: 1 } }, { daily: { d: "2026-11-06", gram: 0, pt: 0, ex: 0, path: 3 } });
+  expect(P.daily.path).toBe(3);
+});

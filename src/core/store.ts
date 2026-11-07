@@ -91,7 +91,7 @@ function mergeDaily(l: any, r: any) {
   const ld = (l || {}).d || "", rd = (r || {}).d || "";
   if (!l || !r || ld !== rd) return ld >= rd ? l : r;
   const o: any = Object.assign({}, r, l);
-  for (const k of ["gram", "pt", "ex", "talk"]) o[k] = Math.max(l[k] || 0, r[k] || 0);
+  for (const k of ["gram", "pt", "ex", "talk", "path"]) o[k] = Math.max(l[k] || 0, r[k] || 0);
   return o;
 }
 // đổi một cài đặt đồng bộ (upto / exAll / examDate) kèm thời điểm đổi để gộp đúng giữa các máy
@@ -161,7 +161,7 @@ export function renderStats() {
   const d = dueList().length; $$(".dueN,.dueN2").forEach(e => e.textContent = d ? d : "");
 }
 // đếm việc đã làm trong ngày (ngữ pháp, trợ từ, luyện thi)
-export function dailyGet() { const t = dayStr(); const d = S.progress.daily; return d && d.d === t ? d : (S.progress.daily = { d: t, gram: 0, pt: 0, ex: 0 }); }
+export function dailyGet() { const t = dayStr(); const d = S.progress.daily; return d && d.d === t ? d : (S.progress.daily = { d: t, gram: 0, pt: 0, ex: 0, path: 0 }); }
 export function dailyInc(k: string) { const d = dailyGet(); d[k] = (d[k] || 0) + 1; }
 
 export function initStore() { lsLoad(); renderStats(); }

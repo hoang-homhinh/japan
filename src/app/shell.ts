@@ -19,6 +19,7 @@ import * as journey from "../views/journey";
 import * as station from "../views/station";
 import * as player from "../views/player";
 import * as stamps from "../views/stamps";
+import * as reviewq from "../views/reviewq";
 
 export let view = "today";
 
@@ -58,8 +59,7 @@ export function examCountdown() {
 const VIEW_NAME: any = { library: "Thư viện", reviewq: "Ôn tập", journey: "Hành trình", station: "Ga", player: "Đang học", stamps: "Sổ dấu ga", today: "Hôm nay", learn: "Ngữ pháp", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", review: "Ôn sổ câu", notes: "Sổ ngữ pháp", particle: "Trợ từ", talk: "Hội thoại", exam: "Luyện thi N5", account: "Tài khoản & sao lưu" };
 const RENDER: any = {
   library: () => library.renderLibrary(),
-  // tạm thời cho tới Task 7/11: journey → Thư viện, reviewq → Sổ câu
-  journey: () => journey.renderJourney(), station: () => station.renderStation(), player: () => player.renderPlayer(), stamps: () => stamps.renderStamps(), reviewq: () => review.openReview(),
+  journey: () => journey.renderJourney(), station: () => station.renderStation(), player: () => player.renderPlayer(), stamps: () => stamps.renderStamps(), reviewq: () => reviewq.renderReviewTab(),
   today: () => today.renderToday(), learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
   match: () => match.renderMatch(), particle: () => particle.renderParticles(), exam: () => exam.renderExam(), account: () => account.renderAccount(), talk: () => talk.renderTalk(), review: () => review.openReview(),
 };
@@ -95,6 +95,7 @@ export function bindEvents() {
     const t = e.target.closest("button");
     if (!t) { const r = e.target.closest(".cover-m .vrow,.cover-w .vrow"); if (r) r.classList.toggle("peek"); return; }
     if (player.onClick(t)) return;
+    if (view === "reviewq" && reviewq.onClick(t)) return;
     if (view === "journey" && journey.onClick(t)) return;
     if (t.dataset.station) return station.openStation(+t.dataset.station);
     if (view === "station" && station.onClick(t)) return;

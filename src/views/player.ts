@@ -16,7 +16,7 @@ import { stationOf } from "../core/route";
 import { buildStep } from "../core/steps";
 import { playChime, playDeparture } from "../core/sound";
 import { kid } from "../core/srs";
-import { dailyInc } from "../core/store";
+import { dailyInc, saveProgress } from "../core/store";
 import { strokeSVG } from "../core/strokes";
 import { say, speakSeq } from "../core/tts";
 import { $, esc, toast } from "../core/util";
@@ -191,7 +191,9 @@ function next() {
 // ---- kết thúc lượt ----
 function finish() {
   const run = R!; R = null;
-  dailyInc("path"); playDeparture();
+  playDeparture();
+  // mục tiêu ngày đếm lượt học MỚI (gói ôn không tính); lưu ngay để tải lại trang không mất
+  if (run.mode === "step") { dailyInc("path"); saveProgress(); }
   if (run.mode === "review") {
     if (run.then) return startStep(run.then.n, run.then.step);
     return summary("Xong phần ôn hôm nay", `Đúng ${run.firstOk}/${run.firstTotal} câu ngay lần đầu.`, run);

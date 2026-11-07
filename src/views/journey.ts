@@ -4,7 +4,7 @@ import { penguin } from "../core/mascot";
 import { STEP_NAMES, currentStation, nextStep, pathState, setStart, stationStatus } from "../core/path";
 import { buildReview } from "../core/reviewq";
 import { STATIONS, stationOf } from "../core/route";
-import { S, streak } from "../core/store";
+import { S, dailyGet, streak } from "../core/store";
 import { $, esc } from "../core/util";
 
 const GAP = 118;                       // khoảng cách dọc giữa 2 ga (px)
@@ -49,6 +49,7 @@ export function renderJourney() {
     <div class="jstat"><b>${streak()}</b><span>ngày liên tục</span></div>
     <button class="btn ghost" data-view="stamps">Sổ dấu</button>
   </section>
+  <div class="goalrail" aria-label="Mục tiêu hôm nay"><span>Hôm nay ${Math.min(dailyGet().path || 0, P.goal)}/${P.goal} lượt</span><i style="--p:${Math.min(1, (dailyGet().path || 0) / P.goal)}"></i>${(dailyGet().path || 0) >= P.goal ? "<b>✓ tàu đã tới ga</b>" : ""}</div>
   <section class="routemap" style="height:${25 * GAP + 40}px" aria-label="Bản đồ tuyến N5">
     <svg class="rails" viewBox="0 0 100 ${25 * GAP + 40}" preserveAspectRatio="none" aria-hidden="true">
       <path class="rail-bed" d="${railPath()}"/><path class="rail-ties" d="${railPath()}"/><path class="rail-line" d="${railPath()}"/>
