@@ -3,6 +3,7 @@
 import { KANJI, VOCAB } from "../content/data";
 import { LESSONS } from "../content/lessons";
 import { PT_DRILLS } from "../content/drills";
+import { PLUS, typeAnswers } from "../content/enrich";
 import { EXAM_BANK } from "../content/exam";
 import { KJ_SIM, kjWrongReads } from "./examgen";
 import { getPart, type StepNo } from "./path";
@@ -55,13 +56,14 @@ function clozeQ(jp: string, vi: string, others: string[], rnd: Rnd): Q | null {
   const pool = [swapParticle(right, rnd) || "", ...others.flatMap(toks)];
   return { kind: "mcq", prompt: vi, jp: t.map((x, i) => (i === hide ? "（　）" : x)).join(" "), say: jp, optJp: true, ...choices(right, pool, rnd) };
 }
-function patternQs(P: any, all: string[], rnd: Rnd): Q[] {
+function patternQs(P: any, all: string[], rnd: Rnd, mine: [string, string][] = []): Q[] {
   const out: Q[] = [{ kind: "pattern-intro", pid: P.id }];
   const sents: [string, string][] = [...(P.ex || []).map((e: any) => [e[0], e[1]]), ...(P.drills || []).map((d: any) => [d.a[0], d.cue || ""])];
   const usable = sents.filter(([jp]) => toks(jp).length >= 3);
   for (const [jp, vi] of usable.slice(0, 2)) { const q = buildQ(jp, vi || P.mean, all, rnd); if (q) out.push(q); }
   const c = usable[2] || usable[0];
   if (c) { const q = clozeQ(c[0], c[1] || P.mean, all, rnd); if (q) out.push(q); }
+  for (const [jp, vi] of mine) { const q = buildQ(jp, vi, all, rnd); if (q) out.push(q); } // câu về chính mình, để cuối
   return out;
 }
 
@@ -88,13 +90,29 @@ function particleIds(n: number, want: number, rnd: Rnd): string[] {
 export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random, opt: { listen?: boolean } = {}): { qs: Q[]; partTotal: number; part: number } {
   const canListen = opt.listen !== false;
   const li = lessonIdx(n), L = LESSONS.find((x: any) => x.n === n), st = stationOf(n);
-  if (step === 1) return { qs: [{ kind: "dialogue", id: `${n}a` }], partTotal: 1, part: 0 };
+  const plus = PLUS[n];
+  if (step === 1) {
+    if (!plus) return { qs: [{ kind: "dialogue", id: `${n}a` }], partTotal: 1, part: 0 };
+    const qs: Q[] = [];
+    if (canListen) { qs.push({ kind: "dialogue-blind", id: `${n}a` }); for (const g of plus.gist) qs.push({ kind: "mcq", prompt: g.q, opts: g.opts, a: g.a }); }
+    qs.push({ kind: "dialogue", id: `${n}a` }, { kind: "phrases", id: `${n}a`, keep: plus.keep });
+    return { qs, partTotal: 1, part: 0 };
+  }
 
   if (step === 2) {
     // lượt = lô đầu tiên còn từ chưa từng học (từ đã thuộc/đã gặp thì bỏ qua)
-    const lots = (LOTS[li] || []).map((lot: any) => lot.ids.filter((i: number) => !srs(vid(li, i)))).filter((ids: number[]) => ids.length);
+    const src: number[][] = plus ? plus.lots.map(l => l.map(k => VFLAT[li].findIndex((w: any) => w[0] === k)).filter((i: number) => i >= 0)) : (LOTS[li] || []).map((lot: any) => lot.ids);
+    const lots = src.map((ids: number[]) => ids.filter((i: number) => !srs(vid(li, i)))).filter((ids: number[]) => ids.length);
     if (!lots.length) return { qs: [], partTotal: 0, part: 0 };
     const ids: number[] = lots[0], qs: Q[] = [];
+    if (plus) {
+      // thẻ (câu ví dụ + mẹo nhớ) → nghe chọn từ → chọn nghĩa → tự gõ lại (nhớ lại khó nhất để cuối)
+      for (const i of ids) { const w = VFLAT[li][i]; qs.push({ kind: "word-intro", vid: vid(li, i), w, plus: plus.words[w[0]] }); }
+      if (canListen) for (const i of shuffle(ids, rnd)) qs.push(listenQ(li, i, rnd));
+      for (const i of shuffle(ids, rnd)) qs.push(meaningQ(li, i, rnd));
+      for (const i of shuffle(ids, rnd)) { const w = VFLAT[li][i]; qs.push({ kind: "type", vi: w[3], answers: typeAnswers(w[0]), say: w[0], track: { type: "srs", id: vid(li, i) } }); }
+      return { qs, partTotal: lots.length, part: 0 };
+    }
     for (const i of ids) qs.push({ kind: "word-intro", vid: vid(li, i), w: VFLAT[li][i] }, meaningQ(li, i, rnd));
     if (canListen) for (const i of shuffle(ids, rnd)) qs.push(listenQ(li, i, rnd));
     qs.push({ kind: "match", pairs: ids.map(i => [VFLAT[li][i][3], VFLAT[li][i][0], vid(li, i)] as [string, string, string]) });
@@ -104,7 +122,7 @@ export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random, opt: 
   if (step === 3) {
     const pats = L?.patterns || [], total = Math.ceil(pats.length / 2), part = Math.min(getPart(n, 3), Math.max(total - 1, 0));
     const all = pats.flatMap((p: any) => (p.ex || []).map((e: any) => e[0]));
-    return { qs: pats.slice(part * 2, part * 2 + 2).flatMap((p: any) => patternQs(p, all, rnd)), partTotal: total, part };
+    return { qs: pats.slice(part * 2, part * 2 + 2).flatMap((p: any) => patternQs(p, all, rnd, plus?.mine[p.id])), partTotal: total, part };
   }
 
   if (step === 4) return { qs: particleIds(n, 10, rnd).map(id => ({ kind: "particle", drill: id }) as Q), partTotal: 1, part: 0 };

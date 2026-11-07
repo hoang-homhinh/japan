@@ -1,22 +1,20 @@
-// Tab Ôn tập: (1) gói ôn hôm nay — từ, kanji, trợ từ, câu thi đến hạn + mục cũ của các ga đã qua; (2) Sổ câu.
-import { penguin } from "../core/mascot";
+// Ôn tập: gói ôn hôm nay (từ, kanji, trợ từ, câu thi đến hạn + mục cũ của các bài đã qua) và Sổ câu.
 import { buildReview } from "../core/reviewq";
-import { S, dueList, streak } from "../core/store";
-import { $ } from "../core/util";
+import { S, dueList } from "../core/store";
+import { $, dayStr } from "../core/util";
+import { reviewBreakdown, reviewCard } from "./home";
 import { startReview } from "./player";
 
 export function renderReviewTab() {
-  const n = S.progress.path ? buildReview(undefined, 15, 10, false).length : 0;
+  const qs = S.progress.path ? buildReview(undefined, 15, 10, false) : [];
   const sent = dueList().length;
-  $("#main").innerHTML = `
-  <section class="rvq">
-    <div class="pensay">${penguin(n ? "think" : "cheer", 64)}<div class="bubble"><b>${n ? `Hôm nay có ${n} câu cần ôn` : "Hôm nay đã ôn xong"}</b><span>${n ? "Ôn đúng lúc sắp quên là cách nhớ lâu nhất. Khoảng 3 phút." : "Quay lại ngày mai nhé. Chuỗi hiện tại: " + streak() + " ngày."}</span></div></div>
-    <button class="btn accent big" id="rvStart" ${n ? "" : "disabled"}>${n ? `Ôn ngay ${n} câu` : "Không còn câu nào"}</button>
-  </section>
-  <section class="step"><h2><span class="k">句</span>Sổ câu<span class="hint">các câu bạn đã tự đặt</span></h2>
-    <p class="tip">${sent ? `${sent} câu đến hạn ôn.` : "Không có câu nào đến hạn."} Câu bạn tự đặt ở Mẫu câu, Kanji, Từ vựng được lưu ở đây.</p>
-    <button class="btn ghost" data-view="review">Mở sổ câu</button>
-  </section>`;
+  $("#main").innerHTML = `<div class="m-grid">
+  <div class="m-col">${reviewCard(qs.length, reviewBreakdown(qs), dayStr())}
+    <section class="m-card"><div class="m-ch"><h2>Vì sao ôn mỗi ngày?</h2></div><p style="margin:0;color:var(--muted);font-size:13.5px">Mỗi mục được hỏi lại đúng lúc bạn sắp quên: sau 1, 3, 7, 14 rồi 30 ngày. Trả lời đúng thì giãn ra, sai thì hỏi lại sớm. Mỗi ngày khoảng 3–10 phút là đủ giữ những gì đã học.</p></section>
+  </div>
+  <aside class="m-col"><section class="m-card"><div class="m-ch"><h2>Sổ câu</h2><span>${sent} câu đến hạn</span></div>
+    <p style="margin:0 0 12px;color:var(--muted);font-size:13.5px">Các câu bạn tự đặt ở Mẫu câu, Kanji, Từ vựng được lưu ở đây để ôn lại.</p>
+    <button class="btn ghost" data-view="review">Mở sổ câu</button></section></aside></div>`;
 }
 export function onClick(t: any): boolean {
   if (t.id === "rvStart") { startReview(); return true; }

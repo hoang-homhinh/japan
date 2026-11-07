@@ -7,7 +7,7 @@ import { LESSONS } from "../content/lessons";
 import { PT_DRILLS } from "../content/drills";
 import { ancientHTML, tipHTML, vPic } from "../core/cards";
 import { gradeTrack, introduce } from "../core/grade";
-import { kanaToRomaji, norm, showKana } from "../core/kana";
+import { kanaToRomaji, norm, pvText, showKana } from "../core/kana";
 import { penguin, penLine } from "../core/mascot";
 import { pathState, STEP_NAMES, getPart, markStepDone, nextStep, currentStation, setPart, stampStation, type StepNo } from "../core/path";
 import { adviceStep, isGradable, type Q } from "../core/q";
@@ -24,6 +24,7 @@ import { setView } from "../app/shell";
 import { showStampMoment } from "./stamps";
 import { openStation } from "./station";
 import { canListen } from "../core/tts";
+import { icon } from "../core/brand";
 
 type Item = { q: Q; retry?: boolean };
 type Run = { mode: "step" | "review"; n: number; step: StepNo; part: number; partTotal: number; skip?: boolean; then?: { n: number; step: StepNo };
@@ -69,7 +70,7 @@ function head() {
   const s = R!.mode === "review" ? "Ôn tập" : `${stationOf(R!.n).code} · Bước ${R!.step} — ${STEP_NAMES[R!.step]}${R!.partTotal > 1 ? ` · lượt ${R!.part + 1}/${R!.partTotal}` : ""}`;
   return `<div class="phead"><button class="lnk" id="pQuit">✕ Dừng</button><span>${esc(s)}</span><span class="pcount">${Math.min(R!.pos + 1, R!.items.length)}/${R!.items.length}</span></div>${rail()}`;
 }
-const sayBtn = (t: string, big = false) => `<button class="say${big ? " saybig" : ""}" data-say="${esc(t)}" aria-label="Nghe">🔊</button>`;
+const sayBtn = (t: string, big = false) => `<button class="say${big ? " saybig" : ""}" data-say="${esc(t)}" aria-label="Nghe">${icon("vol", big ? 22 : 16)}</button>`;
 const optBtns = (opts: string[], jp: boolean) => `<div class="popts">${opts.map((o, i) => `<button class="popt${jp ? " jp" : ""}" data-pa="${i}"><span class="pk">${i + 1}</span>${esc(o)}</button>`).join("")}</div>`;
 
 function body(q: Q): string {
@@ -77,14 +78,33 @@ function body(q: Q): string {
     case "dialogue": {
       const D = DIALOGUES.find((d: any) => d.id === q.id); if (!D) return `<p>Chưa có hội thoại.</p>`;
       return `<div class="pcard"><p class="pprompt">${esc(D.t)}</p><p class="tip">${esc(D.scene)}</p>
-        <div class="row"><button class="btn accent" id="pDlgPlay">▶ Nghe cả đoạn</button></div>
+        <div class="row"><button class="btn" id="pDlgPlay">${icon("play", 14)} Nghe cả đoạn</button></div>
         <div class="pdlg">${D.lines.map((x: any, i: number) => { const r = D.roles[x.s] || {}; return `<div class="pdl${x.s === D.me ? " me" : ""}" data-dl="${i}"><span class="pdn">${esc(r.name || x.s)}</span><div><div class="jp">${esc(x.kana)}</div><div class="tip">${esc(x.vi)}</div></div>${sayBtn(x.kana)}</div>`; }).join("")}</div>
         <button class="btn accent big" id="pNext">Đã nghe xong →</button></div>`;
     }
+    case "dialogue-blind": {
+      const D = DIALOGUES.find((d: any) => d.id === q.id); if (!D) return `<p>Chưa có hội thoại.</p>`;
+      return `<div class="pcard"><p class="tip">Nghe lần 1 · chưa xem chữ</p><p class="pprompt">${esc(D.t)}</p><p class="tip">${esc(D.scene)}</p>
+        <p>Nghe 1–2 lần và đoán chuyện gì đang xảy ra. Không cần hiểu hết từng chữ. Sau đó trả lời 3 câu hỏi ngắn.</p>
+        <div class="row"><button class="btn accent" id="pDlgPlay">▶ Nghe cả đoạn</button></div>
+        <button class="btn big" id="pNext">Đã nghe, trả lời câu hỏi →</button></div>`;
+    }
+    case "phrases": {
+      const D = DIALOGUES.find((d: any) => d.id === q.id); if (!D) return "";
+      return `<div class="pcard"><p class="tip">Đem dùng được ngay</p><p class="pprompt">${q.keep.length} câu nên thuộc lòng</p>
+        <div class="pex">${q.keep.map(i => D.lines[i]).filter(Boolean).map((x: any) => `<div class="pexl">${sayBtn(x.kana)}<div><div class="jp">${esc(x.kana)}</div><div class="tip">${esc(x.vi)}</div></div></div>`).join("")}</div>
+        <p class="tip">Bấm nghe từng câu và đọc nhẩm theo 2–3 lần.</p><button class="btn accent big" id="pNext">Xong, sang bước tiếp →</button></div>`;
+    }
+    case "type":
+      return `<div class="pcard"><p class="pprompt">Tự nhớ lại: gõ từ này bằng kana hoặc romaji</p><div class="pmean">${esc(q.vi)}</div>
+        <div class="row"><input id="pType" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ví dụ: teishoku" ${R!.ok !== null ? "disabled" : ""}></div><div class="tip" id="pPv"></div>
+        ${R!.ok === null ? `<div class="row"><button class="btn accent" id="pCheck">Kiểm tra</button></div>` : ""}</div>`;
     case "word-intro": {
-      const w = q.w;
+      const w = q.w, P = q.plus;
       return `<div class="pcard pintro"><p class="tip">Từ mới</p><div class="pword">${vPic(w)}<span class="jp">${esc(w[0])}</span>${w[1] ? `<span class="pk2 jp">${esc(w[1])}</span>` : ""}${sayBtn(w[0], true)}</div>
-        <div class="ro">${esc(w[2])}</div><div class="pmean">${esc(w[3])}</div>${w[4] ? `<div class="pnote">${esc(w[4])}</div>` : ""}
+        <div class="ro">${esc(w[2])}</div><div class="pmean">${esc(w[3])}</div>
+        ${P ? `<div class="pexl pwex">${sayBtn(P.ex[0])}<div><div class="jp">${esc(P.ex[0])}</div><div class="tip">${esc(P.ex[1])}</div></div></div><div class="pmemo"><b>Mẹo nhớ</b>${esc(P.tip)}</div>`
+          : (w[4] ? `<div class="pnote">${esc(w[4])}</div>` : "")}
         <button class="btn accent big" id="pNext">Đã nhớ, tiếp →</button></div>`;
     }
     case "pattern-intro": {
@@ -124,7 +144,7 @@ function body(q: Q): string {
       const e = EX.get(q.id); if (!e) return `<p>Không tìm thấy câu.</p>`;
       const listen = /^ch_/.test(e.k);
       return `<div class="pcard"><p class="pprompt">${listen ? "Nghe rồi chọn" : "Chọn đáp án đúng"}</p>
-        ${listen ? `<div class="pcenter"><button class="btn accent" id="pExPlay">🔊 Nghe</button></div>${e.sit ? `<p>${esc(e.sit)}</p>` : ""}${e.q ? `<div class="pjp jp">${esc(e.q)}</div>` : ""}`
+        ${listen ? `<div class="pcenter"><button class="btn" id="pExPlay">${icon("vol", 16)} Nghe</button></div>${e.sit ? `<p>${esc(e.sit)}</p>` : ""}${e.q ? `<div class="pjp jp">${esc(e.q)}</div>` : ""}`
           : `<div class="pjp jp">${esc(e.q || "").replace("（　）", `<span class="pblank">？</span>`)}</div>`}
         ${optBtns(e.opts, true)}</div>`;
     }
@@ -145,6 +165,7 @@ function feedback(): string {
   if (!ok) {
     if (q.kind === "mcq" || q.kind === "listen") ans = q.opts[q.a];
     if (q.kind === "build") ans = q.answer.join(" ");
+    if (q.kind === "type") ans = q.answers[0];
     if (q.kind === "particle") { const d = PT.get(q.drill); ans = d.a.join(" / "); }
     if (q.kind === "exam") { const e = EX.get(q.id); ans = e.opts[e.a]; }
   }
@@ -152,11 +173,11 @@ function feedback(): string {
   if (q.kind === "exam") why = EX.get(q.id).why || "";
   if (q.kind === "mcq" && q.why) why = q.why;
   return `<div class="psheet ${ok ? "ok" : "bad"}" role="status">${penguin(ok ? "happy" : "oops", 54)}<div class="psb"><b class="jp">${L[0]}</b> ${esc(L[1])}
-    ${ans ? `<div>Đáp án: <b class="jp">${esc(ans)}</b></div>` : ""}${why ? `<div class="tip">${esc(why)}</div>` : ""}${R!.combo >= 3 && ok ? `<div class="pcombo">🔥 ${R!.combo} câu đúng liên tiếp</div>` : ""}</div>
+    ${ans ? `<div>Đáp án: <b class="jp">${esc(ans)}</b></div>` : ""}${why ? `<div class="tip">${esc(why)}</div>` : ""}${R!.combo >= 3 && ok ? `<div class="pcombo">${R!.combo} câu đúng liên tiếp</div>` : ""}</div>
     <button class="btn ${ok ? "accent" : ""} big" id="pNext">Tiếp →</button></div>`;
 }
 export function renderPlayer() {
-  if (!R) { setView("journey"); return; }
+  if (!R) { setView("home"); return; }
   if (R.pos >= R.items.length) return finish();
   const q = R.items[R.pos].q;
   if (q.kind === "match" && !R.match) { const ix = q.pairs.map((_, i) => i); R.match = { sel: null, done: new Set(), miss: new Set(), L: shuffle(ix), R: shuffle(ix) }; }
@@ -166,18 +187,19 @@ export function renderPlayer() {
     if (q.kind === "listen") say(q.say);
     if (q.kind === "mcq" && q.say && /Từ này/.test(q.prompt)) say(q.say);
   }
-  if (q.kind === "build" && R.typed) ($("#pType") as any)?.focus();
+  if ((q.kind === "build" && R.typed) || (q.kind === "type" && R.ok === null)) ($("#pType") as any)?.focus();
+  if (q.kind === "type" && R.ok !== null) say(q.say);
 }
 
 // ---- chấm ----
-function strength(q: Q): 1 | 2 | 3 { if (R!.mode === "review" || R!.step === 6) return 3; return q.kind === "listen" || q.kind === "match" ? 2 : 1; }
+function strength(q: Q): 1 | 2 | 3 { if (R!.mode === "review" || R!.step === 6) return 3; return q.kind === "listen" || q.kind === "match" || q.kind === "type" ? 2 : 1; }
 function answer(ok: boolean) {
   const it = R!.items[R!.pos], q = it.q;
   R!.ok = ok;
   if (!it.retry && ok) R!.firstOk++;
   if (ok) { R!.combo++; if ([3, 5, 10].includes(R!.combo)) playChime(R!.combo as 3 | 5 | 10); } else { R!.combo = 0; const st = String(adviceStep(q, q.kind === "exam" ? EX.get(q.id)?.k : "")); R!.wrongByKind[st] = (R!.wrongByKind[st] || 0) + 1; }
   // ghi lịch ôn
-  if (q.kind === "mcq" || q.kind === "listen" || q.kind === "build") { if (q.track) gradeTrack(q.track, ok, strength(q)); }
+  if (q.kind === "mcq" || q.kind === "listen" || q.kind === "build" || q.kind === "type") { if (q.track) gradeTrack(q.track, ok, strength(q)); }
   if (q.kind === "particle") gradeTrack({ type: "pt", id: q.drill }, ok);
   if (q.kind === "exam") gradeTrack({ type: "ex", id: q.id }, ok);
   if (!ok && !it.retry) R!.items.push({ q, retry: true });
@@ -220,8 +242,8 @@ function summary(title: string, sub: string, run: Run, back?: number) {
   setView("player");
   $("#main").innerHTML = `<div class="player"><div class="pcard pdone">${penguin(back ? "oops" : "cheer", 96)}<h2>${esc(title)}</h2><p>${esc(sub)}</p>
     <div class="row" style="flex-wrap:wrap;justify-content:center">
-      ${back ? `<button class="btn accent big" data-step-go="${run.n}:${back}">Ôn lại bước ${back}</button>` : `<button class="btn accent big" id="jContinue">▶ Tiếp tục hành trình</button>`}
-      ${run.n ? `<button class="btn ghost" data-station="${run.n}">Về ga ${stationOf(run.n).code}</button>` : ""}<button class="btn ghost" data-view="journey">Bản đồ</button></div></div></div>`;
+      ${back ? `<button class="btn accent big" data-step-go="${run.n}:${back}">Ôn lại bước ${back}</button>` : `<button class="btn big" id="jContinue">Học tiếp</button>`}
+      ${run.n ? `<button class="btn ghost" data-station="${run.n}">Về ga ${stationOf(run.n).code}</button>` : ""}<button class="btn ghost" data-view="home">Tổng quan</button></div></div></div>`;
 }
 
 // ---- sự kiện ----
@@ -230,10 +252,10 @@ export function onClick(t: any): boolean {
   if (t.dataset.stepGo) { const [n, s] = t.dataset.stepGo.split(":").map(Number); startStep(n, s as StepNo); return true; }
   if (!R) return false;
   const q = R.items[R.pos]?.q;
-  if (t.id === "pQuit") { R = null; setView("journey"); return true; }
-  if (t.id === "pNext") { if (q && (q.kind === "dialogue" || q.kind === "word-intro" || q.kind === "pattern-intro" || q.kind === "kanji-intro") && R.ok === null) { next(); return true; } if (R.ok !== null) next(); return true; }
+  if (t.id === "pQuit") { const n = R.n; R = null; if (n) openStation(n); else setView("home"); return true; }
+  if (t.id === "pNext") { if (q && (q.kind === "dialogue" || q.kind === "dialogue-blind" || q.kind === "phrases" || q.kind === "word-intro" || q.kind === "pattern-intro" || q.kind === "kanji-intro") && R.ok === null) { next(); return true; } if (R.ok !== null) next(); return true; }
   if (t.id === "pReplay") { const s = $(".pkstroke"); if (s && q?.kind === "kanji-intro") s.innerHTML = strokeSVG(q.ch, 150) + `<button class="lnk" id="pReplay">↻ Xem lại nét</button>`; return true; }
-  if (t.id === "pDlgPlay" && q?.kind === "dialogue") { const D = DIALOGUES.find((d: any) => d.id === q.id); speakSeq(D.lines.map((x: any) => [x.kana, (D.roles[x.s] || {}).g === "f" ? 1.3 : 0.85])); return true; }
+  if (t.id === "pDlgPlay" && (q?.kind === "dialogue" || q?.kind === "dialogue-blind")) { const D = DIALOGUES.find((d: any) => d.id === q.id); speakSeq(D.lines.map((x: any) => [x.kana, (D.roles[x.s] || {}).g === "f" ? 1.3 : 0.85])); return true; }
   if (t.id === "pExPlay" && q?.kind === "exam") { const e = EX.get(q.id); const parts: any[] = []; if (e.intro) parts.push([e.intro, 1]); (e.script || []).forEach((x: any) => parts.push([x[1], x[0] === "F" ? 1.3 : 0.8])); if (e.line) parts.push([e.line, 1.2]); if (e.q && e.k === "ch_kadai") parts.push([e.q, 1]); speakSeq(parts); return true; }
   if (R.ok !== null) return t.dataset.pa !== undefined || t.dataset.pp !== undefined;
   if (t.dataset.pa !== undefined && q) {
@@ -246,6 +268,11 @@ export function onClick(t: any): boolean {
   if (t.dataset.tp !== undefined) { R.build = [...(R.build || []), t.dataset.tp]; renderPlayer(); return true; }
   if (t.dataset.tu !== undefined) { R.build = (R.build || []).filter(x => x !== t.dataset.tu); renderPlayer(); return true; }
   if (t.id === "pTypeT") { R.typed = !R.typed; renderPlayer(); return true; }
+  if (t.id === "pCheck" && q?.kind === "type") {
+    const got = showKana(($("#pType") as any)?.value || "");
+    if (!got.trim()) { toast("Hãy gõ từ trước."); return true; }
+    answer(q.answers.some(a => norm(a) === norm(got))); return true;
+  }
   if (t.id === "pCheck" && q?.kind === "build") {
     const want = q.answer.join("");
     const got = R.typed ? showKana(($("#pType") as any)?.value || "") : (R.build || []).map(i => q.tokens[+i]).join("");
@@ -273,3 +300,6 @@ export function onKey(e: any): boolean {
 }
 // cửa cho kiểm thử tự động (chỉ khi URL có ?e2e): đọc trạng thái lượt học và tra đáp án
 if (typeof location !== "undefined" && location.search.includes("e2e")) (globalThis as any).__player = () => ({ R, ex: (id: string) => EX.get(id), pt: (id: string) => PT.get(id) });
+
+// xem trước kana khi gõ romaji ở câu "tự nhớ lại"
+if (typeof document !== "undefined") document.addEventListener("input", e => { const t = e.target as any; if (t?.id === "pType" && R?.items[R.pos]?.q.kind === "type") { const pv = $("#pPv"); if (pv) pv.textContent = pvText(t.value); } });

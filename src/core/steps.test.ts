@@ -7,11 +7,11 @@ import { PT_DRILLS } from "../content/drills";
 const rnd = () => 0.42;
 beforeEach(() => { S.progress = { upto: 13, days: [], counts: {}, drills: {} }; });
 
-test("step 1 is the a-dialogue", () => {
-  expect(buildStep(13, 1).qs).toEqual([{ kind: "dialogue", id: "13a" }]);
+test("step 1 is the a-dialogue (bài chưa có nội dung mới)", () => {
+  expect(buildStep(12, 1).qs).toEqual([{ kind: "dialogue", id: "12a" }]);
 });
 test("vocab step part covers one lot with intro + mcq per word", () => {
-  const r = buildStep(13, 2, rnd);
+  const r = buildStep(12, 2, rnd);
   expect(r.partTotal).toBeGreaterThan(1);
   expect(r.qs.filter(q => q.kind === "word-intro").length).toBe(r.qs.filter(q => q.kind === "mcq").length);
   expect(r.qs.some(q => q.kind === "match")).toBe(true);

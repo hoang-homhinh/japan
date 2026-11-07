@@ -9,21 +9,21 @@ import { loadAncient } from "./core/cards";
 import { bindEvents, refreshView, setView, view } from "./app/shell";
 import { syncLabel } from "./views/account";
 import { $$ } from "./core/util";
-import "./styles/theme.css";
-import "./styles/tokens.css";
 import "./styles/journey.css";
-import { penguin, penguinDataURI } from "./core/mascot";
+import "./styles/michi.css";
+import { icon, peng } from "./core/brand";
+import { openCmd } from "./views/cmdk";
+import { openStation } from "./views/station";
 
-// ペンちゃん: logo + hình nhỏ cạnh mọi ô báo đúng/sai (.res) qua biến CSS
-$$(".logo").forEach(el => { el.innerHTML = penguin("hi", 40, "ペンちゃん"); el.classList.add("logo-pen"); });
-document.documentElement.style.setProperty("--pen-happy", `url("${penguinDataURI("happy")}")`);
-document.documentElement.style.setProperty("--pen-oops", `url("${penguinDataURI("oops")}")`);
+// logo chim cánh cụt + icon nét mảnh cho menu
+$$(".logo").forEach(el => { el.innerHTML = peng(30, "Michi"); });
+$$("[data-i]").forEach(el => { el.innerHTML = icon(el.dataset.i!, 18); });
 
 initStore();
 bindEvents();
-export const HOME = "journey";
+export const HOME = "home";
 // mở thẳng một tab qua đường link, vd …/#particle (tiện để ghim tab hay dùng)
-const VIEWS = ["journey", "stamps", "library", "reviewq", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
+const VIEWS = ["home", "journey", "stamps", "library", "reviewq", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
 const startView = location.hash.slice(1);
 setView(VIEWS.includes(startView) ? startView : HOME);
 window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (VIEWS.includes(h) && h !== view) setView(h); });
@@ -56,3 +56,8 @@ if ("serviceWorker" in navigator) {
     else location.reload();
   });
 }
+
+// tìm nhanh: Ctrl K / ⌘K hoặc nút tìm trên thanh trên
+const goCmd = (target: string) => { const [k, v] = target.split(":"); if (k === "view") setView(v); else if (k === "station") openStation(+v); };
+document.addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); openCmd(goCmd); } });
+document.getElementById("cmdOpen")?.addEventListener("click", () => openCmd(goCmd));

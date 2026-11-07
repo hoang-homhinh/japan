@@ -20,11 +20,13 @@ import * as station from "../views/station";
 import * as player from "../views/player";
 import * as stamps from "../views/stamps";
 import * as reviewq from "../views/reviewq";
+import * as home from "../views/home";
+import { buildReview } from "../core/reviewq";
 
-export let view = "today";
+export let view = "home";
 
-const NAV_GROUPS: any = { journey: ["journey", "station", "player", "stamps"], reviewq: ["reviewq", "review"], library: ["library", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam"] };
-const NO_SUBNAV = new Set(["journey"]);
+const NAV_GROUPS: any = { home: ["home"], journey: ["journey", "station", "player"], stamps: ["stamps"], exam: ["exam"], reviewq: ["reviewq", "review"], library: ["library", "vocab", "kanji", "match", "learn", "talk", "particle", "notes"] };
+const NO_SUBNAV = new Set(["home", "journey", "stamps", "exam"]);
 const SUB_NAME: any = { library: "Tất cả", reviewq: "Ôn hôm nay", review: "Sổ câu", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", learn: "Mẫu câu", talk: "Hội thoại", particle: "Trợ từ", notes: "Sổ ngữ pháp" };
 export const navGroupOf = (v: string) => Object.keys(NAV_GROUPS).find(g => NAV_GROUPS[g].includes(v)) || v;
 const LASTSUB: any = {};
@@ -56,11 +58,11 @@ export function examCountdown() {
   return d >= 0 ? `<span class="pill">試 ${d === 0 ? "Hôm nay thi!" : "Còn " + d + " ngày tới kỳ thi"}</span>` : "";
 }
 
-const VIEW_NAME: any = { library: "Thư viện", reviewq: "Ôn tập", journey: "Hành trình", station: "Ga", player: "Đang học", stamps: "Sổ dấu ga", today: "Hôm nay", learn: "Ngữ pháp", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", review: "Ôn sổ câu", notes: "Sổ ngữ pháp", particle: "Trợ từ", talk: "Hội thoại", exam: "Luyện thi N5", account: "Tài khoản & sao lưu" };
+const VIEW_NAME: any = { home: "Tổng quan", library: "Thư viện", reviewq: "Ôn tập", journey: "Lộ trình", station: "Bài học", player: "Đang học", stamps: "Thành tích", today: "Tổng quan", learn: "Ngữ pháp", vocab: "Từ vựng", kanji: "Kanji", match: "Nối từ", review: "Ôn sổ câu", notes: "Sổ ngữ pháp", particle: "Trợ từ", talk: "Hội thoại", exam: "Luyện thi N5", account: "Tài khoản & sao lưu" };
 const RENDER: any = {
   library: () => library.renderLibrary(),
-  journey: () => journey.renderJourney(), station: () => station.renderStation(), player: () => player.renderPlayer(), stamps: () => stamps.renderStamps(), reviewq: () => reviewq.renderReviewTab(),
-  today: () => setView("journey"), // màn cũ đã thay bằng Hành trình learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
+  home: () => home.renderHome(), journey: () => journey.renderJourney(), station: () => station.renderStation(), player: () => player.renderPlayer(), stamps: () => stamps.renderStamps(), reviewq: () => reviewq.renderReviewTab(),
+  today: () => setView("home"), // màn cũ đã thay bằng Hành trình learn: () => learn.renderLearn(), notes: () => notes.renderNotes(), kanji: () => kanji.renderKanji(), vocab: () => vocab.renderVocab(),
   match: () => match.renderMatch(), particle: () => particle.renderParticles(), exam: () => exam.renderExam(), account: () => account.renderAccount(), talk: () => talk.renderTalk(), review: () => review.openReview(),
 };
 export function setView(v: string) {
@@ -72,6 +74,8 @@ export function setView(v: string) {
   talk.leaveTalk(); // dừng phát hội thoại khi đổi tab
   if ("speechSynthesis" in window && v !== "exam") speechSynthesis.cancel();
   const c = $("#crumb"); if (c) c.textContent = VIEW_NAME[v] || "";
+  const cs = $("#crumbSub"); if (cs) cs.textContent = SUBTITLE[v] ? SUBTITLE[v]() : "";
+  updateRevBadge();
   RENDER[v]();
   // giữ đường link …/#tab khớp tab đang mở (tải lại trang vẫn ở đúng tab)
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
@@ -92,11 +96,12 @@ export function refreshView() {
 export function bindEvents() {
   document.addEventListener("submit", e => e.preventDefault());
   document.addEventListener("click", (e: any) => {
-    const t = e.target.closest("button");
+    const t = e.target.closest("button,[data-station]");
     if (!t) { const r = e.target.closest(".cover-m .vrow,.cover-w .vrow"); if (r) r.classList.toggle("peek"); return; }
     if (player.onClick(t)) return;
     if (view === "reviewq" && reviewq.onClick(t)) return;
-    if (view === "journey" && journey.onClick(t)) return;
+    if ((view === "journey" || view === "home") && journey.onClick(t)) return;
+    if (view === "home" && home.onClick(t)) return;
     if (t.dataset.station) return station.openStation(+t.dataset.station);
     if (view === "station" && station.onClick(t)) return;
     if (match.onClick(t)) return;
@@ -152,3 +157,19 @@ export function bindEvents() {
     }
   });
 }
+
+// tiêu đề phụ dưới tên màn
+const SUBTITLE: any = {
+  home: () => { const d = new Date(); return `${["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"][d.getDay()]}, ${d.getDate()} tháng ${d.getMonth() + 1} · Tuyến N5`; },
+  journey: () => "25 bài Minna no Nihongo · mỗi bài là một ga", reviewq: () => "Ôn đúng lúc sắp quên", stamps: () => "Sổ dấu và huy hiệu", library: () => "Tra cứu và luyện thêm", exam: () => "10 dạng đề JLPT N5 và thi thử",
+};
+// số mục cần ôn trên menu
+export function updateRevBadge() {
+  let n = 0; try { n = S.progress.path ? buildReview(undefined, 15, 10, false).length : 0; } catch (e) {}
+  $$(".revN").forEach(el => (el.textContent = n ? String(n) : ""));
+}
+// bàn phím trên sơ đồ tuyến (nhóm SVG có role=button)
+document.addEventListener("keydown", (e: any) => {
+  const g = e.target?.closest?.("g[data-station]");
+  if (g && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); station.openStation(+g.dataset.station); }
+});
