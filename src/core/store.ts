@@ -67,6 +67,10 @@ export function mergeProgress(local: any, rem: any) {
   P.daily = mergeDaily(local.daily, rem.daily);
   // hành trình N5: hợp bước đã xong, dấu ga sớm nhất (xem core/path.ts)
   const pa = mergePath(local.path, rem.path); if (pa) P.path = pa;
+  // mục đã ghim: từng mục, thao tác mới hơn thắng (bỏ ghim cũng đồng bộ)
+  const pins: any = Object.assign({}, rem.pins || {});
+  for (const [k, v] of Object.entries<any>(local.pins || {})) if (!pins[k] || (v.t || 0) > (pins[k].t || 0)) pins[k] = v;
+  if (Object.keys(pins).length) P.pins = pins;
   // mới: danh sách câu đã xoá (id → thời điểm), giữ 1000 mục gần nhất
   const del = Object.assign({}, rem.delSent || {});
   for (const [k, v] of Object.entries<any>(local.delSent || {})) del[k] = Math.max(v, del[k] || 0);

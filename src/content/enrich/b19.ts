@@ -1,0 +1,56 @@
+// Bài 19 — nội dung "học dễ nhớ" (xem khuôn ở ../enrich.ts)
+import type { LessonPlus } from "../enrich";
+
+const L: LessonPlus = {
+  gist: [
+    { q: "Mọi người đang ở đâu?", opts: ["Tiệc cuối tháng của phòng", "Tiệc cưới", "Phòng họp", "Nhà hàng Việt Nam"], a: 0 },
+    { q: "Vì sao chị Satō không ăn bánh?", opts: ["Đang ăn kiêng", "Không thích đồ ngọt", "Đang bị ốm", "Đã ăn no"], a: 0 },
+    { q: "Cuối cùng chị Satō quyết định thế nào?", opts: ["Ăn kiêng từ ngày mai", "Bỏ ăn kiêng luôn", "Đi chạy bộ ngay", "Về nhà sớm"], a: 0 },
+  ],
+  keep: [0, 2, 4, 8],
+  lots: [
+    ["かんぱい", "じつは", "ダイエット", "ケーキ", "むり[な]"],
+    ["なんかいも", "でも", "からだに いい", "いちど", "いちども"],
+    ["のぼります", "とまります", "おかげさまで", "れんしゅう", "なります"],
+    ["だんだん", "もうすぐ", "ねむい", "つよい", "よわい"],
+    ["そうじします", "せんたくします", "ひ", "ちょうし", "しかし"],
+    ["ゴルフ", "すもう", "おちゃ"],
+  ],
+  words: {
+    "かんぱい": { ex: ["じゃ、かんぱい！", "Nào, cạn chén!"], tip: "乾杯 = “can bôi”: làm cạn (can) chén (bôi), y như “cạn chén”." },
+    "じつは": { ex: ["じつは ダイエットを して います。", "Thật ra tôi đang ăn kiêng."], tip: "実 = “thực” trong “sự thực”: じつは là “thực ra là…”, mở đầu điều khó nói." },
+    "ダイエット": { ex: ["前にも ダイエットを した ことが ありますか。", "Trước đây chị từng ăn kiêng chưa?"], tip: "Từ tiếng Anh “diet”: ăn kiêng. ダイエットを します." },
+    "ケーキ": { ex: ["ケーキを 食べませんか。おいしいですよ。", "Ăn bánh không? Ngon lắm đấy."], tip: "Từ tiếng Anh “cake”: bánh ngọt, bánh kem." },
+    "むり[な]": { ex: ["むりを しないで くださいね。", "Đừng cố quá sức nhé."], tip: "無理 = “vô lý”: không hợp lẽ, quá sức. むりを しないで là đừng cố quá." },
+    "なんかいも": { ex: ["ええ、なんかいも あります。", "Ừ, nhiều lần rồi."], tip: "何回 (mấy lần) + も: bao nhiêu lần cũng có, tức nhiều lần." },
+    "でも": { ex: ["ありがとう。でも、じつは ダイエットを して います。", "Cảm ơn. Nhưng thật ra tôi đang ăn kiêng."], tip: "でも nghe như “dẫu mà”: dẫu vậy, nhưng. Đứng đầu câu, văn nói." },
+    "からだに いい": { ex: ["まいあさ はしったり、およいだり して ください。からだに いいですよ。", "Mỗi sáng chạy bộ, bơi lội đi. Tốt cho sức khỏe đấy."], tip: "からだ (cơ thể) + に いい (tốt cho): tốt cho sức khỏe." },
+    "いちど": { ex: ["いちど 富士山に のぼりたいです。", "Tôi muốn leo núi Phú Sĩ một lần."], tip: "一度 = “nhất độ”: một lần." },
+    "いちども": { ex: ["いいえ、いちども ありません。", "Chưa, chưa lần nào."], tip: "一度 + も: dù một lần cũng không. Chỉ đi với phủ định." },
+    "のぼります": { ex: ["富士山に のぼった ことが ありますか。", "Anh đã từng leo núi Phú Sĩ chưa?"], tip: "登 = “đăng” trong “đăng sơn” (leo núi). 山に のぼります, nhóm I." },
+    "とまります": { ex: ["京都で ホテルに とまりました。", "Ở Kyoto tôi ngủ lại khách sạn."], tip: "泊 = “bạc” (ghé thuyền nghỉ đêm): ngủ trọ. N に とまります. Khác とめます (dừng xe)." },
+    "おかげさまで": { ex: ["はい、おかげさまで。", "Vâng, nhờ trời tôi vẫn khỏe."], tip: "おかげ là “nhờ ơn”: đáp khi được hỏi thăm, cảm ơn khiêm tốn “nhờ anh chị mà tôi vẫn ổn”." },
+    "れんしゅう": { ex: ["まいにち 日本語を れんしゅうして います。", "Ngày nào tôi cũng luyện tiếng Nhật."], tip: "練習 = “luyện tập”, đọc gần giống tiếng Việt." },
+    "なります": { ex: ["日本語が じょうずに なりましたね。", "Tiếng Nhật anh giỏi lên rồi nhỉ."], tip: "なります là trở nên: tính từ い đổi い thành く (さむく), tính từ な và danh từ thêm に (じょうずに)." },
+    "だんだん": { ex: ["だんだん さむく なりました。", "Trời lạnh dần rồi."], tip: "だんだん nghe như “dần dần”: gần như y hệt tiếng Việt." },
+    "もうすぐ": { ex: ["もうすぐ なつやすみです。", "Sắp đến nghỉ hè rồi."], tip: "もう (sắp) + すぐ (ngay): ngay sắp tới, chẳng bao lâu nữa." },
+    "ねむい": { ex: ["ゆうべ おそく ねましたから、ねむいです。", "Tối qua ngủ muộn nên tôi buồn ngủ."], tip: "眠 = “miên” trong “thôi miên”. ねむい nghe như “nằm mơ”: buồn ngủ chỉ muốn nằm mơ." },
+    "つよい": { ex: ["きょうは 風が つよいです。", "Hôm nay gió mạnh."], tip: "強 = “cường” trong “cường tráng”: mạnh. Trái nghĩa là よわい." },
+    "よわい": { ex: ["わたしは おさけに よわいです。", "Tôi uống rượu kém."], tip: "弱 = “nhược” trong “nhược điểm”: yếu. よわい nghe như “yếu oải”: yếu ớt, uể oải." },
+    "そうじします": { ex: ["にちようびは へやを そうじします。", "Chủ nhật tôi dọn phòng."], tip: "掃除 = “tảo trừ”: quét (tảo) cho sạch (trừ), dọn dẹp." },
+    "せんたくします": { ex: ["きのうは そうじしたり、せんたくしたり しました。", "Hôm qua tôi dọn dẹp, giặt giũ các thứ."], tip: "洗濯 = “tẩy trạc”: giặt quần áo. Rửa tay, rửa bát là あらいます." },
+    "ひ": { ex: ["その 日は 雨でした。", "Hôm đó trời mưa."], tip: "日 = “nhật”: mặt trời, ngày. ひ nghe như “hi”: chào ngày mới." },
+    "ちょうし": { ex: ["きょうは からだの ちょうしが いいです。", "Hôm nay tôi thấy trong người khỏe."], tip: "調子 = “điệu tử”: nhịp điệu của người hay máy, tức tình trạng. ちょうしが いい / わるい." },
+    "しかし": { ex: ["日本語は むずかしいです。しかし、おもしろいです。", "Tiếng Nhật khó. Tuy nhiên, rất thú vị."], tip: "しかし nghe như “thế nhưng”: tuy nhiên, trang trọng hơn でも." },
+    "ゴルフ": { ex: ["ぶちょうは ゴルフが すきです。", "Trưởng ban thích chơi golf."], tip: "Từ tiếng Anh “golf”. ゴルフを します." },
+    "すもう": { ex: ["すもうを 見た ことが ありますか。", "Anh đã từng xem sumo chưa?"], tip: "すもう nghe như “xu mập”: hai võ sĩ mập xô nhau, là sumo." },
+    "おちゃ": { ex: ["京都で おちゃを ならいました。", "Tôi đã học trà đạo ở Kyoto."], tip: "茶 = “trà”. Ở bài này おちゃ còn là trà đạo, nghệ thuật pha trà." },
+  },
+  mine: {
+    "19-2": [["わたしは すもうを みた ことが ありません。", "Tôi chưa từng xem sumo."]],
+    "19-3": [["にちようびは そうじしたり、 せんたくしたり します。", "Chủ nhật tôi dọn dẹp, giặt giũ các thứ."]],
+    "19-4": [["にほんごが すこし じょうずに なりました。", "Tiếng Nhật của tôi đã khá lên một chút."]],
+    "19-5": [["そうですね、 だんだん さむく なりましたね。", "Đúng vậy, trời lạnh dần rồi nhỉ."]],
+  },
+};
+export default L;

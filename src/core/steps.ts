@@ -29,6 +29,11 @@ export function meaningQ(li: number, i: number, rnd: Rnd): Q {
   const w = VFLAT[li][i];
   return { kind: "mcq", prompt: "Từ này nghĩa là gì?", jp: w[0], say: w[0], ...choices(w[3], VFLAT[li].map((x: any) => x[3]), rnd), track: { type: "srs", id: vid(li, i) } };
 }
+// tự nhớ lại: nghĩa → gõ kana
+export function typeQ(li: number, i: number): Q {
+  const w = VFLAT[li][i];
+  return { kind: "type", vi: w[3], answers: typeAnswers(w[0]), say: w[0], track: { type: "srs", id: vid(li, i) } };
+}
 export function listenQ(li: number, i: number, rnd: Rnd): Q {
   const w = VFLAT[li][i];
   return { kind: "listen", say: w[0], ...choices(w[0], VFLAT[li].map((x: any) => x[0]), rnd), track: { type: "srs", id: vid(li, i) } };
@@ -110,7 +115,7 @@ export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random, opt: 
       for (const i of ids) { const w = VFLAT[li][i]; qs.push({ kind: "word-intro", vid: vid(li, i), w, plus: plus.words[w[0]] }); }
       if (canListen) for (const i of shuffle(ids, rnd)) qs.push(listenQ(li, i, rnd));
       for (const i of shuffle(ids, rnd)) qs.push(meaningQ(li, i, rnd));
-      for (const i of shuffle(ids, rnd)) { const w = VFLAT[li][i]; qs.push({ kind: "type", vi: w[3], answers: typeAnswers(w[0]), say: w[0], track: { type: "srs", id: vid(li, i) } }); }
+      for (const i of shuffle(ids, rnd)) qs.push(typeQ(li, i));
       return { qs, partTotal: lots.length, part: 0 };
     }
     for (const i of ids) qs.push({ kind: "word-intro", vid: vid(li, i), w: VFLAT[li][i] }, meaningQ(li, i, rnd));
@@ -129,7 +134,9 @@ export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random, opt: 
 
   if (step === 5) {
     const qs: Q[] = [];
-    for (const ch of st.kanji) {
+    // chữ đã thuộc (bậc 3) bỏ qua; thuộc hết thì ôn lại cả bài
+    const fresh = st.kanji.filter(ch => (srs(kid(ch))?.lv || 0) < 3);
+    for (const ch of fresh.length ? fresh : st.kanji) {
       qs.push({ kind: "kanji-intro", ch });
       const r = kanjiReadQ(ch, rnd), p = kanjiPickQ(ch, st.kanji, rnd);
       if (r) qs.push(r); if (p) qs.push(p);
