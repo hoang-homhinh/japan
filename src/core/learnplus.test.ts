@@ -90,3 +90,22 @@ describe("học tiếp lượt dở", () => {
     clearRun(); expect(loadRun(13, 2, "2026-11-07")).toBeNull();
   });
 });
+
+describe("bài Kiểm tra chia 3 phần như đề N5", () => {
+  const SEC = ["moji", "bunpo", "chokai"];
+  test("thứ tự: Chữ & từ vựng → Ngữ pháp → Nghe, mỗi câu có nhãn phần", () => {
+    for (const n of [1, 13, 25]) {
+      const qs = buildStep(n, 6, rnd).qs as any[];
+      const secs = qs.map(q => q.sec);
+      for (const s of secs) expect(SEC).toContain(s);
+      const order = secs.map(s => SEC.indexOf(s));
+      expect([...order].sort((a, b) => a - b), "bài " + n).toEqual(order);
+      expect(secs.filter(s => s === "moji").length, "bài " + n).toBeGreaterThanOrEqual(4);
+      expect(secs.filter(s => s === "bunpo").length, "bài " + n).toBeGreaterThanOrEqual(3);
+    }
+  });
+  test("có giọng đọc thì có phần Nghe; không có thì bỏ phần Nghe", () => {
+    expect((buildStep(13, 6, rnd).qs as any[]).some(q => q.sec === "chokai")).toBe(true);
+    expect((buildStep(13, 6, rnd, { listen: false }).qs as any[]).some(q => q.sec === "chokai")).toBe(false);
+  });
+});

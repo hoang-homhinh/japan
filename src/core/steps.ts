@@ -7,7 +7,7 @@ import { PLUS, typeAnswers } from "../content/enrich";
 import { EXAM_BANK } from "../content/exam";
 import { KJ_SIM, kjWrongReads } from "./examgen";
 import { getPart, type StepNo } from "./path";
-import type { Q } from "./q";
+import type { Q, Sec } from "./q";
 import { stationOf } from "./route";
 import { LOTS, VFLAT, kid, srs, vid } from "./srs";
 
@@ -144,19 +144,24 @@ export function buildStep(n: number, step: StepNo, rnd: Rnd = Math.random, opt: 
     return { qs, partTotal: 1, part: 0 };
   }
 
-  // bước 6: Kiểm tra qua ga — 3 từ, 2 kanji, 3 ngữ pháp/từ vựng kiểu đề, 2 trợ từ, 1 nghe
-  const qs: Q[] = [];
-  for (const i of shuffle<number>(VFLAT[li].map((_: any, i: number) => i), rnd).slice(0, 3)) qs.push(meaningQ(li, i, rnd));
-  for (const ch of shuffle(st.kanji, rnd).slice(0, 2)) { const q = kanjiReadQ(ch, rnd) || kanjiPickQ(ch, st.kanji, rnd); if (q) qs.push(q); }
-  const exams = shuffle(EXAM_BANK.filter((q: any) => (q.k === "bun_form" || q.k === "goi_ctx") && q.l === n), rnd).slice(0, 3);
-  for (const q of exams) qs.push({ kind: "exam", id: q.id });
-  if (exams.length < 3) {
+  // bước 6: Kiểm tra theo đề N5, 3 phần nối tiếp: 文字・語彙 (từ, gõ lại, kanji, từ theo ngữ cảnh)
+  // → 文法 (dạng đúng, trợ từ) → 聴解 (khi có giọng đọc). 10–12 câu.
+  const tag = (q: Q, s: Sec): Q => Object.assign(q, { sec: s });
+  const moji: Q[] = [], bunpo: Q[] = [], chokai: Q[] = [];
+  const vi = shuffle<number>(VFLAT[li].map((_: any, i: number) => i), rnd);
+  for (const i of vi.slice(0, 3)) moji.push(meaningQ(li, i, rnd));
+  if (vi[3] !== undefined) moji.push(typeQ(li, vi[3]));
+  for (const ch of shuffle(st.kanji, rnd).slice(0, 2)) { const q = kanjiReadQ(ch, rnd) || kanjiPickQ(ch, st.kanji, rnd); if (q) moji.push(q); }
+  for (const q of shuffle(EXAM_BANK.filter((q: any) => q.k === "goi_ctx" && q.l === n), rnd).slice(0, 1)) moji.push({ kind: "exam", id: q.id });
+  for (const q of shuffle(EXAM_BANK.filter((q: any) => q.k === "bun_form" && q.l === n), rnd).slice(0, 2)) bunpo.push({ kind: "exam", id: q.id });
+  if (bunpo.length < 2) {
     const all = (L?.patterns || []).flatMap((p: any) => (p.ex || []).map((e: any) => e[0]));
-    for (const p of shuffle<any>(L?.patterns || [], rnd)) { if (qs.length >= 8) break; const e = (p.ex || []).find((x: any) => toks(x[0]).length >= 3); const q = e && buildQ(e[0], e[1], all, rnd); if (q) qs.push(q); }
+    for (const p of shuffle<any>(L?.patterns || [], rnd)) { if (bunpo.length >= 2) break; const e = (p.ex || []).find((x: any) => toks(x[0]).length >= 3); const q = e && buildQ(e[0], e[1], all, rnd); if (q) bunpo.push(q); }
   }
-  for (const id of particleIds(n, 2, rnd)) qs.push({ kind: "particle", drill: id });
-  const listen = shuffle(EXAM_BANK.filter((q: any) => /^ch_/.test(q.k) && q.l <= n), rnd).sort((a: any, b: any) => b.l - a.l)[0];
-  if (listen && canListen) qs.push({ kind: "exam", id: listen.id });
-  while (qs.length < 10) { const i = Math.floor(rnd() * VFLAT[li].length); qs.push(meaningQ(li, (i + qs.length) % VFLAT[li].length, rnd)); }
-  return { qs: shuffle(qs, rnd).slice(0, 12), partTotal: 1, part: 0 };
+  for (const id of particleIds(n, 2, rnd)) bunpo.push({ kind: "particle", drill: id });
+  if (canListen) for (const q of shuffle(EXAM_BANK.filter((q: any) => /^ch_/.test(q.k) && q.l <= n), rnd).sort((a: any, b: any) => b.l - a.l).slice(0, 2)) chokai.push({ kind: "exam", id: q.id });
+  for (let k = 3; moji.length + bunpo.length + chokai.length < 10; k++) moji.push(meaningQ(li, vi[k % vi.length], rnd));
+  while (moji.length + bunpo.length + chokai.length > 12) { if (moji.length > 5) moji.pop(); else if (bunpo.length > 4) bunpo.pop(); else chokai.pop(); }
+  const qs = [...shuffle(moji, rnd).map(q => tag(q, "moji")), ...shuffle(bunpo, rnd).map(q => tag(q, "bunpo")), ...chokai.map(q => tag(q, "chokai"))];
+  return { qs, partTotal: 1, part: 0 };
 }

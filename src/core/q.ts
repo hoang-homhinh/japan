@@ -1,6 +1,8 @@
 // Một "câu" trong trình học (player). Mọi bước của ga và gói ôn đều là danh sách Q.
 export type Track = { type: "srs" | "pt" | "ex"; id: string };
-export type Q =
+// phần của bài Kiểm tra theo đề N5: 文字・語彙 / 文法 / 聴解
+export type Sec = "moji" | "bunpo" | "chokai";
+export type Q = ({ sec?: Sec }) & (
   | { kind: "dialogue"; id: string }                                       // nghe hội thoại, nút "Đã nghe xong"
   | { kind: "dialogue-blind"; id: string }                                 // nghe lần 1, chưa hiện chữ
   | { kind: "phrases"; id: string; keep: number[] }                        // các câu đem dùng được ngay
@@ -13,7 +15,7 @@ export type Q =
   | { kind: "build"; vi: string; tokens: string[]; answer: string[]; track?: Track } // chạm khối để ghép câu
   | { kind: "particle"; drill: string }                                    // id trong PT_DRILLS
   | { kind: "kanji-intro"; ch: string }
-  | { kind: "exam"; id: string };                                          // id trong EXAM_BANK
+  | { kind: "exam"; id: string });                                          // id trong EXAM_BANK
 
 // câu có chấm điểm (thẻ giới thiệu / hội thoại thì không)
 export const isGradable = (q: Q) => !["dialogue", "dialogue-blind", "phrases", "word-intro", "pattern-intro", "kanji-intro"].includes(q.kind);

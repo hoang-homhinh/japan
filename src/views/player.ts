@@ -31,7 +31,7 @@ import { dayStr } from "../core/util";
 
 type Item = { q: Q; retry?: boolean };
 type Run = { mode: "step" | "review"; n: number; step: StepNo; part: number; partTotal: number; skip?: boolean; then?: { n: number; step: StepNo };
-  items: Item[]; pos: number; ans: any; ok: boolean | null; firstOk: number; firstTotal: number; combo: number; wrongByKind: Record<string, number>; wrong?: { q: Q; ans: string }[];
+  items: Item[]; pos: number; ans: any; ok: boolean | null; firstOk: number; firstTotal: number; combo: number; wrongByKind: Record<string, number>; wrong?: { q: Q; ans: string }[]; sec?: Record<string, { ok: number; t: number }>;
   build?: string[]; typed?: boolean; match?: { sel: string | null; done: Set<number>; miss: Set<number>; L: number[]; R: number[] } };
 let R: Run | null = null;
 
@@ -44,13 +44,13 @@ const shuffle = <T,>(a: T[]): T[] => { const b = [...a]; for (let i = b.length -
 // ---- bắt đầu ----
 function begin(run: Omit<Run, "pos" | "ans" | "ok" | "firstOk" | "firstTotal" | "combo" | "wrongByKind">, resume?: any) {
   lastSummary = "";
-  R = { ...run, pos: 0, ans: null, ok: null, firstOk: 0, firstTotal: run.items.filter(it => isGradable(it.q)).length, combo: 0, wrongByKind: {}, wrong: [] };
-  if (resume) { R.pos = resume.pos; R.firstOk = resume.firstOk || 0; if (resume.firstTotal) R.firstTotal = resume.firstTotal; R.wrong = resume.wrong || []; R.wrongByKind = resume.wrongByKind || {}; }
+  R = { ...run, pos: 0, ans: null, ok: null, firstOk: 0, firstTotal: run.items.filter(it => isGradable(it.q)).length, combo: 0, wrongByKind: {}, wrong: [], sec: {} };
+  if (resume) { R.pos = resume.pos; R.firstOk = resume.firstOk || 0; if (resume.firstTotal) R.firstTotal = resume.firstTotal; R.wrong = resume.wrong || []; R.wrongByKind = resume.wrongByKind || {}; R.sec = resume.sec || {}; }
   setView("player");
   if (resume) toast(`Học tiếp từ câu ${resume.pos + 1}/${run.items.length}`);
 }
 // lưu lượt đang làm để mở lại đúng chỗ (chỉ các bước của bài, trong ngày)
-function persist() { if (R && R.mode === "step") saveRun({ n: R.n, step: R.step, part: R.part, pos: R.pos, items: R.items, firstOk: R.firstOk, firstTotal: R.firstTotal, wrong: R.wrong, wrongByKind: R.wrongByKind } as any, dayStr()); }
+function persist() { if (R && R.mode === "step") saveRun({ n: R.n, step: R.step, part: R.part, pos: R.pos, items: R.items, firstOk: R.firstOk, firstTotal: R.firstTotal, wrong: R.wrong, wrongByKind: R.wrongByKind, sec: R.sec } as any, dayStr()); }
 export function startStep(n: number, step: StepNo, opts?: { skip?: boolean }) {
   const b = buildStep(n, step, Math.random, { listen: canListen() });
   if (step === 2 && b.partTotal === 0) { markStepDone(n, 2); toast("Từ của ga này bạn đã học hết, bước Từ mới tự hoàn thành."); openStation(n); return; }
@@ -81,8 +81,10 @@ function rail() {
   const p = R ? Math.round((R.pos / R.items.length) * 100) : 0;
   return `<div class="prail" role="progressbar" aria-valuemin="0" aria-valuemax="${R!.items.length}" aria-valuenow="${R!.pos}"><i style="width:${p}%"></i><span class="ptrain" style="left:${p}%">🚃</span></div>`;
 }
+export const SEC_NAME: Record<string, string> = { moji: "Chữ và từ vựng", bunpo: "Ngữ pháp", chokai: "Nghe" };
 function head() {
-  const s = R!.mode === "review" ? "Ôn tập" : `${stationOf(R!.n).code} · Bước ${R!.step} — ${STEP_NAMES[R!.step]}${R!.partTotal > 1 ? ` · lượt ${R!.part + 1}/${R!.partTotal}` : ""}`;
+  const sec = R!.items[R!.pos]?.q.sec;
+  const s = R!.mode === "review" ? "Ôn tập" : `Bài ${R!.n} · ${STEP_NAMES[R!.step]}${sec ? ` · ${SEC_NAME[sec]}` : ""}${R!.partTotal > 1 ? ` · lượt ${R!.part + 1}/${R!.partTotal}` : ""}`;
   return `<div class="phead"><button class="lnk" id="pQuit">✕ Dừng</button><span>${esc(s)}</span><span class="pcount">${Math.min(R!.pos + 1, R!.items.length)}/${R!.items.length}</span></div>${rail()}`;
 }
 const sayBtn = (t: string, big = false) => `<button class="say${big ? " saybig" : ""}" data-say="${esc(t)}" aria-label="Nghe">${icon("vol", big ? 22 : 16)}</button>`;
@@ -213,6 +215,7 @@ function answer(ok: boolean) {
   const it = R!.items[R!.pos], q = it.q;
   R!.ok = ok;
   if (!it.retry && ok) R!.firstOk++;
+  if (!it.retry && q.sec) { const b = (R!.sec![q.sec] ||= { ok: 0, t: 0 }); b.t++; if (ok) b.ok++; }
   if (ok) { R!.combo++; if ([3, 5, 10].includes(R!.combo)) playChime(R!.combo as 3 | 5 | 10); } else { R!.combo = 0; const st = String(adviceStep(q, q.kind === "exam" ? EX.get(q.id)?.k : "")); R!.wrongByKind[st] = (R!.wrongByKind[st] || 0) + 1; }
   // ghi lịch ôn
   if (q.kind === "mcq" || q.kind === "listen" || q.kind === "build" || q.kind === "type") { if (q.track) gradeTrack(q.track, ok, strength(q)); }
@@ -266,10 +269,10 @@ function finish() {
   if (step === 6) {
     const score = run.firstTotal ? run.firstOk / run.firstTotal : 0;
     const pass = stampStation(n, score);
-    if (pass) return showStampMoment(n, score);
+    if (pass) return showStampMoment(n, score, run.sec);
     const worst = Object.entries(run.wrongByKind).sort((a, b) => b[1] - a[1])[0];
     const back = worst ? +worst[0] : 2;
-    return summary("Chưa qua ga lần này", `Đúng ${Math.round(score * 100)}% (cần 70%). Nên ôn lại bước ${back} — ${STEP_NAMES[back]} rồi thử lại.`, run, back);
+    return summary("Chưa đạt lần này", `Đúng ${Math.round(score * 100)}% (cần 70%). Nên ôn lại bước ${back} — ${STEP_NAMES[back]} rồi thử lại.`, run, back, secHTML(run.sec));
   }
   if (step === 3) { const p = getPart(n, 3) + 1; if (p >= run.partTotal) markStepDone(n, 3); else setPart(n, 3, p); }
   else if (step === 2) { if (buildStep(n, 2).partTotal === 0) markStepDone(n, 2); }
@@ -277,10 +280,15 @@ function finish() {
   summary(`Xong ${STEP_NAMES[step]}${run.partTotal > 1 ? ` · lượt ${run.part + 1}/${run.partTotal}` : ""}`, run.firstTotal ? `Đúng ${run.firstOk}/${run.firstTotal} câu ngay lần đầu.` : "Đã xong phần này.", run);
 }
 let lastSummary = ""; // màn tổng kết lượt: vẽ trong view "player" để tiêu đề/menu đúng
-function summary(title: string, sub: string, run: Run, back?: number) {
+export function secHTML(sec?: Record<string, { ok: number; t: number }>) {
+  const rows = ["moji", "bunpo", "chokai"].filter(k => sec?.[k]?.t);
+  if (!rows.length) return "";
+  return `<div class="secs">${rows.map(k => { const b = sec![k], p = Math.round((b.ok / b.t) * 100); return `<div class="mbar"><span style="text-align:left;font:13px var(--vi);color:var(--ink)">${SEC_NAME[k]}</span><div class="t" role="img" aria-label="${SEC_NAME[k]} ${p}%"><i style="width:${p}%;${p < 70 ? "background:var(--bad)" : ""}"></i></div><span>${b.ok}/${b.t}</span></div>`; }).join("")}</div>`;
+}
+function summary(title: string, sub: string, run: Run, back?: number, extra = "") {
   const W = run.wrong || [];
   const recap = W.length ? `<div class="recap"><h3>Xem lại ${W.length} câu đã sai</h3>${W.map(w => { const id = trackId(w.q); return `<div class="rc"><div><div class="rq jp">${esc(qText(w.q))}</div><div class="ra">Đáp án: <b class="jp">${esc(w.ans)}</b></div></div>${id ? `<button class="lnk" data-pin="${esc(id)}">${isPinned(id) ? "Bỏ ghim" : "Ghim"}</button>` : ""}</div>`; }).join("")}</div>` : "";
-  lastSummary = `<div class="player"><div class="pcard pdone">${penguin(back ? "oops" : "cheer", 96)}<h2>${esc(title)}</h2><p>${esc(sub)}</p>${recap}
+  lastSummary = `<div class="player"><div class="pcard pdone">${penguin(back ? "oops" : "cheer", 96)}<h2>${esc(title)}</h2><p>${esc(sub)}</p>${extra}${recap}
     <div class="row" style="flex-wrap:wrap;justify-content:center">
       ${back ? `<button class="btn accent big" data-step-go="${run.n}:${back}">Ôn lại bước ${back}</button>` : `<button class="btn big" id="jContinue">Học tiếp</button>`}
       ${run.n ? `<button class="btn ghost" data-station="${run.n}">Về bài ${run.n}</button>` : ""}<button class="btn ghost" data-view="home">Tổng quan</button></div></div></div>`;

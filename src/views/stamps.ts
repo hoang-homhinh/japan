@@ -7,20 +7,22 @@ import { stampSVG } from "../core/stamp";
 import { $, dayStr, esc } from "../core/util";
 import { setView } from "../app/shell";
 import { ekiSign, lessonTitle } from "./ui";
+import { secHTML } from "./player";
 
-let moment: { n: number; score: number } | null = null;
+let moment: { n: number; score: number; sec?: any } | null = null;
 
-export function showStampMoment(n: number, score: number) { moment = { n, score }; setView("stamps"); }
+export function showStampMoment(n: number, score: number, sec?: any) { moment = { n, score, sec }; setView("stamps"); }
 
 export function renderStamps() {
   const st = pathState().st;
   if (moment) {
-    const { n, score } = moment; moment = null;
+    const { n, score, sec } = moment; moment = null;
     const nx = n < 25 ? stationOf(n + 1) : null;
     $("#main").innerHTML = `<section class="m-card" style="max-width:640px;margin:8px auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
       <div class="sdrop">${stampSVG(n, 180, st[n]?.stamp || "")}</div>
       <div class="eyebrow"><i></i>Đã qua bài ${n} · đúng ${Math.round(score * 100)}%</div>
       <h2 style="margin:0;font-size:22px">${esc(lessonTitle(n))}</h2>
+      ${secHTML(sec)}
       <p style="margin:0;color:var(--muted)">Con dấu ${esc(stationOf(n).name)} đã vào sổ. ${nx ? `Bài tiếp theo: ${nx.code} ${esc(nx.name)} · ${esc(lessonTitle(nx.n))}.` : "Bạn đã đi hết tuyến N5."}</p>
       ${nx ? ekiSign(nx.n) : ""}
       <div class="row" style="flex-wrap:wrap;justify-content:center;gap:8px">${nx ? `<button class="btn big" data-station="${nx.n}">Sang bài ${nx.n}</button>` : ""}<button class="btn ghost" data-view="stamps">Xem sổ dấu</button></div>

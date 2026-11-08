@@ -286,3 +286,16 @@ dialog.cmdk::backdrop{overflow:hidden;overscroll-behavior:contain}
 .recap h3{font-size:14px;margin:0 0 8px}
 .rc{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line2);font-size:13.5px}
 .rc:first-of-type{border-top:0}.rq{color:var(--ink)}.ra{color:var(--muted);font-size:13px}
+
+.secs{width:100%;max-width:420px;margin:4px auto 0;text-align:left}
+
+/* điện thoại: lối vào Tài khoản, Phân tích, Thành tích */
+.mobacc,.mobquick{display:none}
+@media (max-width:860px){
+  .tb-r{display:flex;gap:8px;align-items:center}
+  .mobacc{display:grid;place-items:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+  .mobquick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 10px}
+  .mobquick .libcard{display:flex;flex-direction:column;gap:2px;padding:10px;border-left-width:1px}
+  .mobquick .libt{font-size:13.5px}.mobquick .libd{font-size:11.5px}
+}
+.subnav{scrollbar-width:none}.subnav::-webkit-scrollbar{display:none}
