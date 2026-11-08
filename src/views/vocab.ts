@@ -55,7 +55,7 @@ function renderVocab(){
   <div class="formula" style="font-size:1.25rem;font-family:var(--vi)">${esc(L.topic)}</div>
   ${L.n<=LESSONS.length?`<p class="tip"><button class="lnk" data-gogram="${L.n-1}">Mở ngữ pháp Bài ${L.n} →</button></p>`:""}
 
-  <section class="step"><h2><span class="k">一</span>Các lô của bài<span class="hint">học trong tab “Hôm nay”, 14 từ mỗi ngày</span></h2>
+  <section class="step"><h2><span class="k">一</span>Các lô của bài<span class="hint">học theo lô ở bước Từ mới của bài</span></h2>
     <div class="vlist">${LOTS[vL].map(l=>{const lv=l.ids.map(i=>srs(vid(vL,i))?.lv??-1);const done=lv.filter(x=>x>=3).length, learn=lv.filter(x=>x>=0&&x<3).length;
       return `<div class="vrow" style="grid-template-columns:minmax(0,1fr) auto"><div><b>${esc(l.t)}</b><div class="tip">${l.ids.map(i=>esc(VFLAT[vL][i][0])).join("、")}</div></div><div class="tip" style="text-align:right">${l.ids.length} từ<br>${done?`<span style="color:var(--ok)">thuộc ${done}</span>`:""}${learn?` · đang học ${learn}`:""}${!done&&!learn?"chưa học":""}</div></div>`;}).join("")}</div>
     <div class="row"><button class="btn ghost" data-vknown="${vL}">Bài này tôi đã biết</button></div>
