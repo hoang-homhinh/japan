@@ -7,6 +7,7 @@ import { buildReview } from "../core/reviewq";
 import { S, streak } from "../core/store";
 import { $, dayStr, esc } from "../core/util";
 import { onboardHTML } from "./journey";
+import { phraseOfDay } from "../core/phrase";
 import { startReview } from "./player";
 import { ekiSign, fmtMonth, lessonForms, lessonTitle, routeSVG, stepper } from "./ui";
 
@@ -52,8 +53,11 @@ export function renderHome() {
     <section class="m-card"><div class="m-ch"><h2>Lộ trình N5 · 東京 → 長崎</h2><span>${stamps}/25 bài đã đóng dấu · <button class="lnk" data-view="journey">Xem lộ trình</button></span></div>${routeSVG(cur)}</section>
   </div>
   <aside class="m-col">
+    ${(() => { const ph = phraseOfDay(cur, today); return ph ? `<section class="m-card"><div class="m-ch"><h2>Câu của ngày</h2><span>Bài ${cur}</span></div>
+      <div style="display:flex;gap:10px;align-items:flex-start"><button class="say" data-say="${esc(ph.kana)}" aria-label="Nghe">${icon("vol", 16)}</button><div><div lang="ja" style="font:500 16px/1.5 var(--jp)">${esc(ph.jp)}</div><div style="font-size:13px;color:var(--muted)">${esc(ph.vi)}</div></div></div>
+      <p style="margin:10px 0 0;font-size:12.5px;color:var(--dim)">Đọc to 3 lần, thử dùng câu này một lần trong hôm nay.</p></section>` : ""; })()}
     ${reviewCard(due, br, today)}
-    <section class="m-card"><div class="m-ch"><h2>Mức thành thạo</h2><button class="lnk" data-view="stamps">Chi tiết</button></div>
+    <section class="m-card"><div class="m-ch"><h2>Mức thành thạo</h2><button class="lnk" data-view="analytics">Chi tiết</button></div>
       ${[["Từ vựng", m.vocab.p, `${m.vocab.done}/${m.vocab.total}`], ["Kanji", m.kanji.p, `${m.kanji.done}/${m.kanji.total}`], ["Ngữ pháp", m.grammar.p, `${m.grammar.done}/${m.grammar.total}`], ["Trợ từ", m.particle.p, m.particle.total ? pct(m.particle.p) + "%" : "—"], ["Nghe", m.listening.p, m.listening.total ? pct(m.listening.p) + "%" : "—"]]
         .map(([t, p, v]) => `<div class="mbar"><span style="text-align:left;font:13px var(--vi);color:var(--ink)">${t}</span><div class="t" role="img" aria-label="${t} ${pct(p as number)}%"><i style="width:${pct(p as number)}%"></i></div><span>${v}</span></div>`).join("")}</section>
     <section class="m-card"><div class="m-ch"><h2>Sổ dấu</h2><span>${stamps}/25</span></div>

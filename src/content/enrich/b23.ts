@@ -1,0 +1,58 @@
+// Bài 23 — nội dung "học dễ nhớ" (xem khuôn ở ../enrich.ts)
+import type { LessonPlus } from "../enrich";
+
+const L: LessonPlus = {
+  gist: [
+    { q: "Người gọi điện hỏi gì?", opts: ["Đường đến công ty Sankei", "Giờ làm việc của công ty", "Số điện thoại của anh Tanaka", "Giá sản phẩm"], a: 0 },
+    { q: "Khách cần đi xe buýt số mấy?", opts: ["Số 12", "Số 2", "Số 21", "Số 16"], a: 0 },
+    { q: "Bãi đỗ xe ở đâu?", opts: ["Sau tòa nhà", "Trước tòa nhà", "Cạnh thư viện", "Bên kia cầu"], a: 0 },
+  ],
+  keep: [0, 3, 4, 8],
+  lots: [
+    ["みち", "はし", "わたります", "しんごう", "―め"],
+    ["かど", "こうさてん", "たてもの", "ちゅうしゃじょう", "きを つけます"],
+    ["あるきます", "ききます", "ひっこしします", "なんかいも", "[お]しょうがつ"],
+    ["でます", "まわします", "つまみ", "おと", "ひきます"],
+    ["かえます", "サイズ", "さわります", "きかい", "うごきます"],
+    ["こしょう", "でんきや", "～や"],
+  ],
+  words: {
+    "みち": { ex: ["みちが わからない とき、駅の 人に 聞きます。", "Khi không biết đường, tôi hỏi nhân viên ga."], tip: "道 = “đạo” trong “đạo lộ”: con đường. みちが わからない là không biết đường." },
+    "はし": { ex: ["その はしを わたって ください。", "Anh đi qua cây cầu đó nhé."], tip: "橋 có bộ 木 (gỗ): cầu gỗ. Cùng âm はし là đũa, nghe ngữ cảnh mà phân biệt." },
+    "わたります": { ex: ["はしを わたると、左に たてものが あります。", "Qua cầu thì bên trái có tòa nhà."], tip: "渡 = “độ” trong “độ thuyền” (đò qua sông): băng qua. Chỗ đi qua dùng を." },
+    "しんごう": { ex: ["一つ目の しんごうを 右へ まがって ください。", "Rẽ phải ở đèn giao thông thứ nhất."], tip: "信号 = “tín hiệu”: đèn tín hiệu giao thông." },
+    "―め": { ex: ["二つ目の かどを 左へ まがります。", "Rẽ trái ở góc phố thứ hai."], tip: "目 sau số đếm chỉ thứ tự: 一つ目 là cái thứ nhất, 3回目 là lần thứ ba." },
+    "かど": { ex: ["あの かどを 右へ まがって ください。", "Rẽ phải ở góc phố kia."], tip: "角 = “giác” trong “tam giác”: góc. かど nghe như “cạnh đó”: góc nằm ngay cạnh đó." },
+    "こうさてん": { ex: ["こうさてんを 左へ まがると、駅が あります。", "Rẽ trái ở ngã tư thì có ga."], tip: "交差点 = “giao sai điểm”: điểm các con đường giao nhau, ngã tư." },
+    "たてもの": { ex: ["左に 白い たてものが あります。それが サンケイです。", "Bên trái có tòa nhà trắng. Đó là Sankei."], tip: "建 (xây, “kiến” trong kiến trúc) + 物 (vật): vật được xây, tòa nhà." },
+    "ちゅうしゃじょう": { ex: ["ちゅうしゃじょうは たてものの 後ろに あります。", "Bãi đỗ xe ở phía sau tòa nhà."], tip: "駐車場 = “trú xa trường”: bãi (trường) cho xe (xa) dừng lại (trú)." },
+    "きを つけます": { ex: ["車に 気を つけて 来て ください。", "Đi đường cẩn thận xe cộ nhé."], tip: "気 (tâm trí) + つけます (gắn vào): để tâm vào, tức cẩn thận. N に きを つけます." },
+    "あるきます": { ex: ["駅から 会社まで あるいて 10分です。", "Từ ga đến công ty đi bộ 10 phút."], tip: "歩 = “bộ” trong “bộ hành”: đi bộ. Đi dọc theo con đường dùng を." },
+    "ききます": { ex: ["みちが わからない とき、駅の 人に 聞きます。", "Khi không biết đường, tôi hỏi nhân viên ga."], tip: "聞 = “văn” (nghe): chữ có cái tai trong cửa. Nghe và hỏi đều là ききます; hỏi ai dùng に." },
+    "ひっこしします": { ex: ["来月 会社の ちかくに ひっこしします。", "Tháng sau tôi chuyển nhà đến gần công ty."], tip: "引っ越し: kéo (引) đồ vượt qua (越) sang chỗ mới, tức chuyển nhà." },
+    "なんかいも": { ex: ["なんかいも れんしゅうしました。", "Tôi đã luyện tập rất nhiều lần."], tip: "何回 (mấy lần) + も: bao nhiêu lần cũng có, tức rất nhiều lần." },
+    "[お]しょうがつ": { ex: ["おしょうがつに 国へ かえる とき、おみやげを 買います。", "Khi về nước dịp Tết, tôi mua quà."], tip: "正月 = “chính nguyệt”: tháng Giêng, Tết. Ở Nhật là Tết dương lịch." },
+    "でます": { ex: ["この ボタンを おすと、コーヒーが 出ます。", "Bấm nút này thì cà phê ra."], tip: "出 = “xuất”: đồ, tiền thừa chạy ra khỏi máy. N が でます." },
+    "まわします": { ex: ["つまみを 右へ まわすと、おとが 大きく なります。", "Vặn núm sang phải thì tiếng to lên."], tip: "回 = “hồi” trong “luân hồi” (quay vòng): xoay, vặn. N を まわします." },
+    "つまみ": { ex: ["この つまみを まわして ください。", "Vặn cái núm này nhé."], tip: "つまみ nghe như “chụm mí”: chụm ngón tay lại nhón cái núm vặn." },
+    "おと": { ex: ["おとが 小さい とき、この つまみを まわします。", "Khi tiếng nhỏ thì vặn núm này."], tip: "音 = “âm” trong “âm thanh”: tiếng của đồ vật, máy móc. Tiếng người là こえ." },
+    "ひきます": { ex: ["この ドアは ひいて ください。", "Cửa này xin kéo vào."], tip: "引 = “dẫn” (kéo). Trên cửa ở Nhật: 引 là kéo, 押 là đẩy." },
+    "かえます": { ex: ["サイズを かえても いいですか。", "Tôi đổi cỡ được không?"], tip: "変 = “biến” trong “biến đổi”: thay đổi. Nhóm II." },
+    "サイズ": { ex: ["もう 少し 大きい サイズは ありますか。", "Có cỡ to hơn chút không?"], tip: "Từ tiếng Anh “size”: cỡ." },
+    "さわります": { ex: ["きかいに さわらないで ください。", "Đừng chạm vào máy."], tip: "さわり nghe như “sờ vào”: sờ, chạm. Dùng に: N に さわります." },
+    "きかい": { ex: ["この きかいの つかいかたを おしえて ください。", "Chỉ tôi cách dùng máy này."], tip: "機械 = “cơ giới”: máy móc, như “cơ giới hóa”." },
+    "うごきます": { ex: ["この きかいは うごきません。", "Cái máy này không chạy."], tip: "動 = “động” trong “chuyển động”: máy chạy, đồng hồ chạy. N が うごきます." },
+    "こしょう": { ex: ["コピーきが こしょうです。", "Máy photo bị hỏng."], tip: "故障 = “cố chướng”: có trở ngại (chướng), máy hỏng. Chỉ dùng cho máy móc." },
+    "でんきや": { ex: ["でんきやで パソコンを 買いました。", "Tôi mua máy tính ở cửa hàng điện máy."], tip: "電気 (điện) + 屋 (cửa hàng): cửa hàng đồ điện." },
+    "～や": { ex: ["駅の 前に パンやが あります。", "Trước ga có tiệm bánh mì."], tip: "屋 = “ốc” (nhà): gắn sau món hàng là cửa hàng bán thứ đó, như 本屋, 花屋." },
+  },
+  mine: {
+    "23-1": [["ねむい とき、 コーヒーを のみます。", "Khi buồn ngủ, tôi uống cà phê."]],
+    "23-2": [["にほんへ きた とき、 にほんごが ぜんぜん わかりませんでした。", "Khi mới sang Nhật, tôi hoàn toàn không hiểu tiếng Nhật."]],
+    "23-3": [["この ボタンを おすと、 コーヒーが でます。", "Bấm nút này thì cà phê chảy ra."]],
+    "23-4": [["えきを でて、 みぎへ まがると、 サンケイが あります。", "Ra khỏi ga, rẽ phải thì có Sankei."]],
+    "23-5": [["まいあさ はしを わたって、 えきへ いきます。", "Sáng nào tôi cũng đi qua cầu để ra ga."]],
+    "23-6": [["ははが びょうきの とき、 ベトナムへ かえりました。", "Khi mẹ ốm, tôi đã về Việt Nam."]],
+  },
+};
+export default L;

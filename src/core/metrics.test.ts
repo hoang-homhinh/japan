@@ -1,5 +1,5 @@
 import { S } from "./store";
-import { heatmap, mastery, reviewForecast, readiness, badges } from "./metrics";
+import { heatmap, mastery, reviewForecast, readiness, badges, weakItems, lessonCoverage } from "./metrics";
 
 beforeEach(() => { S.progress = { upto: 13, days: [], counts: {}, drills: {}, srs: {} }; });
 
@@ -38,4 +38,22 @@ test("badges unlock from real progress", () => {
   const b = badges("2026-11-07");
   expect(b.find(x => x.id === "streak3")!.got).toBe(true);
   expect(b.find(x => x.id === "streak7")!.got).toBe(false);
+});
+
+test("weakItems: mục sai nhiều nhất trước, kèm chữ và nghĩa", () => {
+  S.progress.srs = { "v13-0": { lv: 1, wr: 4 }, "v13-1": { lv: 2, wr: 1 }, "k一": { lv: 0, wr: 6 }, "v13-2": { lv: 3, wr: 0 } };
+  const w = weakItems(5);
+  expect(w.map(x => x.id)).toEqual(["k一", "v13-0", "v13-1"]);
+  expect(w[0].jp).toBe("一");
+  expect(w[1].jp).toBe("あそびます");
+  expect(w[1].vi).toBe("chơi");
+});
+test("lessonCoverage: % từ đã thuộc theo từng bài", () => {
+  S.progress.srs = { "v1-0": { lv: 3 }, "v1-1": { lv: 3 }, "v1-2": { lv: 2 } };
+  const c = lessonCoverage();
+  expect(c).toHaveLength(25);
+  expect(c[0].n).toBe(1);
+  expect(c[0].done).toBe(2);
+  expect(c[0].seen).toBe(3);
+  expect(c[1].done).toBe(0);
 });

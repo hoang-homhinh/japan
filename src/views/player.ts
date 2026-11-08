@@ -25,10 +25,13 @@ import { showStampMoment } from "./stamps";
 import { openStation } from "./station";
 import { canListen } from "../core/tts";
 import { icon } from "../core/brand";
+import { buildPinned, isPinned, togglePin } from "../core/pins";
+import { clearRun, loadRun, saveRun } from "../core/resume";
+import { dayStr } from "../core/util";
 
 type Item = { q: Q; retry?: boolean };
 type Run = { mode: "step" | "review"; n: number; step: StepNo; part: number; partTotal: number; skip?: boolean; then?: { n: number; step: StepNo };
-  items: Item[]; pos: number; ans: any; ok: boolean | null; firstOk: number; firstTotal: number; combo: number; wrongByKind: Record<string, number>;
+  items: Item[]; pos: number; ans: any; ok: boolean | null; firstOk: number; firstTotal: number; combo: number; wrongByKind: Record<string, number>; wrong?: { q: Q; ans: string }[];
   build?: string[]; typed?: boolean; match?: { sel: string | null; done: Set<number>; miss: Set<number>; L: number[]; R: number[] } };
 let R: Run | null = null;
 
@@ -39,15 +42,27 @@ const PBTN = ["は", "が", "を", "に", "へ", "で", "と", "から", "まで
 const shuffle = <T,>(a: T[]): T[] => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 
 // ---- bắt đầu ----
-function begin(run: Omit<Run, "pos" | "ans" | "ok" | "firstOk" | "firstTotal" | "combo" | "wrongByKind">) {
-  R = { ...run, pos: 0, ans: null, ok: null, firstOk: 0, firstTotal: run.items.filter(it => isGradable(it.q)).length, combo: 0, wrongByKind: {} };
+function begin(run: Omit<Run, "pos" | "ans" | "ok" | "firstOk" | "firstTotal" | "combo" | "wrongByKind">, resume?: any) {
+  lastSummary = "";
+  R = { ...run, pos: 0, ans: null, ok: null, firstOk: 0, firstTotal: run.items.filter(it => isGradable(it.q)).length, combo: 0, wrongByKind: {}, wrong: [] };
+  if (resume) { R.pos = resume.pos; R.firstOk = resume.firstOk || 0; R.wrong = resume.wrong || []; R.wrongByKind = resume.wrongByKind || {}; }
   setView("player");
+  if (resume) toast(`Học tiếp từ câu ${resume.pos + 1}/${run.items.length}`);
 }
+// lưu lượt đang làm để mở lại đúng chỗ (chỉ các bước của bài, trong ngày)
+function persist() { if (R && R.mode === "step") saveRun({ n: R.n, step: R.step, part: R.part, pos: R.pos, items: R.items, firstOk: R.firstOk, wrong: R.wrong, wrongByKind: R.wrongByKind } as any, dayStr()); }
 export function startStep(n: number, step: StepNo, opts?: { skip?: boolean }) {
   const b = buildStep(n, step, Math.random, { listen: canListen() });
   if (step === 2 && b.partTotal === 0) { markStepDone(n, 2); toast("Từ của ga này bạn đã học hết, bước Từ mới tự hoàn thành."); openStation(n); return; }
   if (!b.qs.length) { markStepDone(n, step); openStation(n); return; }
+  const saved = opts?.skip ? null : loadRun(n, step, dayStr());
+  if (saved && saved.part === b.part) return begin({ mode: "step", n, step, part: b.part, partTotal: b.partTotal, items: saved.items }, saved);
   begin({ mode: "step", n, step, part: b.part, partTotal: b.partTotal, skip: opts?.skip, items: b.qs.map(q => ({ q })) });
+}
+export function startPinned() {
+  const qs = buildPinned();
+  if (!qs.length) { toast("Chưa có mục nào được ghim."); return; }
+  begin({ mode: "review", n: 0, step: 1, part: 0, partTotal: 1, items: qs.map(q => ({ q })) });
 }
 export function startReview(then?: { n: number; step: StepNo }) {
   const qs = buildReview(undefined, 15, 10, true, canListen());
@@ -105,6 +120,7 @@ function body(q: Q): string {
         <div class="ro">${esc(w[2])}</div><div class="pmean">${esc(w[3])}</div>
         ${P ? `<div class="pexl pwex">${sayBtn(P.ex[0])}<div><div class="jp">${esc(P.ex[0])}</div><div class="tip">${esc(P.ex[1])}</div></div></div><div class="pmemo"><b>Mẹo nhớ</b>${esc(P.tip)}</div>`
           : (w[4] ? `<div class="pnote">${esc(w[4])}</div>` : "")}
+        <div class="row" style="justify-content:space-between;align-items:center"><button class="lnk" data-pin="${esc(q.vid)}">${isPinned(q.vid) ? "Bỏ ghim" : "Ghim từ khó"}</button></div>
         <button class="btn accent big" id="pNext">Đã nhớ, tiếp →</button></div>`;
     }
     case "pattern-intro": {
@@ -177,7 +193,7 @@ function feedback(): string {
     <button class="btn ${ok ? "accent" : ""} big" id="pNext">Tiếp →</button></div>`;
 }
 export function renderPlayer() {
-  if (!R) { setView("home"); return; }
+  if (!R) { if (lastSummary) { $("#main").innerHTML = lastSummary; return; } setView("home"); return; }
   if (R.pos >= R.items.length) return finish();
   const q = R.items[R.pos].q;
   if (q.kind === "match" && !R.match) { const ix = q.pairs.map((_, i) => i); R.match = { sel: null, done: new Set(), miss: new Set(), L: shuffle(ix), R: shuffle(ix) }; }
@@ -202,21 +218,43 @@ function answer(ok: boolean) {
   if (q.kind === "mcq" || q.kind === "listen" || q.kind === "build" || q.kind === "type") { if (q.track) gradeTrack(q.track, ok, strength(q)); }
   if (q.kind === "particle") gradeTrack({ type: "pt", id: q.drill }, ok);
   if (q.kind === "exam") gradeTrack({ type: "ex", id: q.id }, ok);
-  if (!ok && !it.retry) R!.items.push({ q, retry: true });
+  if (!ok && !it.retry) { R!.items.push({ q, retry: true }); R!.wrong!.push({ q, ans: rightAnswer(q) }); }
   renderPlayer();
   ($("#pNext") as any)?.focus();
 }
+function rightAnswer(q: Q): string {
+  if (q.kind === "mcq" || q.kind === "listen") return q.opts[q.a];
+  if (q.kind === "build") return q.answer.join(" ");
+  if (q.kind === "type") return q.answers[0];
+  if (q.kind === "particle") return PT.get(q.drill)?.a.join(" / ") || "";
+  if (q.kind === "exam") { const e = EX.get(q.id); return e ? e.opts[e.a] : ""; }
+  if (q.kind === "match") return "nối lại các cặp";
+  return "";
+}
+function qText(q: Q): string {
+  if (q.kind === "mcq") return q.jp ? `${q.jp} — ${q.prompt}` : q.prompt;
+  if (q.kind === "listen") return "Nghe: " + q.say;
+  if (q.kind === "type") return q.vi;
+  if (q.kind === "build") return q.vi;
+  if (q.kind === "particle") return PT.get(q.drill)?.s || "";
+  if (q.kind === "exam") return EX.get(q.id)?.q || "Câu luyện thi";
+  if (q.kind === "match") return "Nối nghĩa với từ";
+  return "";
+}
+const trackId = (q: Q) => ((q as any).track?.type === "srs" ? (q as any).track.id : "");
 function next() {
   const q = R!.items[R!.pos].q;
   if (q.kind === "word-intro") introduce(q.vid);
   if (q.kind === "kanji-intro") introduce(kid(q.ch));
   R!.pos++; R!.ok = null; R!.ans = null; R!.build = undefined; R!.typed = false; R!.match = undefined;
+  persist();
   renderPlayer(); window.scrollTo({ top: 0 });
 }
 
 // ---- kết thúc lượt ----
 function finish() {
   const run = R!; R = null;
+  if (run.mode === "step") clearRun();
   playDeparture();
   // mục tiêu ngày đếm lượt học MỚI (gói ôn không tính); lưu ngay để tải lại trang không mất
   if (run.mode === "step") { dailyInc("path"); saveProgress(); }
@@ -238,17 +276,21 @@ function finish() {
   else markStepDone(n, step);
   summary(`Xong ${STEP_NAMES[step]}${run.partTotal > 1 ? ` · lượt ${run.part + 1}/${run.partTotal}` : ""}`, run.firstTotal ? `Đúng ${run.firstOk}/${run.firstTotal} câu ngay lần đầu.` : "Đã xong phần này.", run);
 }
+let lastSummary = ""; // màn tổng kết lượt: vẽ trong view "player" để tiêu đề/menu đúng
 function summary(title: string, sub: string, run: Run, back?: number) {
-  setView("player");
-  $("#main").innerHTML = `<div class="player"><div class="pcard pdone">${penguin(back ? "oops" : "cheer", 96)}<h2>${esc(title)}</h2><p>${esc(sub)}</p>
+  const W = run.wrong || [];
+  const recap = W.length ? `<div class="recap"><h3>Xem lại ${W.length} câu đã sai</h3>${W.map(w => { const id = trackId(w.q); return `<div class="rc"><div><div class="rq jp">${esc(qText(w.q))}</div><div class="ra">Đáp án: <b class="jp">${esc(w.ans)}</b></div></div>${id ? `<button class="lnk" data-pin="${esc(id)}">${isPinned(id) ? "Bỏ ghim" : "Ghim"}</button>` : ""}</div>`; }).join("")}</div>` : "";
+  lastSummary = `<div class="player"><div class="pcard pdone">${penguin(back ? "oops" : "cheer", 96)}<h2>${esc(title)}</h2><p>${esc(sub)}</p>${recap}
     <div class="row" style="flex-wrap:wrap;justify-content:center">
       ${back ? `<button class="btn accent big" data-step-go="${run.n}:${back}">Ôn lại bước ${back}</button>` : `<button class="btn big" id="jContinue">Học tiếp</button>`}
-      ${run.n ? `<button class="btn ghost" data-station="${run.n}">Về ga ${stationOf(run.n).code}</button>` : ""}<button class="btn ghost" data-view="home">Tổng quan</button></div></div></div>`;
+      ${run.n ? `<button class="btn ghost" data-station="${run.n}">Về bài ${run.n}</button>` : ""}<button class="btn ghost" data-view="home">Tổng quan</button></div></div></div>`;
+  setView("player");
 }
 
 // ---- sự kiện ----
 export function onClick(t: any): boolean {
   if (t.id === "jContinue") { startContinue(); return true; }
+  if (t.dataset.pin) { const on = togglePin(t.dataset.pin); t.textContent = on ? "Bỏ ghim" : (t.closest(".recap") ? "Ghim" : "Ghim từ khó"); toast(on ? "Đã ghim, ôn riêng ở mục Ôn tập." : "Đã bỏ ghim."); return true; }
   if (t.dataset.stepGo) { const [n, s] = t.dataset.stepGo.split(":").map(Number); startStep(n, s as StepNo); return true; }
   if (!R) return false;
   const q = R.items[R.pos]?.q;

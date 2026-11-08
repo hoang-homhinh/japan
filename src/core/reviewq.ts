@@ -6,7 +6,7 @@ import { PT_DRILLS } from "../content/drills";
 import { pathState, stationStatus } from "./path";
 import type { Q } from "./q";
 import { STATIONS } from "./route";
-import { kanjiReadQ, listenQ, meaningQ } from "./steps";
+import { kanjiReadQ, listenQ, meaningQ, typeQ } from "./steps";
 import { VFLAT, kid, srs, srsAll, vid } from "./srs";
 import { S, saveProgress } from "./store";
 import { dayStr } from "./util";
@@ -20,6 +20,8 @@ function srsQ(id: string, k: number, listen = true): Q | null {
   const m = id.match(/^v(\d+)-(\d+)$/); if (!m) return null;
   const li = lessonIdx(+m[1]), i = +m[2];
   if (li < 0 || !VFLAT[li]?.[i]) return null;
+  // đã lên bậc 2 trở lên: bắt tự nhớ lại (gõ), nhớ lâu hơn chọn đáp án
+  if ((srs(id)?.lv || 0) >= 2) return typeQ(li, i);
   return k % 2 && listen ? listenQ(li, i, Math.random) : meaningQ(li, i, Math.random);
 }
 

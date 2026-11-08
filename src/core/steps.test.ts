@@ -3,15 +3,19 @@ import { S } from "./store";
 import { VFLAT, vid } from "./srs";
 import { STATIONS } from "./route";
 import { PT_DRILLS } from "../content/drills";
+import { PLUS } from "../content/enrich";
+
+// nhánh dự phòng khi một bài chưa có nội dung kiểu mới: tạm gỡ PLUS của bài 12
+const withoutPlus = (n: number, f: () => void) => { const p = PLUS[n]; delete PLUS[n]; try { f(); } finally { if (p) PLUS[n] = p; } };
 
 const rnd = () => 0.42;
 beforeEach(() => { S.progress = { upto: 13, days: [], counts: {}, drills: {} }; });
 
 test("step 1 is the a-dialogue (bài chưa có nội dung mới)", () => {
-  expect(buildStep(12, 1).qs).toEqual([{ kind: "dialogue", id: "12a" }]);
+  withoutPlus(12, () => expect(buildStep(12, 1).qs).toEqual([{ kind: "dialogue", id: "12a" }]));
 });
 test("vocab step part covers one lot with intro + mcq per word", () => {
-  const r = buildStep(12, 2, rnd);
+  let r: any; withoutPlus(12, () => { r = buildStep(12, 2, rnd); });
   expect(r.partTotal).toBeGreaterThan(1);
   expect(r.qs.filter(q => q.kind === "word-intro").length).toBe(r.qs.filter(q => q.kind === "mcq").length);
   expect(r.qs.some(q => q.kind === "match")).toBe(true);

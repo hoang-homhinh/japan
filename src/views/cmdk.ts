@@ -7,7 +7,7 @@ import { esc } from "../core/util";
 
 type Hit = { k: string; m: string; g: string; go: string };
 let INDEX: Hit[] | null = null;
-const VIEWS: [string, string][] = [["home", "Tổng quan"], ["journey", "Lộ trình N5"], ["reviewq", "Ôn tập hôm nay"], ["exam", "Luyện thi N5"], ["library", "Thư viện"], ["stamps", "Thành tích & sổ dấu"], ["vocab", "Tra từ vựng"], ["kanji", "Kanji theo chương"], ["particle", "Trợ từ"], ["talk", "Hội thoại"], ["learn", "Mẫu câu"], ["account", "Tài khoản & sao lưu"]];
+const VIEWS: [string, string][] = [["home", "Tổng quan"], ["journey", "Lộ trình N5"], ["reviewq", "Ôn tập hôm nay"], ["analytics", "Phân tích"], ["exam", "Luyện thi N5"], ["library", "Thư viện"], ["stamps", "Thành tích & sổ dấu"], ["vocab", "Tra từ vựng"], ["kanji", "Kanji theo chương"], ["particle", "Trợ từ"], ["talk", "Hội thoại"], ["learn", "Mẫu câu"], ["account", "Tài khoản & sao lưu"]];
 
 function index(): Hit[] {
   if (INDEX) return INDEX;

@@ -1,5 +1,6 @@
 // Số liệu cho Dashboard / Analytics / Thành tích — hàm thuần đọc S.progress, không ghi gì.
 import { EXAM_BANK } from "../content/exam";
+import { VOCAB } from "../content/data";
 import { LESSONS } from "../content/lessons";
 import { currentStation, peekPath } from "./path";
 import { KLIST, VFLAT, kid, vid } from "./srs";
@@ -72,4 +73,26 @@ export function badges(today: string): Badge[] {
     b("kanji25", "25 kanji", "Thuộc 25 kanji", m.kanji.done, 25), b("kanji50", "50 kanji", "Thuộc 50 kanji", m.kanji.done, 50), b("kanji95", "Trọn bộ kanji", "Thuộc 95 kanji", m.kanji.done, 95),
     b("words100", "100 từ", "Thuộc 100 từ", m.vocab.done, 100), b("words500", "500 từ", "Thuộc 500 từ", m.vocab.done, 500), b("words1000", "1000 từ", "Thuộc 1000 từ", m.vocab.done, 1000),
   ];
+}
+
+// mục hay sai (từ / kanji), sai nhiều nhất trước — cho trang Phân tích
+export type Weak = { id: string; jp: string; vi: string; wr: number; lv: number };
+const VIDX = new Map<string, number>(VOCAB.map((L: any, i: number) => [String(L.n), i]));
+export function weakItems(limit = 10): Weak[] {
+  const out: Weak[] = [];
+  for (const [id, v] of Object.entries<any>(S.progress.srs || {})) {
+    if (!(v.wr > 0)) continue;
+    if (id[0] === "k") { const k = KLIST.find((x: any) => x.k.k === id.slice(1)); if (k) out.push({ id, jp: k.k.k, vi: `${k.k.hv} · ${k.k.mean}`, wr: v.wr, lv: v.lv || 0 }); }
+    else if (id[0] === "v") { const [n, i] = id.slice(1).split("-"); const w = VFLAT[VIDX.get(n) ?? -1]?.[+i]; if (w) out.push({ id, jp: w[0], vi: w[3], wr: v.wr, lv: v.lv || 0 }); }
+  }
+  return out.sort((a, b) => b.wr - a.wr || a.lv - b.lv).slice(0, limit);
+}
+// mỗi bài: số từ đã thuộc (lv≥3), đã gặp, tổng
+export function lessonCoverage() {
+  const srs = S.progress.srs || {};
+  return VOCAB.map((L: any, li: number) => {
+    let done = 0, seen = 0; const total = VFLAT[li].length;
+    for (let i = 0; i < total; i++) { const s = srs[vid(li, i)]; if (s) { seen++; if ((s.lv || 0) >= 3) done++; } }
+    return { n: L.n, done, seen, total };
+  });
 }

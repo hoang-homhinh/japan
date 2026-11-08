@@ -1,5 +1,6 @@
 // Tài khoản & sao lưu: đăng nhập email + mật khẩu (Supabase), trạng thái đồng bộ, xuất / nhập file sao lưu
 import { S, exportJSON, importBackup } from "../core/store";
+import { getTheme, setTheme } from "../core/theme";
 import { configError, hasSupabase, resetPassword, signIn, signOut, signUp, sync, syncNow, updatePassword } from "../core/sync";
 import { $, dayStr, esc, toast } from "../core/util";
 import { peekPath, setPathOption, setStart } from "../core/path";
@@ -62,9 +63,10 @@ export function renderAccount() {
   <section class="step"><h2><span class="k">道</span>Lộ trình<span class="hint">cài đặt học mỗi ngày</span></h2>
     <div class="card" style="margin-top:0">
       <div class="row" style="align-items:center;flex-wrap:wrap"><span>Mỗi ngày học</span>${[1, 2, 3].map(g => `<button class="chip" data-goal="${g}" aria-pressed="${peekPath().goal === g}">${g} lượt</button>`).join("")}</div>
-      <div class="row" style="align-items:center;flex-wrap:wrap"><span>Âm thanh (nhạc tàu, chuông)</span><button class="chip" data-sound="1" aria-pressed="${peekPath().sound}">${peekPath().sound ? "Bật" : "Tắt"}</button></div>
-      <div class="row" style="align-items:center;flex-wrap:wrap"><label for="accStart">Bắt đầu từ ga (bài)</label><select id="accStart">${Array.from({ length: 25 }, (_, i) => `<option value="${i + 1}" ${peekPath().start === i + 1 ? "selected" : ""}>Bài ${i + 1}</option>`).join("")}</select><button class="btn ghost" id="accSetStart">Đổi</button></div>
-      <p class="tip">Đổi ga bắt đầu: các ga trước đó được coi là đã đi qua (mở hết, chưa đóng dấu). Không mất tiến độ đã có.</p>
+      <div class="row" style="align-items:center;flex-wrap:wrap"><span>Giao diện</span>${([["auto", "Theo máy"], ["light", "Sáng"], ["dark", "Tối"]] as const).map(([k, t]) => `<button class="chip" data-theme-set="${k}" aria-pressed="${getTheme() === k}">${t}</button>`).join("")}</div>
+      <div class="row" style="align-items:center;flex-wrap:wrap"><span>Âm thanh khi xong bài</span><button class="chip" data-sound="1" aria-pressed="${peekPath().sound}">${peekPath().sound ? "Bật" : "Tắt"}</button></div>
+      <div class="row" style="align-items:center;flex-wrap:wrap"><label for="accStart">Bắt đầu từ bài</label><select id="accStart">${Array.from({ length: 25 }, (_, i) => `<option value="${i + 1}" ${peekPath().start === i + 1 ? "selected" : ""}>Bài ${i + 1}</option>`).join("")}</select><button class="btn ghost" id="accSetStart">Đổi</button></div>
+      <p class="tip">Đổi bài bắt đầu: các bài trước đó được coi là đã đi qua (mở hết, chưa đóng dấu). Không mất tiến độ đã có.</p>
     </div>
   </section>
   <section class="step"><h2><span class="k">保</span>Sao lưu<span class="hint">file .json</span></h2>
@@ -107,6 +109,7 @@ function pickFile() {
 
 export function onClick(t: any) {
   if (t.dataset.goal) { setPathOption("goal", +t.dataset.goal); renderAccount(); return true; }
+  if (t.dataset.themeSet) { setTheme(t.dataset.themeSet); renderAccount(); return true; }
   if (t.dataset.sound) { setPathOption("sound", !peekPath().sound); renderAccount(); return true; }
   if (t.id === "accSetStart") { setStart(+val("accStart")); toast("Đã đổi ga bắt đầu."); renderAccount(); return true; }
   if (t.dataset.accmode) { mode = t.dataset.accmode; msg = ""; renderAccount(); return true; }
