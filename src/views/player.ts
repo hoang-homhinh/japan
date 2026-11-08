@@ -53,7 +53,7 @@ function begin(run: Omit<Run, "pos" | "ans" | "ok" | "firstOk" | "firstTotal" | 
 function persist() { if (R && R.mode === "step") saveRun({ n: R.n, step: R.step, part: R.part, pos: R.pos, items: R.items, firstOk: R.firstOk, firstTotal: R.firstTotal, wrong: R.wrong, wrongByKind: R.wrongByKind, sec: R.sec } as any, dayStr()); }
 export function startStep(n: number, step: StepNo, opts?: { skip?: boolean }) {
   const b = buildStep(n, step, Math.random, { listen: canListen() });
-  if (step === 2 && b.partTotal === 0) { markStepDone(n, 2); toast("Từ của ga này bạn đã học hết, bước Từ mới tự hoàn thành."); openStation(n); return; }
+  if (step === 2 && b.partTotal === 0) { markStepDone(n, 2); toast("Từ của bài này bạn đã học hết, bước Từ mới tự hoàn thành."); openStation(n); return; }
   if (!b.qs.length) { markStepDone(n, step); openStation(n); return; }
   const saved = opts?.skip ? null : loadRun(n, step, dayStr());
   if (saved && saved.part === b.part) return begin({ mode: "step", n, step, part: b.part, partTotal: b.partTotal, items: saved.items }, saved);
@@ -133,8 +133,8 @@ function body(q: Q): string {
         <button class="btn accent big" id="pNext">Hiểu rồi, luyện →</button></div>`;
     }
     case "kanji-intro":
-      return `<div class="pcard pkanji"><p class="tip">Kanji của ga</p><div class="pkrow"><div class="pkbig">${esc(q.ch)}</div><div class="pkstroke">${strokeSVG(q.ch, 150)}<button class="lnk" id="pReplay">↻ Xem lại nét</button></div></div>
-        ${ancientHTML(q.ch)}${kanjiInfo(q.ch)}<button class="btn accent big" id="pNext">Đã nhớ chữ này →</button></div>`;
+      return `<div class="pcard pkanji"><p class="tip">Kanji của bài</p><div class="pkrow"><div class="pkbig">${esc(q.ch)}</div><div class="pkstroke">${strokeSVG(q.ch, 150)}<button class="lnk" id="pReplay">↻ Xem lại nét</button></div></div>
+        ${ancientHTML(q.ch)}${kanjiInfo(q.ch)}<div class="row"><button class="lnk" data-pin="${esc(kid(q.ch))}">${isPinned(kid(q.ch)) ? "Bỏ ghim" : "Ghim chữ khó"}</button></div><button class="btn accent big" id="pNext">Đã nhớ chữ này →</button></div>`;
     case "mcq":
       return `<div class="pcard"><p class="pprompt">${esc(q.prompt)}</p>${q.jp ? `<div class="pjp jp">${esc(q.jp)}${q.say ? sayBtn(q.say) : ""}</div>` : ""}${optBtns(q.opts, !!q.optJp)}</div>`;
     case "listen":
@@ -298,7 +298,7 @@ function summary(title: string, sub: string, run: Run, back?: number, extra = ""
 // ---- sự kiện ----
 export function onClick(t: any): boolean {
   if (t.id === "jContinue") { startContinue(); return true; }
-  if (t.dataset.pin) { const on = togglePin(t.dataset.pin); t.textContent = on ? "Bỏ ghim" : (t.closest(".recap") ? "Ghim" : "Ghim từ khó"); toast(on ? "Đã ghim, ôn riêng ở mục Ôn tập." : "Đã bỏ ghim."); return true; }
+  if (t.dataset.pin) { const on = togglePin(t.dataset.pin); t.textContent = on ? "Bỏ ghim" : (t.closest(".recap") ? "Ghim" : t.dataset.pin[0] === "k" ? "Ghim chữ khó" : "Ghim từ khó"); toast(on ? "Đã ghim, ôn riêng ở mục Ôn tập." : "Đã bỏ ghim."); return true; }
   if (t.dataset.stepGo) { const [n, s] = t.dataset.stepGo.split(":").map(Number); startStep(n, s as StepNo); return true; }
   if (!R) return false;
   const q = R.items[R.pos]?.q;

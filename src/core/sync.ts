@@ -3,6 +3,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { LS_KEY, S, applyData, mergeData, setChangeHook } from "./store";
 import { baseUrl } from "./supaurl";
+import { clearRun } from "./resume";
 
 // nhận cả tên biến do tích hợp Supabase của Vercel tạo (NEXT_PUBLIC_…)
 const ENV: any = import.meta.env;
@@ -18,7 +19,7 @@ export const sb: any = client;
 export const hasSupabase = () => !!sb;
 
 // status: local (không cấu hình) · out (chưa đăng nhập) · syncing · ok · pending · error · offline
-export const sync: any = { status: sb ? "out" : "local", user: null, last: null, err: "", recovery: false, checked: !sb };
+export const sync: any = { status: sb ? "out" : "local", user: null, last: null, err: "", recovery: false, checked: !sb, loaded: !sb };
 let listeners: Array<() => void> = [];
 export function onSyncChange(f: () => void) { listeners.push(f); }
 const emit = () => { for (const f of listeners) { try { f(); } catch (e) {} } };
@@ -54,6 +55,7 @@ async function pullMerge(rerender: boolean) {
     // dữ liệu trên máy thuộc tài khoản khác (đổi tài khoản trên cùng máy) → không gộp sang, lấy bản của tài khoản này
     let owner: string | null = null; try { owner = localStorage.getItem(OWNER_KEY); } catch (e) {}
     const foreign = !!owner && owner !== sync.user.id;
+    if (foreign) clearRun(); // lượt học dở của tài khoản trước trên máy này
     const local = foreign ? { progress: {}, sentences: [] } : { progress: S.progress, sentences: S.sentences };
     const merged = rem ? mergeData(local, rem) : mergeData(local, {});
     applyData(merged);
@@ -61,9 +63,11 @@ async function pullMerge(rerender: boolean) {
     try { localStorage.setItem(OWNER_KEY, sync.user.id); } catch (e) {}
     ready = true; sync.last = new Date();
     setStatus(dirty ? "pending" : "ok");
+    sync.loaded = true;
     if (rerender && onMerged) onMerged();
+    emit();
   } catch (e) {
-    dirty = true;
+    dirty = true; sync.loaded = true; // không tải được: vẫn cho học trên máy, lần sau gộp tiếp
     setStatus(isOffline() ? "offline" : "error", errText(e));
   }
 }
@@ -101,7 +105,7 @@ export function syncNow() { if (!sb || !sync.user) return Promise.resolve(); cle
 function setUser(u: any) {
   const changed = (u?.id || null) !== (sync.user?.id || null);
   sync.user = u || null;
-  if (changed) ready = false;
+  if (changed) { ready = false; sync.loaded = !u; }
   if (!u) { clearTimeout(timer); timer = null; dirty = false; setStatus("out"); }
   return changed;
 }

@@ -8,7 +8,7 @@ type Mode = "in" | "up" | "forgot";
 let mode: Mode = "in", msg = "", ok = false, busy = false;
 
 export const gateNeeded = () => hasSupabase() && (sync.recovery || (!sync.user && sync.checked));
-export const gateLoading = () => hasSupabase() && !sync.checked;
+export const gateLoading = () => hasSupabase() && !sync.recovery && (!sync.checked || (!!sync.user && !sync.loaded));
 
 function form() {
   if (sync.recovery) return `<h1>Đặt mật khẩu mới</h1><p class="gsub">Nhập mật khẩu mới cho tài khoản của bạn.</p>
@@ -43,7 +43,7 @@ export function renderGate() {
   </aside>
   <main class="gcard">
     <div class="gbrand gbrand-m"><span class="logo">${peng(34, "Michi")}</span><div><b>Michi</b><small>Tiếng Nhật theo lộ trình · N5</small></div></div>
-    ${gateLoading() ? `<p class="gsub" role="status">Đang kiểm tra đăng nhập…</p>` : form()}
+    ${gateLoading() ? `<p class="gsub" role="status">${sync.user ? "Đang tải tiến độ học của bạn…" : "Đang kiểm tra đăng nhập…"}</p>` : form()}
     ${msg ? `<div class="gmsg ${ok ? "ok" : "bad"}" role="${ok ? "status" : "alert"}">${esc(msg)}</div>` : ""}
   </main></div>`;
   const e = $("#gEmail") as any; if (e) { e.value = keepEmail; (keepEmail ? $("#gPw") as any : e)?.focus(); }

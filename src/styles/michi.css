@@ -328,3 +328,20 @@ body.gated .shell,body.gated .bottomnav{display:none}
 .gmsg.bad{background:var(--bad-soft);color:var(--bad)}.gmsg.ok{background:var(--ok-soft);color:var(--ok)}
 @media (max-width:860px){.gwrap{grid-template-columns:1fr}.gside{display:none}.gbrand-m{display:flex}.gcard{padding:40px 20px}}
 .acc input,#accName,#remTime,#remEmail{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+/* trình học: khối chữ, ô ghép câu, kanji, hội thoại theo v4 (phẳng, viền mảnh) */
+.ptok{border:1px solid var(--line);box-shadow:none;border-radius:8px;padding:8px 12px;font-size:17px}
+.ptok:hover{border-color:var(--accent);background:var(--card2)}
+.ptok:active{transform:none;box-shadow:none}
+.pbuild{border:1px dashed color-mix(in srgb,var(--line) 40%,var(--dim));background:var(--card2);border-radius:10px;min-height:58px}
+.pbuild .ptok{border-color:var(--accent);background:var(--accent-soft)}
+.pblank{border-bottom-width:2px;border-color:var(--accent);color:var(--accent-d)}
+.pkbig{border:1px solid var(--line);border-radius:12px;font-weight:500}
+.pdl{border-radius:10px;background:var(--card2)}
+.pdl.me{background:var(--accent-soft)}
+.pdn{font-size:12.5px;color:var(--dim);font-weight:600}
+.pjp{font-size:22px}
+.pprompt{font-weight:600;font-size:16px}
+.pmean{font-weight:600}
+.pnote{border-left:3px solid var(--accent);color:var(--muted)}
+.trap{border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;padding:10px 12px}
+.pcombo{font-size:12.5px;color:var(--accent-d);font-weight:600}

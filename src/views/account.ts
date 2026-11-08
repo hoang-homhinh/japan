@@ -146,7 +146,7 @@ export function onClick(t: any) {
   if (t.dataset.goal) { setPathOption("goal", +t.dataset.goal); renderAccount(); return true; }
   if (t.dataset.themeSet) { setTheme(t.dataset.themeSet); renderAccount(); return true; }
   if (t.dataset.sound) { setPathOption("sound", !peekPath().sound); renderAccount(); return true; }
-  if (t.id === "accSetStart") { setStart(+val("accStart")); toast("Đã đổi ga bắt đầu."); renderAccount(); return true; }
+  if (t.id === "accSetStart") { setStart(+val("accStart")); toast("Đã đổi bài bắt đầu."); renderAccount(); return true; }
   if (t.dataset.accmode) { mode = t.dataset.accmode; msg = ""; renderAccount(); return true; }
   if (t.id === "accGo") {
     const email = val("accEmail"), pw = val("accPw");
