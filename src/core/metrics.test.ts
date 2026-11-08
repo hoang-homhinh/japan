@@ -15,7 +15,7 @@ test("mastery counts only level-3 items", () => {
   const m = mastery();
   expect(m.vocab.done).toBe(1);
   expect(m.kanji.done).toBe(1);
-  expect(m.kanji.total).toBe(95);
+  expect(m.kanji.total).toBe(120);
 });
 test("review forecast buckets due items into the next 7 days", () => {
   S.progress.srs = { a: { next: "2026-11-05" }, b: { next: "2026-11-07" }, c: { next: "2026-11-09" }, d: { next: "2026-12-30" } };

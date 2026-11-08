@@ -32,7 +32,7 @@ export function routeSVG(cur: number) {
   // đoạn đã đi: tới ga hiện tại
   const [cx, cy] = pos[cur - 1];
   const done = cur <= 13 ? `M20 70 H${cx}` : `M20 70 H778 A75 75 0 0 1 778 220 H${cx}`;
-  let s = `<path class="rl-bg" d="${full}"/><path class="rl-on" d="${done}"/>`;
+  let s = `<path class="rl-bg" d="${full}"/><path class="rl-on" d="${done}"/><path class="rl-flow" d="${done}" pathLength="100"/>`;
   STATIONS.forEach((st, i) => {
     const [x, y] = pos[i], status = stationStatus(st.n);
     const cls = status === "current" ? "cur" : status === "stamped" ? "stamped done" : status === "passed" ? "done" : "lock";

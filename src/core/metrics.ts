@@ -70,7 +70,7 @@ export function badges(today: string): Badge[] {
   return [
     b("streak3", "Khởi động", "Học 3 ngày liên tiếp", s, 3), b("streak7", "Một tuần bền bỉ", "Học 7 ngày liên tiếp", s, 7), b("streak30", "Thói quen", "Học 30 ngày liên tiếp", s, 30),
     b("mod1", "Module đầu tiên", "Qua 1 module", passed, 1), b("mod5", "Đà tăng tốc", "Qua 5 module", passed, 5), b("mod13", "Nửa chặng N5", "Qua 13 module", passed, 13), b("mod25", "Hoàn thành N5", "Qua cả 25 module", passed, 25),
-    b("kanji25", "25 kanji", "Thuộc 25 kanji", m.kanji.done, 25), b("kanji50", "50 kanji", "Thuộc 50 kanji", m.kanji.done, 50), b("kanji95", "Trọn bộ kanji", "Thuộc 95 kanji", m.kanji.done, 95),
+    b("kanji25", "25 kanji", "Thuộc 25 kanji", m.kanji.done, 25), b("kanji50", "50 kanji", "Thuộc 50 kanji", m.kanji.done, 50), b("kanji95", "Trọn bộ kanji", `Thuộc ${m.kanji.total} kanji`, m.kanji.done, m.kanji.total),
     b("words100", "100 từ", "Thuộc 100 từ", m.vocab.done, 100), b("words500", "500 từ", "Thuộc 500 từ", m.vocab.done, 500), b("words1000", "1000 từ", "Thuộc 1000 từ", m.vocab.done, 1000),
   ];
 }

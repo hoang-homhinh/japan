@@ -1,4 +1,4 @@
-// Tab Kanji: 8 chương — hình · Hán Việt · mẹo, đọc từ, chọn chữ, đặt câu
+// Tab Kanji: 10 chương — hình · Hán Việt · mẹo, đọc từ, chọn chữ, đặt câu
 import { KANJI } from "../content/data";
 import { CONFUSE, HVRULE, KPAIRS } from "../content/kanji-extra";
 import { examplesHTML, hasAncient, kCard, savedHTML, writeBoxHTML } from "../core/cards";

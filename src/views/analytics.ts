@@ -1,4 +1,4 @@
-// Phân tích: lịch học 20 tuần, mức thành thạo, độ phủ từ vựng theo bài, 95 kanji, mục hay sai.
+// Phân tích: lịch học 20 tuần, mức thành thạo, độ phủ từ vựng theo bài, toàn bộ kanji, mục hay sai.
 import { KANJI } from "../content/data";
 import { heatmap, lessonCoverage, mastery, weakItems } from "../core/metrics";
 import { kid, srs } from "../core/srs";
@@ -26,7 +26,7 @@ export function renderAnalytics() {
         .map(([t, p, v]) => `<div class="mbar"><span style="text-align:left;font:13px var(--vi);color:var(--ink)">${t}</span><div class="t" role="img" aria-label="${t} ${pct(p as number)}%"><i style="width:${pct(p as number)}%"></i></div><span>${v}</span></div>`).join("")}</section>
     <section class="m-card"><div class="m-ch"><h2>Hay sai nhất</h2><span>${weak.length ? "ôn kỹ các mục này" : ""}</span></div>
       ${weak.length ? weak.map(w => `<div class="wl"><b lang="ja">${esc(w.jp)}</b><span>${esc(w.vi)}</span><em class="mono">sai ${w.wr}</em></div>`).join("") : `<p style="margin:0;color:var(--dim);font-size:13.5px">Chưa có mục nào bị sai. Học thêm vài bước để có số liệu.</p>`}</section>
-    <section class="m-card"><div class="m-ch"><h2>95 kanji N5</h2><span>${m.kanji.done} đã nhớ</span></div>
+    <section class="m-card"><div class="m-ch"><h2>${m.kanji.total} kanji N5</h2><span>${m.kanji.done} đã nhớ</span></div>
       <div class="kgrid">${kj.map((k: string) => { const l = srs(kid(k))?.lv || 0; return `<span class="kg l${Math.min(l, 3)}" lang="ja" title="${S.progress.srs?.[kid(k)] ? "bậc " + l : "chưa học"}">${esc(k)}</span>`; }).join("")}</div>
       <div class="mheatl" style="margin-top:10px"><span class="kg l0" style="width:auto;padding:0 6px">chưa học</span><span class="kg l1" style="width:auto;padding:0 6px">đang học</span><span class="kg l3" style="width:auto;padding:0 6px">đã nhớ</span></div></section>
   </aside></div>`;

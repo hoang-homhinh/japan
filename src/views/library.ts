@@ -1,10 +1,11 @@
 // Thư viện: các công cụ tra cứu & luyện tự do (màn cũ). Lộ trình chính nằm ở "Hành trình".
+import { KANJI } from "../content/data";
 import { esc } from "../core/util";
 import { $ } from "../core/util";
 
 const TOOLS: [string, string, string, string][] = [
   ["vocab", "語", "Từ vựng", "Tra 1049 từ theo bài, kiểm tra nhanh, nối từ cả bài"],
-  ["kanji", "漢", "Kanji theo chương", "95 chữ, 8 chương: chữ cổ, cách nhớ, đọc từ"],
+  ["kanji", "漢", "Kanji theo chương", `${KANJI.reduce((a: number, c: any) => a + c.groups.reduce((b: number, g: any) => b + g.kanji.length, 0), 0)} chữ, ${KANJI.length} chương: chữ cổ, cách nhớ, đọc từ`],
   ["match", "結", "Nối từ", "Nối nghĩa ↔ từ, nghĩa ↔ chữ theo ván hoặc cả bài"],
   ["learn", "文", "Mẫu câu", "138 mẫu ngữ pháp Bài 1–25, thay thế và tự đặt câu"],
   ["talk", "話", "Hội thoại", "50 đoạn hội thoại, nghe cả đoạn, đóng vai"],

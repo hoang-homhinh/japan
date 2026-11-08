@@ -40,7 +40,7 @@ function boardHTML(cur: number, due: number, step: number) {
   const label = due ? `Lên tàu · Ôn ${due} mục` : `Lên tàu · ${STEP_NAMES[step]}`;
   return `<section class="board" aria-label="Việc học hôm nay">
     <header class="bd-h"><span class="bd-ring" aria-hidden="true"></span><b lang="ja">発車案内</b><span class="sub">Tuyến N5 · Ga hiện tại <b lang="ja">${esc(st.name)}</b> · Bài ${cur}</span><span class="led bd-clock" id="hClock" aria-label="Giờ hiện tại">${hhmm(now)}</span></header>
-    <div class="bd-ls"><div class="bd-no"><div><small>${st.code}</small><b>${String(cur).padStart(2, "0")}</b></div></div><div style="min-width:0"><h2>${esc(lessonTitle(cur))}</h2><p lang="ja">${forms}</p></div><div class="st" lang="ja"><b>${esc(st.name)}</b><small>${esc(st.kana)}</small></div></div>
+    <div class="bd-ls" data-st="${esc(st.name)}"><div class="bd-no"><div><small>${st.code}</small><b>${String(cur).padStart(2, "0")}</b></div></div><div style="min-width:0"><h2>${esc(lessonTitle(cur))}</h2><p lang="ja">${forms}</p></div><div class="st" lang="ja"><b>${esc(st.name)}</b><small>${esc(st.kana)}</small></div></div>
     <div class="bd-cols" aria-hidden="true"><span>GIỜ</span><span>BƯỚC</span><span>NỘI DUNG</span><span>GA</span><span>THỜI LƯỢNG</span><span>TRẠNG THÁI</span></div>
     <div role="table" aria-label="Các chuyến hôm nay">${body}</div>
     <footer class="bd-f"><span class="sum">Tổng ${total} phút · chạy hết là tới ga <b lang="ja">${esc(cur < 25 ? stationOf(cur + 1).name : st.name)}</b></span>
@@ -64,6 +64,12 @@ export function reviewCard(due: number, br: { v: number; k: number; g: number },
     <div class="fc" aria-hidden="true">${fc.map((c, i) => `<div class="${i ? "" : "t"}" style="height:${(c.n / max) * 100}%"></div>`).join("")}</div>
     <div class="fcl">${fc.map((c, i) => `<span>${i ? WD[new Date(c.d + "T00:00:00").getDay()] : "Nay"}</span>`).join("")}</div>
     <p class="sr-only">${fc.map(c => `${c.d}: ${c.n} mục`).join(", ")}</p></section>`;
+}
+
+// đồng hồ vòng: cung 270°, số % ở giữa bằng chữ LED
+function gauge(label: string, p: number, sub: string, c: string) {
+  const v = Math.round(Math.max(0, Math.min(1, p || 0)) * 100), r = 30, L = 2 * Math.PI * r * 0.75;
+  return `<div class="gauge" style="--c:${c}" role="img" aria-label="${label} ${v}%"><svg viewBox="0 0 80 80" aria-hidden="true"><circle class="g-bg" cx="40" cy="40" r="${r}" stroke-dasharray="${L} 999"/><circle class="g-on" cx="40" cy="40" r="${r}" stroke-dasharray="${(L * v) / 100} 999"/></svg><b class="led">${v}<small>%</small></b><span>${label}</span>${sub ? `<em>${sub}</em>` : ""}</div>`;
 }
 
 export function renderHome() {
@@ -90,9 +96,9 @@ export function renderHome() {
       <div style="display:flex;gap:10px;align-items:flex-start"><button class="say" data-say="${esc(ph.kana)}" aria-label="Nghe">${icon("vol", 16)}</button><div><div lang="ja" style="font:500 16px/1.5 var(--jp)">${esc(ph.jp)}</div><div style="font-size:13px;color:var(--muted)">${esc(ph.vi)}</div></div></div>
       <p style="margin:10px 0 0;font-size:12.5px;color:var(--dim)">Đọc to 3 lần, thử dùng câu này một lần trong hôm nay.</p></section>` : ""; })()}
     ${reviewCard(due, br, today)}
-    <section class="m-card"><div class="m-ch"><h2>Mức thành thạo</h2><button class="lnk" data-view="analytics">Chi tiết</button></div>
-      ${[["Từ vựng", m.vocab.p, `${m.vocab.done}/${m.vocab.total}`, "var(--cyan)"], ["Kanji", m.kanji.p, `${m.kanji.done}/${m.kanji.total}`, "var(--accent)"], ["Ngữ pháp", m.grammar.p, `${m.grammar.done}/${m.grammar.total}`, "var(--ok)"], ["Trợ từ", m.particle.p, m.particle.total ? pct(m.particle.p) + "%" : "—", "var(--ok)"], ["Nghe", m.listening.p, m.listening.total ? pct(m.listening.p) + "%" : "—", "var(--bad)"]]
-        .map(([t, p, v, c]) => `<div class="mbar" style="--c:${c}"><span style="text-align:left;font:13px var(--vi);color:var(--ink)">${t}</span><div class="t" role="img" aria-label="${t} ${pct(p as number)}%"><i style="width:${pct(p as number)}%"></i></div><span>${v}</span></div>`).join("")}</section>
+    <section class="m-card"><div class="m-ch"><h2>Bảng đồng hồ</h2><button class="lnk" data-view="analytics">Chi tiết</button></div>
+      <div class="gauges">${[["Từ vựng", m.vocab.p, `${m.vocab.done}/${m.vocab.total}`, "var(--cyan)"], ["Kanji", m.kanji.p, `${m.kanji.done}/${m.kanji.total}`, "var(--accent)"], ["Ngữ pháp", m.grammar.p, `${m.grammar.done}/${m.grammar.total}`, "var(--ok)"], ["Trợ từ", m.particle.p, m.particle.total ? "" : "chưa làm", "#B98CFF"], ["Nghe", m.listening.p, m.listening.total ? "" : "chưa làm", "var(--bad)"]]
+        .map(([t, p, v, c]) => gauge(t as string, p as number, v as string, c as string)).join("")}</div></section>
     <section class="m-card"><div class="m-ch"><h2>Sổ dấu</h2><span>${stamps}/25</span></div>
       <div class="dots" role="img" aria-label="${stamps} trên 25 con dấu">${Array.from({ length: 25 }, (_, i) => `<i class="${P.st[i + 1]?.stamp ? "on" : i + 1 === cur ? "c" : ""}"></i>`).join("")}</div></section>
   </aside></div>`;

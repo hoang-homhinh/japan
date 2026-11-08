@@ -59,7 +59,7 @@ function buildVocab() {
 // ---------- kanji (build_kanji.py) ----------
 function buildKanji() {
   const dir = path.join(N5, "kanji");
-  const files = fs.readdirSync(dir).filter(f => /^chuong0.*_kanji\.md$/.test(f)).sort();
+  const files = fs.readdirSync(dir).filter(f => /^chuong\d+_kanji\.md$/.test(f)).sort((a, b) => parseInt(a.slice(6), 10) - parseInt(b.slice(6), 10));
   const chapters = [];
   for (const f of files) {
     const txt = fs.readFileSync(path.join(dir, f), "utf8");
