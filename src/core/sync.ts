@@ -2,13 +2,15 @@
 // Không có VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY → chế độ chỉ lưu trên máy, mọi thứ vẫn chạy.
 import { createClient } from "@supabase/supabase-js";
 import { LS_KEY, S, applyData, mergeData, setChangeHook } from "./store";
-import { baseUrl } from "./supaurl";
+import { resolveConfig } from "./supaurl";
 import { clearRun } from "./resume";
 
 // nhận cả tên biến do tích hợp Supabase của Vercel tạo (NEXT_PUBLIC_…)
 const ENV: any = import.meta.env;
-const URL_ = baseUrl(String(ENV.VITE_SUPABASE_URL || ENV.NEXT_PUBLIC_SUPABASE_URL || ""));
-const KEY_ = String(ENV.VITE_SUPABASE_ANON_KEY || ENV.NEXT_PUBLIC_SUPABASE_ANON_KEY || ENV.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "").trim();
+// tự sửa khi dán nhầm ô trên Vercel (đảo URL ↔ khoá, hoặc dán khoá vào ô URL): xem core/supaurl.ts
+const CFG = resolveConfig(String(ENV.VITE_SUPABASE_URL || ENV.NEXT_PUBLIC_SUPABASE_URL || ""), String(ENV.VITE_SUPABASE_ANON_KEY || ENV.NEXT_PUBLIC_SUPABASE_ANON_KEY || ENV.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ""));
+const URL_ = CFG.url, KEY_ = CFG.key;
+export const configFixed = CFG.fixed;
 // cấu hình sai (vd dán nhầm khoá vào ô URL) → không làm sập app, chỉ báo trong ⚙ Tài khoản
 export const configError = URL_ && !/^https:\/\/[^\s]+$/.test(URL_)
   ? "VITE_SUPABASE_URL phải là Project URL dạng https://xxxx.supabase.co (đang là: " + URL_.slice(0, 12) + "…). Có thể bạn dán nhầm khoá vào ô này."
