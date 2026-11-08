@@ -2,10 +2,11 @@
 // Không có VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY → chế độ chỉ lưu trên máy, mọi thứ vẫn chạy.
 import { createClient } from "@supabase/supabase-js";
 import { LS_KEY, S, applyData, mergeData, setChangeHook } from "./store";
+import { baseUrl } from "./supaurl";
 
 // nhận cả tên biến do tích hợp Supabase của Vercel tạo (NEXT_PUBLIC_…)
 const ENV: any = import.meta.env;
-const URL_ = String(ENV.VITE_SUPABASE_URL || ENV.NEXT_PUBLIC_SUPABASE_URL || "").trim();
+const URL_ = baseUrl(String(ENV.VITE_SUPABASE_URL || ENV.NEXT_PUBLIC_SUPABASE_URL || ""));
 const KEY_ = String(ENV.VITE_SUPABASE_ANON_KEY || ENV.NEXT_PUBLIC_SUPABASE_ANON_KEY || ENV.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "").trim();
 // cấu hình sai (vd dán nhầm khoá vào ô URL) → không làm sập app, chỉ báo trong ⚙ Tài khoản
 export const configError = URL_ && !/^https:\/\/[^\s]+$/.test(URL_)
