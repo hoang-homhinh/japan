@@ -182,7 +182,7 @@ function renderMatch(){
     <div class="row"><button class="btn accent" data-msub="play">結 Bắt đầu nối →</button></div>
   </section>`:`
   <section class="step"><h2><span class="k">結</span>Nối cặp<span class="hint">chạm 1 ô bên này rồi ô khớp bên kia</span></h2>
-    <p class="tip" style="margin:0">Được tính vào tiến độ học: nối đúng ngay lần đầu thì ${V?"từ":"chữ"} lên bậc (tối đa ●●○, bậc ●●● cần gõ lại ở tab Hôm nay); nối sai thì được hỏi lại trong buổi ôn hôm nay.</p>
+    <p class="tip" style="margin:0">Được tính vào tiến độ học: nối đúng ngay lần đầu thì ${V?"từ":"chữ"} lên bậc (tối đa ●●○, bậc ●●● cần tự gõ lại ở mục Ôn tập); nối sai thì được hỏi lại trong lượt ôn hôm nay.</p>
     <div class="chips" style="margin-top:0">${V?segBtns("mvm",md,[["m","Nghĩa ↔ Từ"],["k","Kanji ↔ Kana"]]):segBtns("mkm",md,[["m","Nghĩa ↔ Chữ"],["r","Từ ↔ Cách đọc"]])}</div>
     <div id="mtBox">${MS.scope==="d"&&!nLv?"":mtHTML()}</div>
   </section>`}`;

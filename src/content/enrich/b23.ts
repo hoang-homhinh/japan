@@ -34,7 +34,7 @@ const L: LessonPlus = {
     "[お]しょうがつ": { ex: ["おしょうがつに 国へ かえる とき、おみやげを 買います。", "Khi về nước dịp Tết, tôi mua quà."], tip: "正月 = “chính nguyệt”: tháng Giêng, Tết. Ở Nhật là Tết dương lịch." },
     "でます": { ex: ["この ボタンを おすと、コーヒーが 出ます。", "Bấm nút này thì cà phê ra."], tip: "出 = “xuất”: đồ, tiền thừa chạy ra khỏi máy. N が でます." },
     "まわします": { ex: ["つまみを 右へ まわすと、おとが 大きく なります。", "Vặn núm sang phải thì tiếng to lên."], tip: "回 = “hồi” trong “luân hồi” (quay vòng): xoay, vặn. N を まわします." },
-    "つまみ": { ex: ["この つまみを まわして ください。", "Vặn cái núm này nhé."], tip: "つまみ nghe như “chụm mí”: chụm ngón tay lại nhón cái núm vặn." },
+    "つまみ": { ex: ["この つまみを まわして ください。", "Vặn cái núm này nhé."], tip: "Từ つまむ (nhón bằng hai đầu ngón tay): つまみ là cái núm để nhón mà vặn." },
     "おと": { ex: ["おとが 小さい とき、この つまみを まわします。", "Khi tiếng nhỏ thì vặn núm này."], tip: "音 = “âm” trong “âm thanh”: tiếng của đồ vật, máy móc. Tiếng người là こえ." },
     "ひきます": { ex: ["この ドアは ひいて ください。", "Cửa này xin kéo vào."], tip: "引 = “dẫn” (kéo). Trên cửa ở Nhật: 引 là kéo, 押 là đẩy." },
     "かえます": { ex: ["サイズを かえても いいですか。", "Tôi đổi cỡ được không?"], tip: "変 = “biến” trong “biến đổi”: thay đổi. Nhóm II." },

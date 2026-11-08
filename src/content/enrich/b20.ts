@@ -25,7 +25,7 @@ const L: LessonPlus = {
     "ぼく": { ex: ["ぼくも 行く。", "Tớ cũng đi."], tip: "僕 = “bộc” (người hầu, tự hạ mình): nam giới xưng “tớ” với bạn bè." },
     "きみ": { ex: ["きみも 来る？", "Cậu cũng đến chứ?"], tip: "君 = “quân”: gọi “cậu, em”, chỉ dùng với người ngang hoặc dưới mình." },
     "よかったら": { ex: ["よかったら、いっしょに 行かない？", "Nếu được thì đi cùng không?"], tip: "Từ いい (tốt): “nếu thấy được thì…”, lời mời nhẹ nhàng không ép." },
-    "いろいろ": { ex: ["いろいろ ありがとう。", "Cảm ơn vì mọi thứ."], tip: "いろいろ nghe như “i-rô i-rô”: đủ loại, nhiều thứ. Cảm ơn chung chung về mọi việc." },
+    "いろいろ": { ex: ["いろいろ ありがとう。", "Cảm ơn vì mọi thứ."], tip: "色々 = “sắc sắc”: đủ thứ màu sắc. いろいろ ありがとう là cảm ơn về mọi việc." },
     "いります": { ex: ["日本人は ビザが いりますか。", "Người Nhật có cần visa không?"], tip: "要 = “yếu” trong “thiết yếu”: cần. N が いります, nhóm I." },
     "ビザ": { ex: ["ベトナムの ビザが いる？", "Có cần visa Việt Nam không?"], tip: "Từ tiếng Anh “visa”: thị thực." },
     "しらべます": { ex: ["あとで しらべます。", "Lát nữa tôi tra rồi báo."], tip: "調 = “điều” trong “điều tra”: tìm hiểu, tra cứu. Nhóm II." },

@@ -13,8 +13,17 @@ export const PLUS: Record<number, LessonPlus> = Object.fromEntries(
   Object.entries(FILES).map(([p, m]) => [Number(p.match(/b(\d+)\.ts$/)![1]), m.default]),
 );
 
-// kana cần gõ khi tự nhớ lại: bỏ ～ và phần trong [ ] (gõ kèm phần đó cũng được)
+// kana cần gõ khi tự nhớ lại: bỏ ～ ？ …; phần trong [ ] có thể gõ hoặc bỏ;
+// "A／B" và "A（B）" là hai cách viết, gõ cách nào cũng được
 export function typeAnswers(kana: string): string[] {
-  const strip = (s: string) => s.replace(/[～~？?]/g, "").trim();
-  return [...new Set([strip(kana.replace(/\[[^\]]*\]/g, "")), strip(kana.replace(/[\[\]]/g, ""))])];
+  const clean = (s: string) => s.replace(/[～~？?…]/g, "").replace(/\s+/g, " ").trim().replace(/^、+|、+$/g, "").trim();
+  const out = new Set<string>();
+  for (const alt of kana.replace(/［/g, "[").replace(/］/g, "]").split(/\s*[／/]\s*/)) {
+    const m = alt.match(/^(.*?)[（(]([^）)]*)[）)](.*)$/);
+    for (const v of m ? [m[1] + m[3], m[2]] : [alt]) {
+      out.add(clean(v.replace(/\[[^\]]*\]/g, "")));
+      out.add(clean(v.replace(/[\[\]]/g, "")));
+    }
+  }
+  return [...out].filter(Boolean);
 }

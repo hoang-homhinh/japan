@@ -29,7 +29,7 @@ const L: LessonPlus = {
     "あります": { ex: ["駅の 前に コンビニが あります。", "Trước ga có cửa hàng tiện lợi."], tip: "あり nghe như “a, ra rồi”: tìm ra đồ vật nằm yên một chỗ. Đồ vật, cây cối dùng あります." },
     "います": { ex: ["会議室に 田中さんが います。", "Anh Tanaka ở phòng họp."], tip: "い như “in” trong “ở in đây”: người, con vật biết cử động thì dùng います (nhóm II)." },
     "～や ～[など]": { ex: ["れいぞうこに ビールや ジュースが あります。", "Trong tủ lạnh có bia, nước ngọt…"], tip: "や là “và… nữa”, など là “vân vân”: chỉ kể vài thứ tiêu biểu, còn thứ khác. Kể đủ hết dùng と." },
-    "いろいろ[な]": { ex: ["スーパーに いろいろな 物が あります。", "Siêu thị có nhiều loại đồ."], tip: "いろいろ nghe như “i-rô i-rô”: bảng màu i-rô đủ loại sắc màu, nghĩa là đa dạng." },
+    "いろいろ[な]": { ex: ["スーパーに いろいろな 物が あります。", "Siêu thị có nhiều loại đồ."], tip: "色々 = “sắc sắc”: đủ thứ màu sắc, tức là nhiều loại, đa dạng." },
     "もの": { ex: ["わたしの 物は つくえの 上に あります。", "Đồ của tôi ở trên bàn."], tip: "もの nghe như “món”: món đồ, vật. Gặp trong 食べ物 (đồ ăn), 飲み物 (đồ uống)." },
     "うえ": { ex: ["つくえの 上に パソコンが あります。", "Trên bàn có máy tính."], tip: "上 = “thượng” (trên). うえ nghe như “ở trên ê”: gọi người ở tầng trên." },
     "した": { ex: ["いすの 下に かばんが あります。", "Dưới ghế có cái cặp."], tip: "下 = “hạ” (dưới). した nghe như “xỉa tay”: thò tay xuống dưới gầm lấy đồ." },
