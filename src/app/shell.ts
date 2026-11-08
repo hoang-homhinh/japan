@@ -23,6 +23,8 @@ import * as reviewq from "../views/reviewq";
 import * as home from "../views/home";
 import * as analytics from "../views/analytics";
 import { buildReview } from "../core/reviewq";
+import { getName, greeting, initials } from "../core/profile";
+import { sync } from "../core/sync";
 
 export let view = "home";
 
@@ -77,7 +79,7 @@ export function setView(v: string) {
   if ("speechSynthesis" in window && v !== "exam") speechSynthesis.cancel();
   const c = $("#crumb"); if (c) c.textContent = VIEW_NAME[v] || "";
   const cs = $("#crumbSub"); if (cs) cs.textContent = SUBTITLE[v] ? SUBTITLE[v]() : "";
-  updateRevBadge();
+  updateRevBadge(); updateMe();
   RENDER[v]();
   // giữ đường link …/#tab khớp tab đang mở (tải lại trang vẫn ở đúng tab)
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
@@ -162,9 +164,15 @@ export function bindEvents() {
 
 // tiêu đề phụ dưới tên màn
 const SUBTITLE: any = {
-  home: () => { const d = new Date(); return `${["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"][d.getDay()]}, ${d.getDate()} tháng ${d.getMonth() + 1} · Tuyến N5`; },
+  home: () => { const d = new Date(); return `${greeting(d, getName())} · ${["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"][d.getDay()]}, ${d.getDate()} tháng ${d.getMonth() + 1}`; },
   journey: () => "25 bài Minna no Nihongo · mỗi bài là một ga", reviewq: () => "Ôn đúng lúc sắp quên", analytics: () => "Tiến bộ của bạn qua số liệu", stamps: () => "Sổ dấu và huy hiệu", library: () => "Tra cứu và luyện thêm", exam: () => "10 dạng đề JLPT N5 và thi thử",
 };
+// avatar + tên ở góc menu
+export function updateMe() {
+  const n = getName(), em = sync.user?.email || "";
+  $$(".av").forEach(el => (el.textContent = initials(n, em)));
+  $$(".navi.me .lbl b").forEach(el => (el.textContent = n || (em ? em.split("@")[0] : "Tài khoản")));
+}
 // số mục cần ôn trên menu
 export function updateRevBadge() {
   let n = 0; try { n = S.progress.path ? buildReview(undefined, 15, 10, false).length : 0; } catch (e) {}

@@ -71,6 +71,9 @@ export function mergeProgress(local: any, rem: any) {
   const pins: any = Object.assign({}, rem.pins || {});
   for (const [k, v] of Object.entries<any>(local.pins || {})) if (!pins[k] || (v.t || 0) > (pins[k].t || 0)) pins[k] = v;
   if (Object.keys(pins).length) P.pins = pins;
+  // hồ sơ (tên hiển thị): đổi sau thắng
+  const pf = [local.profile, rem.profile].filter(Boolean).sort((x: any, y: any) => (y.t || 0) - (x.t || 0))[0];
+  if (pf) P.profile = pf;
   // mới: danh sách câu đã xoá (id → thời điểm), giữ 1000 mục gần nhất
   const del = Object.assign({}, rem.delSent || {});
   for (const [k, v] of Object.entries<any>(local.delSent || {})) del[k] = Math.max(v, del[k] || 0);

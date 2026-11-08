@@ -15,6 +15,8 @@ import { icon, peng } from "./core/brand";
 import { openCmd } from "./views/cmdk";
 import { openStation } from "./views/station";
 import { applyTheme } from "./core/theme";
+import { bindGate, renderGate } from "./views/gate";
+import { updateMe } from "./app/shell";
 
 applyTheme();
 
@@ -24,6 +26,8 @@ $$("[data-i]").forEach(el => { el.innerHTML = icon(el.dataset.i!, 18); });
 
 initStore();
 bindEvents();
+bindGate();
+renderGate();
 export const HOME = "home";
 // mở thẳng một tab qua đường link, vd …/#particle (tiện để ghim tab hay dùng)
 const VIEWS = ["home", "analytics", "journey", "stamps", "library", "reviewq", "vocab", "kanji", "match", "learn", "talk", "particle", "notes", "exam", "review", "account"];
@@ -35,7 +39,12 @@ window.addEventListener("hashchange", () => { const h = location.hash.slice(1); 
 loadAncient(() => { if (view === "kanji" || view === "match") refreshView(); });
 
 // trạng thái đồng bộ nhỏ ở nút ⚙
+let wasGated = document.body.classList.contains("gated");
 onSyncChange(() => {
+  renderGate(); updateMe();
+  const g = document.body.classList.contains("gated");
+  if (wasGated && !g) setView(view); // vừa đăng nhập xong: vẽ lại màn đang mở
+  wasGated = g;
   $$(".gear").forEach(b => { b.className = "pill gear st-" + sync.status; b.title = "Tài khoản & sao lưu · " + syncLabel(); });
   if (view === "account") refreshView();
 });

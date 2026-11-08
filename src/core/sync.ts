@@ -18,7 +18,7 @@ export const sb: any = client;
 export const hasSupabase = () => !!sb;
 
 // status: local (không cấu hình) · out (chưa đăng nhập) · syncing · ok · pending · error · offline
-export const sync: any = { status: sb ? "out" : "local", user: null, last: null, err: "", recovery: false };
+export const sync: any = { status: sb ? "out" : "local", user: null, last: null, err: "", recovery: false, checked: !sb };
 let listeners: Array<() => void> = [];
 export function onSyncChange(f: () => void) { listeners.push(f); }
 const emit = () => { for (const f of listeners) { try { f(); } catch (e) {} } };
@@ -123,9 +123,10 @@ export async function initSync(afterMerge: () => void) {
   try {
     const { data } = await sb.auth.getSession();
     const u = data?.session?.user || null;
-    if (setUser(u) && u) queue(() => pullMerge(true));
+    sync.checked = true;
+    if (setUser(u) && u) { emit(); queue(() => pullMerge(true)); }
     else emit();
-  } catch (e) { emit(); }
+  } catch (e) { sync.checked = true; emit(); }
 }
 
 // ---- tài khoản ----

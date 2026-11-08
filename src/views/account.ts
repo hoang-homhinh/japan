@@ -4,6 +4,13 @@ import { getTheme, setTheme } from "../core/theme";
 import { configError, hasSupabase, resetPassword, signIn, signOut, signUp, sync, syncNow, updatePassword } from "../core/sync";
 import { $, dayStr, esc, toast } from "../core/util";
 import { peekPath, setPathOption, setStart } from "../core/path";
+import { getName, setName } from "../core/profile";
+import { loadReminder, localTz, saveReminder, type RemindRow } from "../core/remind";
+import { updateMe } from "../app/shell";
+
+// nhắc học: undefined = chưa tải, null = chưa có hàng, "err:…" = lỗi
+let rem: RemindRow | null | undefined | string;
+let remFor = "", pwOpen = false;
 
 let mode = "in"; // in | up | forgot
 let msg = "", msgOk = false, busy = false;
@@ -42,7 +49,8 @@ export function renderAccount() {
       <div class="row"><button class="btn accent" id="accSetPw">Lưu mật khẩu mới</button></div></form>`;
   } else if (u) {
     auth = `<div class="row" style="align-items:center;flex-wrap:wrap;gap:10px"><div style="flex:1;min-width:200px"><div class="tip">Đang đăng nhập</div><b>${esc(u.email || "")}</b></div>
-      <button class="btn" id="accSync">Đồng bộ ngay</button><button class="btn ghost" id="accOut">Đăng xuất</button></div>
+      <button class="btn" id="accSync">Đồng bộ ngay</button><button class="btn ghost" id="accPwT">Đổi mật khẩu</button><button class="btn ghost" id="accOut">Đăng xuất</button></div>
+      ${pwOpen ? `<form class="acc"><input id="accNewPw" type="password" autocomplete="new-password" placeholder="Mật khẩu mới (ít nhất 6 ký tự)"><div class="row"><button class="btn" id="accSetPw">Lưu mật khẩu mới</button></div></form>` : ""}
       <p class="tip">Học trên máy nào cũng được: tiến độ và sổ câu tự gộp với các máy khác đã đăng nhập cùng tài khoản.</p>`;
   } else {
     const tabs = `<div class="chips" style="margin-top:0">${[["in", "Đăng nhập"], ["up", "Tạo tài khoản"], ["forgot", "Quên mật khẩu"]].map(([k, t]) => `<button class="chip" data-accmode="${k}" aria-pressed="${k === mode}">${t}</button>`).join("")}</div>`;
@@ -50,16 +58,18 @@ export function renderAccount() {
       <input id="accEmail" type="email" autocomplete="email" placeholder="Email" inputmode="email">
       ${mode !== "forgot" ? `<input id="accPw" type="password" autocomplete="${mode === "up" ? "new-password" : "current-password"}" placeholder="Mật khẩu${mode === "up" ? " (ít nhất 6 ký tự)" : ""}">` : ""}
       <div class="row"><button class="btn accent" id="accGo" ${busy ? "disabled" : ""}>${mode === "in" ? "Đăng nhập" : mode === "up" ? "Tạo tài khoản" : "Gửi mail đặt lại mật khẩu"}</button></div></form>
-      <p class="tip">${mode === "up" ? "Sau khi tạo, mở thư xác nhận trong hộp mail rồi quay lại đăng nhập." : mode === "forgot" ? "Mở đường link trong mail, app sẽ hỏi mật khẩu mới." : "Đăng nhập để học trên nhiều máy. Dữ liệu đang có trên máy này sẽ được gộp vào tài khoản, không mất."}</p>`;
+      <p class="tip">${mode === "up" ? "Tạo xong là đăng nhập luôn. Dữ liệu đang có trên máy này sẽ được gộp vào tài khoản." : mode === "forgot" ? "Mở đường link trong mail, app sẽ hỏi mật khẩu mới." : "Đăng nhập để học trên nhiều máy. Dữ liệu đang có trên máy này sẽ được gộp vào tài khoản, không mất."}</p>`;
   }
   $("#main").innerHTML = `
   <section class="step"><h2><span class="k">人</span>Tài khoản<span class="hint">đồng bộ nhiều máy</span></h2>
     <div class="card" style="margin-top:0">
       ${hasSupabase() ? `<div class="syncst st-${sync.status}"><i></i><span>${esc(syncLabel())}</span></div>${sync.err && sync.status === "error" ? `<div class="tip">Chi tiết: ${esc(sync.err)}</div>` : ""}` : ""}
+      <div class="row" style="align-items:center;flex-wrap:wrap;gap:8px"><label for="accName">Tên hiển thị</label><input id="accName" maxlength="40" value="${esc(getName())}" placeholder="Ví dụ: Hoàng" style="flex:1;min-width:160px;max-width:260px"><button class="btn ghost" id="accNameSave">Lưu tên</button></div>
       ${auth}
       ${msg ? `<div class="res ${msgOk ? "ok" : "bad"}">${esc(msg)}</div>` : ""}
     </div>
   </section>
+  ${remindHTML(u)}
   <section class="step"><h2><span class="k">道</span>Lộ trình<span class="hint">cài đặt học mỗi ngày</span></h2>
     <div class="card" style="margin-top:0">
       <div class="row" style="align-items:center;flex-wrap:wrap"><span>Mỗi ngày học</span>${[1, 2, 3].map(g => `<button class="chip" data-goal="${g}" aria-pressed="${peekPath().goal === g}">${g} lượt</button>`).join("")}</div>
@@ -79,6 +89,20 @@ export function renderAccount() {
   </section>`;
 }
 
+function remindHTML(u: any) {
+  const head = '<section class="step"><h2><span class="k">鈴</span>Nhắc học qua email<span class="hint">mỗi ngày một lần, chỉ khi hôm đó chưa học</span></h2><div class="card" style="margin-top:0">';
+  if (!hasSupabase() || !u) return head + '<p class="tip">Đăng nhập để bật nhắc học: tới giờ hẹn mà hôm đó chưa học, Michi gửi một email nhắc.</p></div></section>';
+  if (remFor !== u.id) { remFor = u.id; rem = undefined; loadReminder().then(r => { rem = r; }).catch(e => { rem = "err:" + (e?.message || e); }).finally(() => { if ($("#remBox")) renderAccount(); }); }
+  if (rem === undefined) return head + '<div id="remBox" class="tip">Đang tải cài đặt nhắc…</div></div></section>';
+  if (typeof rem === "string") return head + '<div id="remBox" class="res bad">' + esc(rem.slice(4)) + '</div></div></section>';
+  const r: RemindRow = rem || { enabled: false, time_local: "21:00", tz: localTz(), email: u.email || "" };
+  return head + `<div id="remBox">
+    <div class="row" style="align-items:center;flex-wrap:wrap;gap:8px"><span>Nhắc học</span><button class="chip" id="remOn" aria-pressed="${r.enabled}">${r.enabled ? "Đang bật" : "Đang tắt"}</button></div>
+    <div class="row" style="align-items:center;flex-wrap:wrap;gap:8px"><label for="remTime">Giờ nhắc</label><input id="remTime" type="time" value="${esc(r.time_local)}" style="width:auto"><span class="tip">múi giờ ${esc(localTz())}</span></div>
+    <div class="row" style="align-items:center;flex-wrap:wrap;gap:8px"><label for="remEmail">Gửi tới</label><input id="remEmail" type="email" value="${esc(r.email)}" style="flex:1;min-width:200px;max-width:320px"></div>
+    <div class="row"><button class="btn" id="remSave">Lưu cài đặt nhắc</button></div>
+    <p class="tip">Nhắc tối đa 1 lần mỗi ngày, trong vòng 1 giờ sau giờ hẹn. Hôm nào đã học thì không gửi.</p></div></div></section>`;
+}
 const val = (id: string) => (($("#" + id) || {}).value || "").trim();
 async function act(f: () => Promise<any>) {
   if (busy) return; busy = true; msg = "";
@@ -108,6 +132,14 @@ function pickFile() {
 }
 
 export function onClick(t: any) {
+  if (t.id === "accNameSave") { setName(val("accName")); updateMe(); toast("Đã lưu tên."); renderAccount(); return true; }
+  if (t.id === "accPwT") { pwOpen = !pwOpen; renderAccount(); return true; }
+  if (t.id === "remOn" && rem !== undefined && typeof rem !== "string") { const r = rem || { enabled: false, time_local: val("remTime") || "21:00", tz: localTz(), email: val("remEmail") }; rem = { ...r, time_local: val("remTime") || r.time_local, email: val("remEmail") || r.email, enabled: !r.enabled }; renderAccount(); return true; }
+  if (t.id === "remSave" && rem !== undefined && typeof rem !== "string") {
+    const r: RemindRow = { enabled: rem ? rem.enabled : true, time_local: val("remTime"), tz: localTz(), email: val("remEmail"), name: getName() || null };
+    act(async () => { await saveReminder(r); rem = r; msg = r.enabled ? `Đã bật nhắc học lúc ${r.time_local}.` : "Đã tắt nhắc học."; msgOk = true; });
+    return true;
+  }
   if (t.dataset.goal) { setPathOption("goal", +t.dataset.goal); renderAccount(); return true; }
   if (t.dataset.themeSet) { setTheme(t.dataset.themeSet); renderAccount(); return true; }
   if (t.dataset.sound) { setPathOption("sound", !peekPath().sound); renderAccount(); return true; }
@@ -124,7 +156,7 @@ export function onClick(t: any) {
     });
     return true;
   }
-  if (t.id === "accSetPw") { const pw = val("accNewPw"); if (!pw) { toast("Hãy nhập mật khẩu mới."); return true; } act(async () => { await updatePassword(pw); msg = "Đã đổi mật khẩu."; msgOk = true; }); return true; }
+  if (t.id === "accSetPw") { const pw = val("accNewPw"); if (!pw) { toast("Hãy nhập mật khẩu mới."); return true; } act(async () => { await updatePassword(pw); pwOpen = false; msg = "Đã đổi mật khẩu."; msgOk = true; }); return true; }
   if (t.id === "accOut") { act(async () => { await signOut(); msg = "Đã đăng xuất. Dữ liệu vẫn còn trên máy này."; msgOk = true; }); return true; }
   if (t.id === "accSync") { act(async () => { await syncNow(); if (sync.status === "ok") { msg = "Đã đồng bộ xong."; msgOk = true; } }); return true; }
   if (t.id === "accExport") { download(); return true; }
