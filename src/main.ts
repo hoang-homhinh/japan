@@ -11,6 +11,7 @@ import { syncLabel } from "./views/account";
 import { $$ } from "./core/util";
 import "./styles/journey.css";
 import "./styles/michi.css";
+import "./styles/linear.css";
 import { icon, peng } from "./core/brand";
 import { openCmd } from "./views/cmdk";
 import { openStation } from "./views/station";

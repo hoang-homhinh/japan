@@ -73,7 +73,7 @@ export function renderAccount() {
   <section class="step"><h2><span class="k">道</span>Lộ trình<span class="hint">cài đặt học mỗi ngày</span></h2>
     <div class="card" style="margin-top:0">
       <div class="row" style="align-items:center;flex-wrap:wrap"><span>Mỗi ngày học</span>${[1, 2, 3].map(g => `<button class="chip" data-goal="${g}" aria-pressed="${peekPath().goal === g}">${g} lượt</button>`).join("")}</div>
-      <div class="row" style="align-items:center;flex-wrap:wrap"><span>Giao diện</span>${([["auto", "Theo máy"], ["light", "Sáng"], ["dark", "Tối"]] as const).map(([k, t]) => `<button class="chip" data-theme-set="${k}" aria-pressed="${getTheme() === k}">${t}</button>`).join("")}</div>
+      <div class="row" style="align-items:center;flex-wrap:wrap"><span>Giao diện</span>${([["auto", "Mặc định"], ["light", "Sáng"], ["dark", "Tối"]] as const).map(([k, t]) => `<button class="chip" data-theme-set="${k}" aria-pressed="${getTheme() === k}">${t}</button>`).join("")}</div>
       <div class="row" style="align-items:center;flex-wrap:wrap"><span>Âm thanh khi xong bài</span><button class="chip" data-sound="1" aria-pressed="${peekPath().sound}">${peekPath().sound ? "Bật" : "Tắt"}</button></div>
       <div class="row" style="align-items:center;flex-wrap:wrap"><label for="accStart">Bắt đầu từ bài</label><select id="accStart">${Array.from({ length: 25 }, (_, i) => `<option value="${i + 1}" ${peekPath().start === i + 1 ? "selected" : ""}>Bài ${i + 1}</option>`).join("")}</select><button class="btn ghost" id="accSetStart">Đổi</button></div>
       <p class="tip">Đổi bài bắt đầu: các bài trước đó được coi là đã đi qua (mở hết, chưa đóng dấu). Không mất tiến độ đã có.</p>
