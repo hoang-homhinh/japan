@@ -45,12 +45,12 @@ const shuffle = <T,>(a: T[]): T[] => { const b = [...a]; for (let i = b.length -
 function begin(run: Omit<Run, "pos" | "ans" | "ok" | "firstOk" | "firstTotal" | "combo" | "wrongByKind">, resume?: any) {
   lastSummary = "";
   R = { ...run, pos: 0, ans: null, ok: null, firstOk: 0, firstTotal: run.items.filter(it => isGradable(it.q)).length, combo: 0, wrongByKind: {}, wrong: [] };
-  if (resume) { R.pos = resume.pos; R.firstOk = resume.firstOk || 0; R.wrong = resume.wrong || []; R.wrongByKind = resume.wrongByKind || {}; }
+  if (resume) { R.pos = resume.pos; R.firstOk = resume.firstOk || 0; if (resume.firstTotal) R.firstTotal = resume.firstTotal; R.wrong = resume.wrong || []; R.wrongByKind = resume.wrongByKind || {}; }
   setView("player");
   if (resume) toast(`Học tiếp từ câu ${resume.pos + 1}/${run.items.length}`);
 }
 // lưu lượt đang làm để mở lại đúng chỗ (chỉ các bước của bài, trong ngày)
-function persist() { if (R && R.mode === "step") saveRun({ n: R.n, step: R.step, part: R.part, pos: R.pos, items: R.items, firstOk: R.firstOk, wrong: R.wrong, wrongByKind: R.wrongByKind } as any, dayStr()); }
+function persist() { if (R && R.mode === "step") saveRun({ n: R.n, step: R.step, part: R.part, pos: R.pos, items: R.items, firstOk: R.firstOk, firstTotal: R.firstTotal, wrong: R.wrong, wrongByKind: R.wrongByKind } as any, dayStr()); }
 export function startStep(n: number, step: StepNo, opts?: { skip?: boolean }) {
   const b = buildStep(n, step, Math.random, { listen: canListen() });
   if (step === 2 && b.partTotal === 0) { markStepDone(n, 2); toast("Từ của ga này bạn đã học hết, bước Từ mới tự hoàn thành."); openStation(n); return; }
@@ -294,7 +294,7 @@ export function onClick(t: any): boolean {
   if (t.dataset.stepGo) { const [n, s] = t.dataset.stepGo.split(":").map(Number); startStep(n, s as StepNo); return true; }
   if (!R) return false;
   const q = R.items[R.pos]?.q;
-  if (t.id === "pQuit") { const n = R.n; R = null; if (n) openStation(n); else setView("home"); return true; }
+  if (t.id === "pQuit") { if (R.ok !== null) R.pos++; persist(); const n = R.n; R = null; if (n) openStation(n); else setView("home"); return true; }
   if (t.id === "pNext") { if (q && (q.kind === "dialogue" || q.kind === "dialogue-blind" || q.kind === "phrases" || q.kind === "word-intro" || q.kind === "pattern-intro" || q.kind === "kanji-intro") && R.ok === null) { next(); return true; } if (R.ok !== null) next(); return true; }
   if (t.id === "pReplay") { const s = $(".pkstroke"); if (s && q?.kind === "kanji-intro") s.innerHTML = strokeSVG(q.ch, 150) + `<button class="lnk" id="pReplay">↻ Xem lại nét</button>`; return true; }
   if (t.id === "pDlgPlay" && (q?.kind === "dialogue" || q?.kind === "dialogue-blind")) { const D = DIALOGUES.find((d: any) => d.id === q.id); speakSeq(D.lines.map((x: any) => [x.kana, (D.roles[x.s] || {}).g === "f" ? 1.3 : 0.85])); return true; }

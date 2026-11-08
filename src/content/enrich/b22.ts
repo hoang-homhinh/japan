@@ -26,7 +26,7 @@ const L: LessonPlus = {
     "よく": { ex: ["週末 よく 映画を 見ます。", "Cuối tuần tôi hay xem phim."], tip: "よく ở đây là “hay, thường”: よく 行く là hay đi. Nhìn động từ để phân biệt với よく là “rõ”." },
     "おめでとう ございます": { ex: ["おたんじょうび おめでとう ございます。", "Chúc mừng sinh nhật."], tip: "めでたい là “đáng mừng”: câu chúc mừng sinh nhật, cưới hỏi, năm mới, thăng chức." },
     "きます": { ex: ["あの あかい セーターを きて いる 人は だれですか。", "Người mặc áo len đỏ kia là ai?"], tip: "着 là mặc, như trong きもの (着物): mặc áo, đồ phần trên người. Cùng âm 来ます, nhìn を mà phân biệt." },
-    "はきます": { ex: ["くつを はいて ください。", "Đi giày vào nhé."], tip: "はき nghe như “há kín”: há ống giày, ống quần ra rồi xỏ chân vào kín. Đồ từ eo trở xuống." },
+    "はきます": { ex: ["くつを はいて ください。", "Đi giày vào nhé."], tip: "履 = “lý” (giày dép): xỏ vào chân. Dùng cho giày, quần, váy — đồ mặc từ eo trở xuống." },
     "かぶります": { ex: ["ぼうしを かぶって いる 人は 田中さんです。", "Người đội mũ là anh Tanaka."], tip: "かぶり nghe như “cái búi”: đội mũ trùm lên búi tóc. Thứ trùm lên đầu." },
     "かけます": { ex: ["あの めがねを かけて いる 人は だれですか。", "Người đeo kính kia là ai?"], tip: "かけます là treo, móc: kính móc lên tai. Đeo kính dùng かけます." },
     "します": { ex: ["会社へ 行く とき、ネクタイを します。", "Khi đi làm tôi thắt cà vạt."], tip: "Phụ kiện nhỏ như cà vạt, đồng hồ, nhẫn thì dùng します." },

@@ -43,6 +43,15 @@ test("typeAnswers bỏ ～, ？ và phần trong [ ]", () => {
   expect(typeAnswers("～ごろ")).toEqual(["ごろ"]);
   expect(typeAnswers("ごちゅうもんは？")).toEqual(["ごちゅうもんは"]);
 });
+test("typeAnswers nhận từng cách viết khi có ／, （ ）, ［ ］, …", () => {
+  expect(typeAnswers("おっと／しゅじん")).toEqual(expect.arrayContaining(["おっと", "しゅじん"]));
+  expect(typeAnswers("～ふん / ～ぷん")).toEqual(expect.arrayContaining(["ふん", "ぷん"]));
+  expect(typeAnswers("いい（よい）")).toEqual(expect.arrayContaining(["いい", "よい"]));
+  expect(typeAnswers("こうくうびん（エアメール）")).toEqual(expect.arrayContaining(["こうくうびん", "エアメール"]));
+  expect(typeAnswers("[～は] ちょっと…")).toContain("ちょっと");
+  expect(typeAnswers("［いいえ、］まだまだです")).toEqual(expect.arrayContaining(["まだまだです", "いいえ、まだまだです"]));
+  for (const a of typeAnswers("おじいさん／おじいちゃん")) expect(a).not.toMatch(/[／（）\[\]［］…～]/);
+});
 
 test("bước 1 (bài có nội dung mới): nghe không chữ → câu ý chính → hội thoại → câu dùng ngay", () => {
   const kinds = buildStep(13, 1, rnd).qs.map(q => q.kind);
