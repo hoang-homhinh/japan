@@ -77,7 +77,7 @@ function renderVocab(){
     <div class="row"><button class="btn ghost" id="vNewQuiz">10 từ khác</button></div>
   </section>
 
-  <section class="step"><h2><span class="k">四</span>Toàn bộ từ vựng Bài ${L.n}<span class="hint">${vCover?"chạm vào dòng để lật":"bấm 🔊 để nghe"}</span></h2>
+  <section class="step"><h2><span class="k">四</span>Toàn bộ từ vựng Bài ${L.n}<span class="hint">${vCover?"chạm vào dòng để lật":"bấm <svg class='i' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8'/></svg> để nghe"}</span></h2>
     <div class="chips" style="margin-top:0">${segBtns("vcover",vCover,[["","Hiện hết"],["m","Che nghĩa"],["w","Che từ"]])}</div>
     <div class="${vCover?"cover-"+vCover:""}">
     ${(()=>{let off=0;return L.groups.map(g=>{const st=off;off+=g.w.length;return `<h3 class="nh">${esc(g.t)}</h3><div class="vlist">${g.w.map((w,k)=>vRow(w).replace('<div class="vmean">',`<div class="vmean">${lvDots(srs(vid(vL,st+k)))}`)).join("")}</div>`;}).join("");})()}
@@ -110,7 +110,7 @@ function vCheck(qi){
     S.progress.vocab=S.progress.vocab||{}; const arr=S.progress.vocab[VOCAB[vL].n]||[];
     if(!arr.includes(x.i)){arr.push(x.i);S.progress.vocab[VOCAB[vL].n]=arr;saveProgress();}
   }else{
-    out.innerHTML=`<div class="res bad">Chưa đúng. Đáp án: ${ans} <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(w[0])}" aria-label="Nghe">🔊</button>${w[4]?`<br><span style="font-size:.82rem">Mẹo: ${esc(w[4])}</span>`:""}</div>`;
+    out.innerHTML=`<div class="res bad">Chưa đúng. Đáp án: ${ans} <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(w[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button>${w[4]?`<br><span style="font-size:.82rem">Mẹo: ${esc(w[4])}</span>`:""}</div>`;
   }
 }
 

@@ -64,14 +64,14 @@ function ptUseRow(u,st,dim){
   return `<div class="ptu${dim?" dim":""}" id="ptu-${u.u}">
     <div class="ptq"><b>${esc(u.q)}</b> <span class="ptl">Bài ${u.l}</span> ${dim?"":ptBadge(st[u.u])}</div>
     <div class="tip">${esc(u.rule)}</div>
-    <div class="ptex"><button class="say" data-say="${esc(u.ex[0])}" aria-label="Nghe">🔊</button><span class="jp">${esc(u.ex[0])}</span><span class="tip">${esc(u.ex[1])}</span>
+    <div class="ptex"><button class="say" data-say="${esc(u.ex[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button><span class="jp">${esc(u.ex[0])}</span><span class="tip">${esc(u.ex[1])}</span>
     ${dim?"":`<button class="lnk" data-ptmode="u:${u.u}">Luyện →</button>`}</div></div>`;
 }
 
 // ---- Tổng hợp: 1 câu chứa hết · mỗi trợ từ 1 hình · cặp hay nhầm · tra nhanh ----
 let pgM=0, pgSel="";
 const lbl=(l,L)=>l>L?` <span class="ptl">Bài ${l}</span>`:"";
-const pgSay=jp=>`<button class="say" data-say="${esc(jp)}" aria-label="Nghe">🔊</button>`;
+const pgSay=jp=>`<button class="say" data-say="${esc(jp)}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button>`;
 function pgInfo(){
   const M=PG_MASTERS[pgM]; if(!pgSel) return `<span class="tip">👆 Chạm vào từng cụm có màu để xem nó trả lời câu hỏi gì.</span>`;
   const [li,ci]=pgSel.split(":").map(Number), c=(M.lines[li]||[])[ci]; if(!c) return "";
@@ -165,7 +165,7 @@ function renderParticles(){
         <div id="ptFb" class="res ${ok?"ok":"bad"}">${ok?"✓ Đúng!":"✗ Chưa đúng. Đáp án: <b class=\"jp\">"+d.a.map(esc).join(" / ")+"</b>"}${ok&&d.a.length>1?` <span class="tip">(${d.a.map(esc).join(" / ")} đều được)</span>`:""}</div>
         <div class="ptwhy"><div><b>Vì sao:</b> ${esc(d.why)}</div>
           <div class="tip">Câu tự hỏi: <b>${esc(u.q)}</b> → <span class="jp">${esc(u.p)}</span> · <button class="lnk" data-ptsee="${u.u}">xem cách dùng này</button></div>
-          <div class="row" style="align-items:center"><button class="say" data-say="${esc(ptPlain(d.s,d.a[0]))}" aria-label="Nghe">🔊</button><span class="tip">Nghe rồi đọc to cả câu một lần.</span></div></div>
+          <div class="row" style="align-items:center"><button class="say" data-say="${esc(ptPlain(d.s,d.a[0]))}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button><span class="tip">Nghe rồi đọc to cả câu một lần.</span></div></div>
         <div class="row"><button class="btn" id="ptNext">${PQ.pos+1<PQ.ids.length?"Câu tiếp →":"Xem kết quả"}</button><span class="tip kbdhint">(Enter)</span></div>`}
       </section>`;
     }

@@ -177,7 +177,7 @@ function renderMatch(){
   ${MS.sub==="all"&&!(MS.scope==="d"&&!nLv)?`<section class="step"><h2><span class="k">全</span>Nối toàn bộ ${MS.scope==="l"?(V?"Bài "+VOCAB[MS.li].n:esc(KANJI[MS.kc].name)):"phiên này"} trong 1 bảng<span class="hint">nối đúng thì cặp biến mất</span></h2>
     <div class="chips" style="margin-top:0">${V?segBtns("mvm",md,[["m","Nghĩa ↔ Từ"],["k","Kanji ↔ Kana"]]):segBtns("mkm",md,[["m","Nghĩa ↔ Chữ"],["r","Từ ↔ Cách đọc"]])}</div>
     <div id="mbBox">${mbHTML()}</div>
-  </section>`:MS.sub==="list"&&!(MS.scope==="d"&&!nLv)?`<section class="step"><h2><span class="k">一</span>${MS.scope==="l"?(V?"Toàn bộ từ vựng Bài "+VOCAB[MS.li].n:"Toàn bộ kanji "+esc(KANJI[MS.kc].name)):"Các mục trong phiên nối này"}<span class="hint">${V&&vCover?"chạm vào dòng để lật":"bấm 🔊 để nghe · chấm = bậc thuộc"}</span></h2>
+  </section>`:MS.sub==="list"&&!(MS.scope==="d"&&!nLv)?`<section class="step"><h2><span class="k">一</span>${MS.scope==="l"?(V?"Toàn bộ từ vựng Bài "+VOCAB[MS.li].n:"Toàn bộ kanji "+esc(KANJI[MS.kc].name)):"Các mục trong phiên nối này"}<span class="hint">${V&&vCover?"chạm vào dòng để lật":"bấm <svg class='i' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8'/></svg> để nghe · chấm = bậc thuộc"}</span></h2>
     ${mListHTML()}
     <div class="row"><button class="btn accent" data-msub="play">結 Bắt đầu nối →</button></div>
   </section>`:`

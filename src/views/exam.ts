@@ -98,9 +98,9 @@ function exStem(q,done){
     case "goi_para": return `<div class="ptsent jp">${under(q.q)}</div>`;
     case "narabe": return `<div class="ptsent jp">${esc(q.head)} <span class="nb">＿＿</span> <span class="nb">＿＿</span> <span class="nb star">★</span> <span class="nb">＿＿</span> ${esc(q.tail)}</div>`;
     case "dokkai": return `<div class="xtext jp">${esc(q.text)}</div><div class="ptsent jp" style="font-size:1.1rem">${esc(q.q)}</div>`;
-    case "ch_kadai": return `<div class="row" style="align-items:center"><button class="btn" data-xplay="1">🔊 Nghe lại</button><span class="tip">Đi thi chỉ được nghe 1 lần. Khi luyện, cố gắng chỉ nghe lại 1 lần.</span></div><div class="ptsent jp" style="font-size:1.1rem">${esc(q.q)}</div>${done?"":`<div class="tip">${esc(q.qvi||"")}</div>`}`;
-    case "ch_hatsuwa": return `<div class="xsit">${esc(q.sit)}</div><div class="row"><button class="btn" data-xplay="1">🔊 Nghe 3 câu</button></div>`;
-    case "ch_sokuji": return `<div class="row"><button class="btn" data-xplay="1">🔊 Nghe câu nói + 3 câu đáp</button></div>${done||exShowText?`<div class="ptsent jp" style="font-size:1.1rem">${esc(q.line)}</div>`:""}`;
+    case "ch_kadai": return `<div class="row" style="align-items:center"><button class="btn" data-xplay="1"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg> Nghe lại</button><span class="tip">Đi thi chỉ được nghe 1 lần. Khi luyện, cố gắng chỉ nghe lại 1 lần.</span></div><div class="ptsent jp" style="font-size:1.1rem">${esc(q.q)}</div>${done?"":`<div class="tip">${esc(q.qvi||"")}</div>`}`;
+    case "ch_hatsuwa": return `<div class="xsit">${esc(q.sit)}</div><div class="row"><button class="btn" data-xplay="1"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg> Nghe 3 câu</button></div>`;
+    case "ch_sokuji": return `<div class="row"><button class="btn" data-xplay="1"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg> Nghe câu nói + 3 câu đáp</button></div>${done||exShowText?`<div class="ptsent jp" style="font-size:1.1rem">${esc(q.line)}</div>`:""}`;
   }
   return "";
 }
@@ -118,7 +118,7 @@ function exQuestionHTML(){
   <section class="step ptcard">
     <p class="tip">${esc(K.ask)}</p>
     ${exStem(q,done)}
-    <div class="xopts">${q.opts.map((o,i)=>`<div class="xrow"><button class="xopt${done&&i===q.a?" right":""}${done&&i===a&&a!==q.a?" wrong":""}" data-xa="${i}" ${done?"disabled":""}>${exOptLabel(q,i,done)}</button>${listen?`<button class="say" data-xplayo="${i}" aria-label="Nghe câu ${i+1}">🔊</button>`:""}</div>`).join("")}</div>
+    <div class="xopts">${q.opts.map((o,i)=>`<div class="xrow"><button class="xopt${done&&i===q.a?" right":""}${done&&i===a&&a!==q.a?" wrong":""}" data-xa="${i}" ${done?"disabled":""}>${exOptLabel(q,i,done)}</button>${listen?`<button class="say" data-xplayo="${i}" aria-label="Nghe câu ${i+1}"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button>`:""}</div>`).join("")}</div>
     ${listen&&!done?`<label class="tip"><input type="checkbox" id="xShowText" ${exShowText?"checked":""}> Hiện chữ (khi mới luyện; đi thi không có chữ)</label>`:""}
     ${done?exExplainHTML(q,a):""}
   </section>`;

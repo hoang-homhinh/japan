@@ -305,8 +305,8 @@ export function onClick(t: any): boolean {
   if (t.id === "pQuit") { if (R.ok !== null) R.pos++; persist(); const n = R.n; R = null; if (n) openStation(n); else setView("home"); return true; }
   if (t.id === "pNext") { if (q && (q.kind === "dialogue" || q.kind === "dialogue-blind" || q.kind === "phrases" || q.kind === "word-intro" || q.kind === "pattern-intro" || q.kind === "kanji-intro") && R.ok === null) { next(); return true; } if (R.ok !== null) next(); return true; }
   if (t.id === "pReplay") { const s = $(".pkstroke"); if (s && q?.kind === "kanji-intro") s.innerHTML = strokeSVG(q.ch, 150) + `<button class="lnk" id="pReplay">↻ Xem lại nét</button>`; return true; }
-  if (t.id === "pDlgPlay" && (q?.kind === "dialogue" || q?.kind === "dialogue-blind")) { const D = DIALOGUES.find((d: any) => d.id === q.id); speakSeq(D.lines.map((x: any) => [x.kana, (D.roles[x.s] || {}).g === "f" ? 1.3 : 0.85])); return true; }
-  if (t.id === "pExPlay" && q?.kind === "exam") { const e = EX.get(q.id); const parts: any[] = []; if (e.intro) parts.push([e.intro, 1]); (e.script || []).forEach((x: any) => parts.push([x[1], x[0] === "F" ? 1.3 : 0.8])); if (e.line) parts.push([e.line, 1.2]); if (e.q && e.k === "ch_kadai") parts.push([e.q, 1]); speakSeq(parts); return true; }
+  if (t.id === "pDlgPlay" && (q?.kind === "dialogue" || q?.kind === "dialogue-blind")) { const D = DIALOGUES.find((d: any) => d.id === q.id); speakSeq(D.lines.map((x: any) => [x.kana, (D.roles[x.s] || {}).g === "f" ? 1.3 : 0.85]), t); return true; }
+  if (t.id === "pExPlay" && q?.kind === "exam") { const e = EX.get(q.id); const parts: any[] = []; if (e.intro) parts.push([e.intro, 1]); (e.script || []).forEach((x: any) => parts.push([x[1], x[0] === "F" ? 1.3 : 0.8])); if (e.line) parts.push([e.line, 1.2]); if (e.q && e.k === "ch_kadai") parts.push([e.q, 1]); speakSeq(parts, t); return true; }
   if (R.ok !== null) return t.dataset.pa !== undefined || t.dataset.pp !== undefined;
   if (t.dataset.pa !== undefined && q) {
     const i = +t.dataset.pa;

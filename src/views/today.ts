@@ -87,7 +87,7 @@ function renderSession(){
   const pct=Math.round(SES.pos/SES.tasks.length*100);
   let body="";
   if(T.type==="intro"){
-    body=`<div class="sq">Lô mới · ${T.items.length} từ. Đọc từng từ, bấm 🔊 nghe và đọc to theo, nhìn mẹo nhớ rồi bắt đầu luyện.</div><div class="vlist">${T.items.map(it=>wordCard(it.w,true)).join("")}</div>
+    body=`<div class="sq">Lô mới · ${T.items.length} từ. Đọc từng từ, bấm <svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg> nghe và đọc to theo, nhìn mẹo nhớ rồi bắt đầu luyện.</div><div class="vlist">${T.items.map(it=>wordCard(it.w,true)).join("")}</div>
       <div class="row"><button class="btn accent" data-snext="1">Bắt đầu luyện lô này →</button></div>`;
   }else if(T.type==="kintro"){
     body=`<div class="sq">Chữ mới. Nhìn hình, đọc mẹo, nhắm mắt tưởng tượng 3 giây, rồi viết tay 3 lần.</div>${kCard(T.it.k)}
@@ -95,7 +95,7 @@ function renderSession(){
   }else if(T.type==="mcq"){
     T.opts=T.opts||mcqOpts(T.it);
     body=`<div class="sq">Bậc 1 · Nhận ra: từ này nghĩa là gì?</div>
-      <div class="sbig"><span class="jp">${esc(T.it.w[0])}</span>${T.it.w[1]?`<span class="vk jp">${esc(T.it.w[1])}</span>`:""}<button class="say" data-say="${esc(T.it.w[0])}" aria-label="Nghe">🔊</button></div>
+      <div class="sbig"><span class="jp">${esc(T.it.w[0])}</span>${T.it.w[1]?`<span class="vk jp">${esc(T.it.w[1])}</span>`:""}<button class="say" data-say="${esc(T.it.w[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button></div>
       <div class="sopts">${T.opts.map(o=>`<button class="sopt" data-sopt="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
     setTimeout(()=>say(T.it.w[0]),150);
   }else if(T.type==="recall"){
@@ -108,7 +108,7 @@ function renderSession(){
     if(!c){
       // không có câu ví dụ chứa từ này → nghe rồi gõ lại
       body=`<div class="sq">Bậc 3 · Dùng được: nghe rồi gõ lại từ</div>
-        <div class="sbig"><button class="say" data-say="${esc(T.it.w[0])}" aria-label="Nghe">🔊</button><span class="tip">Bấm 🔊 nghe lại</span></div>
+        <div class="sbig"><button class="say" data-say="${esc(T.it.w[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button><span class="tip">Bấm <svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg> nghe lại</span></div>
         <div class="tip">Gợi ý: <b>${esc(T.it.w[3])}</b></div>
         <div class="row"><input id="sIn" data-sin="1" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Gõ từ vừa nghe (kana hoặc romaji)…"><button class="btn" data-scheck="1">Kiểm tra</button></div>
         <div class="preview" id="sPv"></div><button class="lnk" data-sidk="1">Không nhớ, cho xem đáp án</button>`;
@@ -161,7 +161,7 @@ function feedback(ok,html,T){
 }
 function ansHTML(T){
   if(T.it.kind==="v"){const w=T.it.w;const c=clozeFor(T.it.li,T.it.i);
-    return `<span class="jp">${esc(w[0])}</span>${w[1]?` (<span class="jp">${esc(w[1])}</span>)`:""} = ${esc(w[3])}${T.type==="cloze"&&c?`<br><span class="jp">${esc(c.s.replace(/（[\s　]*）/,c.a))}</span>`:""}${w[4]?`<br><span style="font-size:.82rem">Mẹo: ${esc(w[4])}</span>`:""} <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(w[0])}" aria-label="Nghe">🔊</button>`;}
+    return `<span class="jp">${esc(w[0])}</span>${w[1]?` (<span class="jp">${esc(w[1])}</span>)`:""} = ${esc(w[3])}${T.type==="cloze"&&c?`<br><span class="jp">${esc(c.s.replace(/（[\s　]*）/,c.a))}</span>`:""}${w[4]?`<br><span style="font-size:.82rem">Mẹo: ${esc(w[4])}</span>`:""} <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(w[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button>`;}
   return `<span class="jp">${esc(T.ex[0])}</span> = <span class="jp">${esc(T.ex[1])}</span> · ${esc(T.it.k.hv)} (${esc(T.it.k.mean)})<br><span style="font-size:.82rem">${esc(T.it.k.tip)}</span>`;
 }
 function sAnswerText(v){
@@ -243,8 +243,8 @@ function renderToday(){
       <div class="ring">${ringSVG(gramDone/gramAll.length,"var(--ok)","Ngữ pháp")}<b>Ngữ pháp</b><span class="tip">${gramDone}/${gramAll.length} mẫu</span></div>
     </div>
     <div class="tip">Một từ “thuộc” khi qua đủ 3 bậc: nhận ra → nhớ lại → dùng được trong câu. Sau đó app hỏi lại sau 1 → 3 → 7 → 14 → 30 ngày.</div></section>
-  <section class="panel span6"><h3>Từ hay quên</h3>${hard.length?`<div class="hard">${hard.map(x=>`<div class="h1"><button class="say" data-say="${esc(x.it.w[0])}" aria-label="Nghe">🔊</button><span class="jp">${esc(x.it.w[0])}</span><span>${esc(x.it.w[3])}</span><span class="wr">sai ${x.wr}</span></div>`).join("")}</div>`:`<div class="tip">Chưa có. Từ nào bạn trả lời sai sẽ hiện ở đây để để ý hơn.</div>`}</section>
-  <section class="panel span6"><h3>Một câu của bạn</h3>${sent?`<div class="quote">${esc(sent.jp)}</div><div class="tip">${esc(sent.vi)}</div><div class="row"><button class="say" data-say="${esc(sent.kana||sent.jp)}" aria-label="Nghe">🔊</button><span class="tip">Nghe rồi đọc to theo một lần.</span></div>`:`<div class="tip">Sổ câu đang trống. Câu bạn tự đặt sẽ hiện ở đây.</div>`}</section>
+  <section class="panel span6"><h3>Từ hay quên</h3>${hard.length?`<div class="hard">${hard.map(x=>`<div class="h1"><button class="say" data-say="${esc(x.it.w[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button><span class="jp">${esc(x.it.w[0])}</span><span>${esc(x.it.w[3])}</span><span class="wr">sai ${x.wr}</span></div>`).join("")}</div>`:`<div class="tip">Chưa có. Từ nào bạn trả lời sai sẽ hiện ở đây để để ý hơn.</div>`}</section>
+  <section class="panel span6"><h3>Một câu của bạn</h3>${sent?`<div class="quote">${esc(sent.jp)}</div><div class="tip">${esc(sent.vi)}</div><div class="row"><button class="say" data-say="${esc(sent.kana||sent.jp)}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button><span class="tip">Nghe rồi đọc to theo một lần.</span></div>`:`<div class="tip">Sổ câu đang trống. Câu bạn tự đặt sẽ hiện ở đây.</div>`}</section>
   </div>`;
 }
 

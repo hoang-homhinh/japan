@@ -112,7 +112,7 @@ export function bindEvents() {
     if (view === "talk" && talk.onClick(t)) return;
     if (t.id === "dTalk") return setView("talk");
     if (t.dataset.view) { const v = t.dataset.view; if (t.classList.contains("navi") || t.classList.contains("bni")) return setView(NO_SUBNAV.has(navGroupOf(v)) ? v : LASTSUB[navGroupOf(v)] || v); return setView(v); }
-    if (t.dataset.say) return say(t.dataset.say);
+    if (t.dataset.say) return say(t.dataset.say, t);
     if (view === "particle" && particle.ptClick(t)) return;
     if (view === "exam" && exam.exClick(t)) return;
     if (view === "account" && account.onClick(t)) return;

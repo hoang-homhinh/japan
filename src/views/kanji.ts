@@ -79,14 +79,14 @@ function renderKanji(){
 function kGo(c,g){kC=c;kG=g;try{localStorage.setItem(LS_KEY+"_kpos",JSON.stringify({c,g}));}catch(e){}renderKanji();window.scrollTo({top:0});}
 function kCheck(i){
   const id=gid(), e=kReadItems(kGroup())[i], inp=$(`#kr-${id}-${i}`), out=$(`#krr-${id}-${i}`);
-  const v=inp.value.trim(); if(!v){inp.focus();return;}
+  const v=inp.value.trim(); if(!v){inp.focus();toast("Gõ cách đọc vào ô trước rồi bấm Kiểm tra.");return;}
   if(norm(v)===norm(e[1])){
     out.innerHTML=`<div class="res ok">✓ Đúng! <span class="jp">${esc(e[0])}</span> = <span class="jp">${esc(e[1])}</span></div>`;
     const key=id+"#"+i; if(!kpassed[key]){kpassed[key]=true;bump(1);}
     S.progress.kanji=S.progress.kanji||{}; const arr=S.progress.kanji[id]||[];
     if(!arr.includes(i)){arr.push(i);S.progress.kanji[id]=arr;saveProgress();}
   }else{
-    out.innerHTML=`<div class="res bad">Chưa đúng. <span class="jp">${esc(e[0])}</span> đọc là <span class="jp">${esc(e[1])}</span> <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(e[1])}" aria-label="Nghe">🔊</button></div>`;
+    out.innerHTML=`<div class="res bad">Chưa đúng. <span class="jp">${esc(e[0])}</span> đọc là <span class="jp">${esc(e[1])}</span> <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(e[1])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button></div>`;
   }
 }
 function kPick(btn){

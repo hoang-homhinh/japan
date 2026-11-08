@@ -94,7 +94,7 @@ export function renderTalk() {
         ${tS.vi && !hide ? `<div class="tvi">${esc(x.vi)}</div>` : ""}
         ${hide ? `</div>` : ""}
       </div>
-      <button class="say" data-tsay="${i}" aria-label="Nghe câu này">🔊</button>
+      <button class="say" data-tsay="${i}" aria-label="Nghe câu này"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button>
     </div>`;
   };
   $("#main").innerHTML = `

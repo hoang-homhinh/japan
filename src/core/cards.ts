@@ -29,18 +29,18 @@ export const vPic = (w: any) => { const p = (VOCAB_PIC as any)[w[0] + "|" + w[3]
 
 export function lvDots(st: any) { const lv = st ? st.lv : -1; return `<span class="lvd" title="${lv < 0 ? "chưa học" : lv >= 3 ? "đã thuộc" : "bậc " + lv + "/3"}">${[1, 2, 3].map(k => `<i class="${lv >= k ? "on" : ""}"></i>`).join("")}</span>`; }
 export function vRow(w: any) {
-  return `<div class="vrow"><button class="say" data-say="${esc(w[0])}" aria-label="Nghe">🔊</button>
+  return `<div class="vrow"><button class="say" data-say="${esc(w[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button>
     <div class="vmain"><div class="vjp"><span class="jp">${esc(w[0])}</span>${w[1] ? `<span class="vk jp">${esc(w[1])}</span>` : ""}</div><div class="ro">${esc(w[2])}</div></div>
     <div class="vmean"><div>${vPic(w)}${esc(w[3])}</div>${w[4] ? `<div class="vnote">${esc(w[4])}</div>` : ""}</div></div>`;
 }
-export function wordCard(w: any, big?: boolean) { return `<div class="vrow"><button class="say" data-say="${esc(w[0])}" aria-label="Nghe">🔊</button><div class="vmain"><div class="vjp"><span class="jp" ${big ? 'style="font-size:1.35rem"' : ""}>${esc(w[0])}</span>${w[1] ? `<span class="vk jp">${esc(w[1])}</span>` : ""}</div><div class="ro">${esc(w[2])}</div></div><div class="vmean"><div>${vPic(w).replace("vpic", "vpic big")}<b>${esc(w[3])}</b></div>${w[4] ? `<div class="vnote">${esc(w[4])}</div>` : ""}</div></div>`; }
+export function wordCard(w: any, big?: boolean) { return `<div class="vrow"><button class="say" data-say="${esc(w[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button><div class="vmain"><div class="vjp"><span class="jp" ${big ? 'style="font-size:1.35rem"' : ""}>${esc(w[0])}</span>${w[1] ? `<span class="vk jp">${esc(w[1])}</span>` : ""}</div><div class="ro">${esc(w[2])}</div></div><div class="vmean"><div>${vPic(w).replace("vpic", "vpic big")}<b>${esc(w[3])}</b></div>${w[4] ? `<div class="vnote">${esc(w[4])}</div>` : ""}</div></div>`; }
 export function kCard(k: any) { return `<div class="kcard"><div class="kbig">${esc(k.k)}</div><div class="kbody"><div><b>${esc(k.hv)}</b> · ${esc(k.mean)}</div>${ancientHTML(k.k)}<div class="kread"><span>On: <span class="jp">${esc(k.on)}</span></span><span>Kun: <span class="jp">${esc(k.kun)}</span></span></div><div class="ktip">${tipHTML(k.tip)}</div><div class="kex">${k.ex.map((e: any) => `<button class="kw" data-say="${esc(e[1])}"><span class="jp">${esc(e[0])}</span><span class="r">${esc(e[1])}</span><span class="m">${esc(e[2])}</span></button>`).join("")}</div></div></div>`; }
 
-// câu vừa lưu vào Sổ câu: 🔊 + romaji + 3 chấm "đọc to"
+// câu vừa lưu vào Sổ câu: <svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg> + romaji + 3 chấm "đọc to"
 export function savedHTML(jp: string, vi: string, note: string, kana?: string) {
   const rd = kana || jp;
   return `<div class="fix ok"><span class="badge">✓ Đã lưu vào sổ câu</span>
-    <div class="row" style="align-items:center"><div style="flex:1;min-width:0"><div class="jp">${esc(jp)}</div><div class="ro">${esc(kanaToRomaji(rd))}</div></div><button class="say" data-say="${esc(rd)}" aria-label="Nghe">🔊</button></div>
+    <div class="row" style="align-items:center"><div style="flex:1;min-width:0"><div class="jp">${esc(jp)}</div><div class="ro">${esc(kanaToRomaji(rd))}</div></div><button class="say" data-say="${esc(rd)}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button></div>
     ${vi ? `<div class="vi">${esc(vi)}</div>` : ""}${note ? `<div style="font-size:.88rem">${esc(note)}</div>` : ""}
     <div class="dots">Đọc to: <button class="dot" aria-pressed="false" aria-label="Lần 1"></button><button class="dot" aria-pressed="false" aria-label="Lần 2"></button><button class="dot" aria-pressed="false" aria-label="Lần 3"></button></div>
   </div>`;
@@ -62,7 +62,7 @@ export function examplesHTML(own: string, ownKana: string, ex: any[], none: stri
   return `<div class="fix"><span class="badge">So với ví dụ</span>
     ${own ? `<div><div class="tip">Câu của bạn</div><div class="jp">${esc(ownKana)}</div>${ownKana !== own ? `<div class="ro">${esc(own)}</div>` : ""}</div>` : ""}
     ${ex.length ? `<div class="tip">Câu ví dụ có chứa từ đang học (lấy từ bài ngữ pháp, bài luyện trợ từ, đề luyện thi):</div>
-    <div class="exl">${ex.map(e => `<div class="row" style="align-items:center"><div style="flex:1;min-width:0"><div class="jp">${e.html}</div>${e.vi ? `<div class="tip">${esc(e.vi)}</div>` : ""}</div><button class="say" data-say="${esc(e.s)}" aria-label="Nghe">🔊</button></div>`).join("")}</div>`
+    <div class="exl">${ex.map(e => `<div class="row" style="align-items:center"><div style="flex:1;min-width:0"><div class="jp">${e.html}</div>${e.vi ? `<div class="tip">${esc(e.vi)}</div>` : ""}</div><button class="say" data-say="${esc(e.s)}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button></div>`).join("")}</div>`
     : `<div class="tip">${none}</div>`}
     <div class="tip">Tự đối chiếu: trợ từ, đuôi câu, cách dùng từ. Thấy ổn thì bấm “Lưu vào sổ câu” để hôm sau ôn lại.</div>
   </div>`;

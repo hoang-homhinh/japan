@@ -14,7 +14,7 @@ function savePos(){try{localStorage.setItem(LS_KEY+"_pos",JSON.stringify({l:curL
 function patternDone(p){const d=S.progress.drills[p.id]||[];return d.length>=p.drills.length;}
 
 function exHTML(jp,vi){
-  return `<div class="ex"><div class="body"><div class="jp">${esc(jp)}</div><div class="ro">${esc(kanaToRomaji(jp))}</div><div class="vi">${esc(vi)}</div></div><button class="say" data-say="${esc(jp)}" aria-label="Nghe">🔊</button></div>`;
+  return `<div class="ex"><div class="body"><div class="jp">${esc(jp)}</div><div class="ro">${esc(kanaToRomaji(jp))}</div><div class="vi">${esc(vi)}</div></div><button class="say" data-say="${esc(jp)}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button></div>`;
 }
 function renderLearnChips(){
   const box=$("#lessonChips"); if(!box) return;
@@ -24,14 +24,14 @@ function renderLearnChips(){
 function renderLearn(){
   const L=LESSONS[curL], P=L.patterns[curP];
   $("#main").innerHTML=`
-  <div class="plan"><span>Mỗi ngày <b>10 câu</b>: làm hết 1 mẫu (thay thế + tự đặt câu), rồi qua tab <b>Ôn sổ câu</b>.</span><button class="btn ghost" id="resumeBtn">Học tiếp →</button></div>
+  <div class="plan"><span>Mỗi ngày <b>10 câu</b>: làm hết 1 mẫu (thay thế + tự đặt câu), rồi vào <b>Ôn tập › Sổ câu</b>.</span><button class="btn ghost" id="resumeBtn">Học tiếp →</button></div>
   <div class="chips" id="lessonChips">${LESSONS.map((l,i)=>`<button class="chip" data-les="${i}" aria-pressed="${i===curL}">Bài ${l.n}</button>`).join("")}</div>
   <div class="chips" id="patChips"></div>
   <p class="lesson-title">Bài ${L.n} · ${esc(L.title)} · Mẫu ${curP+1}/${L.patterns.length}</p>
   <div class="formula">${esc(P.form)}</div>
   <p class="mean">${esc(P.mean)}</p>
 
-  <section class="step"><h2><span class="k">一</span>Xem mẫu<span class="hint">bấm 🔊 nghe, đọc theo</span></h2>
+  <section class="step"><h2><span class="k">一</span>Xem mẫu<span class="hint">bấm <svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg> nghe, đọc theo</span></h2>
     <p class="note">${esc(P.explain)}</p>
     <p class="trap"><b>Bẫy:</b> ${esc(P.trap)} <button class="lnk" data-view="notes">Xem tất cả trường hợp đặc biệt →</button></p>
     ${P.more&&P.more.length?`<div class="more"><b>Chú ý thêm</b><ul>${P.more.map(m=>`<li>${esc(m)}</li>`).join("")}</ul></div>`:""}
@@ -63,7 +63,7 @@ function renderLearn(){
       <div id="pr-${P.id}-free"></div>
     </div>
     <div class="row" style="align-items:center;flex-wrap:wrap"><button class="btn accent" id="cmpBtn">So với câu mẫu</button><span class="status" id="cmpStatus"></span></div>
-    <p class="tip"><span class="k" style="font-family:var(--jp);color:var(--accent)">四</span> <b>Nói to:</b> sau khi so với câu mẫu và chọn lưu, mỗi câu có 🔊 và 3 chấm. Nghe một lần, rồi đọc to theo 3 lần, mỗi lần đọc chạm một chấm. Câu đã lưu vào <b>Sổ câu</b> để hôm sau ôn lại.</p>
+    <p class="tip"><span class="k" style="font-family:var(--jp);color:var(--accent)">四</span> <b>Nói to:</b> sau khi so với câu mẫu và chọn lưu, mỗi câu có <svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg> và 3 chấm. Nghe một lần, rồi đọc to theo 3 lần, mỗi lần đọc chạm một chấm. Câu đã lưu vào <b>Sổ câu</b> để hôm sau ôn lại.</p>
   </section>
 
   <div class="nav">
@@ -79,15 +79,15 @@ function go(l,p){curL=l;curP=p;savePos();renderLearn();window.scrollTo({top:0});
 function checkDrill(i){
   const P=LESSONS[curL].patterns[curP], d=P.drills[i];
   const inp=$(`#d-${P.id}-${i}`), out=$(`#r-${P.id}-${i}`);
-  const v=inp.value.trim(); if(!v){inp.focus();return;}
+  const v=inp.value.trim(); if(!v){inp.focus();toast("Gõ câu trả lời vào ô trước rồi bấm Kiểm tra.");return;}
   const ok=d.a.some(a=>norm(a)===norm(v));
   if(ok){
-    out.innerHTML=`<div class="res ok">✓ Đúng rồi! <span class="jp">${esc(d.a[0])}</span> <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(d.a[0])}" aria-label="Nghe">🔊</button></div>`;
+    out.innerHTML=`<div class="res ok">✓ Đúng rồi! <span class="jp">${esc(d.a[0])}</span> <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(d.a[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button></div>`;
     const key=P.id+"#"+i;
     if(!passed[key]){passed[key]=true;bump(1);dailyInc("gram");}
     const arr=S.progress.drills[P.id]||[]; if(!arr.includes(i)){arr.push(i);S.progress.drills[P.id]=arr;saveProgress();renderLearnChips();}
   }else{
-    out.innerHTML=`<div class="res bad">Chưa khớp. Đáp án mẫu: <span class="jp">${esc(d.a[0])}</span> <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(d.a[0])}" aria-label="Nghe">🔊</button><br><span style="font-size:.82rem">Nếu bạn viết kanji hoặc cách nói khác, có thể câu vẫn đúng. Hãy tự so với đáp án mẫu, hoặc viết câu đó ở phần “Câu tự do” để lưu vào sổ.</span></div>`;
+    out.innerHTML=`<div class="res bad">Chưa khớp. Đáp án mẫu: <span class="jp">${esc(d.a[0])}</span> <button class="say" style="display:inline-grid;vertical-align:middle;width:28px;height:28px" data-say="${esc(d.a[0])}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button><br><span style="font-size:.82rem">Nếu bạn viết kanji hoặc cách nói khác, có thể câu vẫn đúng. Hãy tự so với đáp án mẫu, hoặc viết câu đó ở phần “Câu tự do” để lưu vào sổ.</span></div>`;
   }
 }
 
@@ -96,7 +96,7 @@ function fixHTML(ok,own,jp,vi,note,kana?){
   return `<div class="fix ${ok?"ok":"bad"}">
     <span class="badge">${ok?"✓ Đúng":"✎ Sửa lại"}</span>
     ${ok?"":`<div><del>${esc(own)}</del></div>`}
-    <div class="row" style="align-items:center"><div style="flex:1;min-width:0"><div class="jp">${esc(jp)}</div><div class="ro">${esc(kanaToRomaji(rd))}</div></div><button class="say" data-say="${esc(rd)}" aria-label="Nghe">🔊</button></div>
+    <div class="row" style="align-items:center"><div style="flex:1;min-width:0"><div class="jp">${esc(jp)}</div><div class="ro">${esc(kanaToRomaji(rd))}</div></div><button class="say" data-say="${esc(rd)}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button></div>
     <div class="vi">${esc(vi)}</div>
     ${note?`<div style="font-size:.88rem">${esc(note)}</div>`:""}
     <div class="dots">Đọc to: <button class="dot" aria-pressed="false" aria-label="Lần 1"></button><button class="dot" aria-pressed="false" aria-label="Lần 2"></button><button class="dot" aria-pressed="false" aria-label="Lần 3"></button></div>
@@ -109,7 +109,7 @@ function cmpHTML(k,own,q){
   const kana=showKana(own);
   return `<div class="fix"><span class="badge">So với câu mẫu</span>
     <div class="cmp"><div><div class="tip">Câu của bạn</div><div class="jp">${esc(kana)}</div>${kana!==own?`<div class="ro">${esc(own)}</div>`:""}</div>
-    <div><div class="tip">Câu mẫu</div><div class="row" style="align-items:center"><div style="flex:1;min-width:0"><div class="jp">${esc(q.ex)}</div><div class="ro">${esc(kanaToRomaji(q.ex))}</div></div><button class="say" data-say="${esc(q.ex)}" aria-label="Nghe">🔊</button></div></div></div>
+    <div><div class="tip">Câu mẫu</div><div class="row" style="align-items:center"><div style="flex:1;min-width:0"><div class="jp">${esc(q.ex)}</div><div class="ro">${esc(kanaToRomaji(q.ex))}</div></div><button class="say" data-say="${esc(q.ex)}" aria-label="Nghe"><svg class="i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8a5 5 0 0 1 0 8"/></svg></button></div></div></div>
     <div class="tip">Câu mẫu chỉ là một cách nói. Câu của bạn khác chữ vẫn có thể đúng: để ý trợ từ, đuôi câu và đúng ý câu hỏi.</div>
     <div class="row" style="flex-wrap:wrap"><button class="btn ghost" data-cmpok="${k}">Câu tôi đúng ý</button><button class="btn ghost" data-cmpfix="${k}">Tôi viết sai, lưu câu mẫu</button></div></div>`;
 }
