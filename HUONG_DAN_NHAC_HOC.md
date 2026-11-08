@@ -1,5 +1,7 @@
 # Bật nhắc học qua email (Brevo + Supabase)
 
+Mục này đang ẩn trong app. Làm xong các bước dưới, thêm biến `VITE_REMINDERS=1` trên Vercel rồi Redeploy để hiện mục "Nhắc học qua email".
+
 Mỗi 15 phút, Supabase chạy hàm `send-reminders`. Hàm này tìm người đã bật nhắc, đã tới giờ hẹn (trễ không quá 1 giờ) mà hôm đó chưa học, rồi gửi một email qua Brevo. Mỗi người nhận tối đa 1 mail mỗi ngày.
 
 ## 1. Brevo (miễn phí)

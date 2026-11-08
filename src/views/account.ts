@@ -89,7 +89,10 @@ export function renderAccount() {
   </section>`;
 }
 
+// tạm ẩn cho tới khi bật Brevo + bảng reminders (HUONG_DAN_NHAC_HOC.md): đặt VITE_REMINDERS=1 trên Vercel để hiện
+const REMINDERS_ON = String((import.meta as any).env?.VITE_REMINDERS || "") === "1";
 function remindHTML(u: any) {
+  if (!REMINDERS_ON) return "";
   const head = '<section class="step"><h2><span class="k">鈴</span>Nhắc học qua email<span class="hint">mỗi ngày một lần, chỉ khi hôm đó chưa học</span></h2><div class="card" style="margin-top:0">';
   if (!hasSupabase() || !u) return head + '<p class="tip">Đăng nhập để bật nhắc học: tới giờ hẹn mà hôm đó chưa học, Michi gửi một email nhắc.</p></div></section>';
   if (remFor !== u.id) { remFor = u.id; rem = undefined; loadReminder().then(r => { rem = r; }).catch(e => { rem = "err:" + (e?.message || e); }).finally(() => { if ($("#remBox")) renderAccount(); }); }
