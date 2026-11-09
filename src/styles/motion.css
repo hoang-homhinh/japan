@@ -74,7 +74,7 @@ body::after{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;
 .pcombo{animation:icoPop .5s cubic-bezier(.3,1.6,.5,1)}
 
 /* pháo sáng */
-.burst{position:fixed;width:0;height:0;z-index:60;pointer-events:none}
+.burst{position:fixed;width:0;height:0;z-index:60;pointer-events:none;contain:layout}
 .burst i{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;box-shadow:0 0 10px currentColor;animation:spark .8s cubic-bezier(.2,.7,.3,1) forwards}
 @keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
 

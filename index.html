@@ -7,13 +7,16 @@
 <meta name="description" content="Học tiếng Nhật N5 mỗi ngày: từ vựng, kanji, ngữ pháp Minna no Nihongo Bài 1–25, trợ từ, luyện thi.">
 <meta name="theme-color" content="#06080C">
 <script>
-/* Bản cũ trong bộ nhớ đệm gọi file CSS/JS đã bị thay sau khi cập nhật → gỡ service worker, xoá cache, tải lại 1 lần */
-(function(){var K="michi-heal";function heal(){try{if(sessionStorage.getItem(K))return;sessionStorage.setItem(K,"1")}catch(e){}var go=function(){location.reload()};
-Promise.all([navigator.serviceWorker?navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(x){return x.unregister()}))}):0,
-self.caches?caches.keys().then(function(k){return Promise.all(k.map(function(n){return caches.delete(n)}))}):0]).then(go,go)}
-addEventListener("error",function(e){var t=e.target,u=t&&(t.src||t.href)||"";if(u.indexOf("/assets/")>=0)heal()},true);
-addEventListener("load",function(){var bad=[].some.call(document.querySelectorAll('link[rel=stylesheet][href*="/assets/"]'),function(l){try{return !l.sheet||!l.sheet.cssRules.length}catch(e){return false}});
-if(bad)heal();else setTimeout(function(){try{sessionStorage.removeItem(K)}catch(e){}},5000)})})();
+/* File CSS/JS trong /assets bị hỏng (bản cũ trong cache, hoặc trình duyệt lưu nhầm) → tải lại file đó thẳng từ máy chủ,
+   gỡ service worker + cache, rồi tải lại trang. Mỗi 30 giây tối đa 1 lần để không lặp vô hạn. */
+(function(){var K="michi-heal";function heal(urls){var now=Date.now(),last=0;try{last=+localStorage.getItem(K)||0}catch(e){}
+if(now-last<30000)return;try{localStorage.setItem(K,String(now))}catch(e){}var go=function(){location.reload()};
+Promise.all(urls.map(function(u){return fetch(u,{cache:"reload"}).catch(function(){})}).concat([
+navigator.serviceWorker?navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(x){return x.unregister()}))}):0,
+self.caches?caches.keys().then(function(k){return Promise.all(k.map(function(n){return caches.delete(n)}))}):0])).then(go,go)}
+addEventListener("error",function(e){var t=e.target,u=t&&(t.src||t.href)||"";if(u.indexOf("/assets/")>=0)heal([u])},true);
+addEventListener("load",function(){var bad=[].filter.call(document.querySelectorAll('link[rel=stylesheet][href*="/assets/"]'),function(l){try{return !l.sheet||!l.sheet.cssRules.length}catch(e){return false}}).map(function(l){return l.href});
+if(bad.length)heal(bad)})})();
 </script>
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
