@@ -6,6 +6,15 @@
 <title>Michi · Tiếng Nhật theo lộ trình</title>
 <meta name="description" content="Học tiếng Nhật N5 mỗi ngày: từ vựng, kanji, ngữ pháp Minna no Nihongo Bài 1–25, trợ từ, luyện thi.">
 <meta name="theme-color" content="#06080C">
+<script>
+/* Bản cũ trong bộ nhớ đệm gọi file CSS/JS đã bị thay sau khi cập nhật → gỡ service worker, xoá cache, tải lại 1 lần */
+(function(){var K="michi-heal";function heal(){try{if(sessionStorage.getItem(K))return;sessionStorage.setItem(K,"1")}catch(e){}var go=function(){location.reload()};
+Promise.all([navigator.serviceWorker?navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(x){return x.unregister()}))}):0,
+self.caches?caches.keys().then(function(k){return Promise.all(k.map(function(n){return caches.delete(n)}))}):0]).then(go,go)}
+addEventListener("error",function(e){var t=e.target,u=t&&(t.src||t.href)||"";if(u.indexOf("/assets/")>=0)heal()},true);
+addEventListener("load",function(){var bad=[].some.call(document.querySelectorAll('link[rel=stylesheet][href*="/assets/"]'),function(l){try{return !l.sheet||!l.sheet.cssRules.length}catch(e){return false}});
+if(bad)heal();else setTimeout(function(){try{sessionStorage.removeItem(K)}catch(e){}},5000)})})();
+</script>
 <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
