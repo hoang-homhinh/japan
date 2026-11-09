@@ -19,7 +19,7 @@ const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, "0")}:${String(d.g
 let clockTimer = 0;
 function tickClock() {
   if (clockTimer) return;
-  clockTimer = window.setInterval(() => { const c = document.getElementById("hClock"); if (c) c.textContent = hhmm(new Date()); }, 15000);
+  clockTimer = window.setInterval(() => { const c = document.getElementById("hClock"); if (c) c.innerHTML = hhmm(new Date()).replace(":", "<i>:</i>"); }, 15000);
 }
 export function boardRows(cur: number, due: number) {
   const st = stationOf(cur), nx = cur < 25 ? stationOf(cur + 1).name : "終点", all = stationStatus(cur) === "stamped";
@@ -39,7 +39,7 @@ function boardHTML(cur: number, due: number, step: number) {
   }).join("") : `<div class="bd-r empty" style="--i:0">Hôm nay đã chạy hết các chuyến. Mở Lộ trình để chọn bài khác hoặc ôn thêm.</div>`;
   const label = due ? `Lên tàu · Ôn ${due} mục` : `Lên tàu · ${STEP_NAMES[step]}`;
   return `<section class="board" aria-label="Việc học hôm nay">
-    <header class="bd-h"><span class="bd-ring" aria-hidden="true"></span><b lang="ja">発車案内</b><span class="sub">Tuyến N5 · Ga hiện tại <b lang="ja">${esc(st.name)}</b> · Bài ${cur}</span><span class="led bd-clock" id="hClock" aria-label="Giờ hiện tại">${hhmm(now)}</span></header>
+    <header class="bd-h"><span class="bd-ring" aria-hidden="true"></span><b lang="ja">発車案内</b><span class="sub">Tuyến N5 · Ga hiện tại <b lang="ja">${esc(st.name)}</b> · Bài ${cur}</span><span class="led bd-clock" id="hClock" aria-label="Giờ hiện tại">${hhmm(now).replace(":", "<i>:</i>")}</span></header>
     <div class="bd-ls" data-st="${esc(st.name)}"><div class="bd-no"><div><small>${st.code}</small><b>${String(cur).padStart(2, "0")}</b></div></div><div style="min-width:0"><h2>${esc(lessonTitle(cur))}</h2><p lang="ja">${forms}</p></div><div class="st" lang="ja"><b>${esc(st.name)}</b><small>${esc(st.kana)}</small></div></div>
     <div class="bd-cols" aria-hidden="true"><span>GIỜ</span><span>BƯỚC</span><span>NỘI DUNG</span><span>GA</span><span>THỜI LƯỢNG</span><span>TRẠNG THÁI</span></div>
     <div role="table" aria-label="Các chuyến hôm nay">${body}</div>

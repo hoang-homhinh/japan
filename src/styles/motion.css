@@ -1,0 +1,84 @@
+/* ================= Michi · chuyển động =================
+   Nạp sau linear.css. base.css đã tắt mọi animation khi máy bật "giảm chuyển động". */
+
+/* nền: hai quầng sáng trôi chậm */
+body::after{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;
+  background:radial-gradient(520px 380px at 30% 30%,color-mix(in srgb,var(--accent) 9%,transparent),transparent 70%),
+             radial-gradient(480px 360px at 70% 70%,color-mix(in srgb,var(--cyan) 8%,transparent),transparent 70%);
+  animation:aurora 38s ease-in-out infinite alternate}
+@keyframes aurora{0%{transform:translate(-6%,-4%) rotate(0)}50%{transform:translate(5%,3%) rotate(8deg)}100%{transform:translate(-2%,6%) rotate(-6deg)}}
+
+/* vào trang: khối hiện lần lượt, hơi mờ rồi rõ */
+.rv{animation:rvIn .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}
+@keyframes rvIn{from{opacity:0;transform:translateY(14px) scale(.985);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+.board.rv{animation-name:boardOn}
+@keyframes boardOn{0%{opacity:0;transform:translateY(10px);filter:brightness(2.2) blur(4px)}40%{opacity:1;filter:brightness(1.4)}100%{transform:none;filter:none}}
+
+/* ánh sáng theo con trỏ: nền sáng nhẹ + viền bắt sáng chỗ con trỏ */
+.m-card,.pcard,.kcard,.libcard,.tile,.xcard{
+  background-image:radial-gradient(420px circle at var(--mx,-999px) var(--my,-999px),color-mix(in srgb,var(--accent) 7%,transparent),transparent 60%)}
+.m-card:hover::after,.kpis:hover::after,.pcard:hover::after{
+  background:radial-gradient(240px circle at var(--mx,50%) var(--my,0),color-mix(in srgb,var(--accent) 85%,transparent),transparent 65%),
+             linear-gradient(155deg,rgba(255,255,255,.22),rgba(255,255,255,.03) 32%,rgba(255,255,255,0) 60%,rgba(255,178,36,.35))}
+.kcard,.libcard,.tile,.xcard{transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .2s,box-shadow .25s}
+.kcard:hover,.libcard:hover,.tile:hover,.xcard:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 45%,var(--line));
+  box-shadow:inset 0 1px 0 var(--glass-hi),0 24px 50px -24px color-mix(in srgb,var(--accent) 45%,transparent)}
+
+/* nút: vệt sáng quét qua khi rê chuột, gợn sóng khi bấm */
+.btn,.popt,.chip{position:relative;overflow:hidden;isolation:isolate}
+.btn::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%);transform:translateX(-120%)}
+.btn.ghost::after{background:linear-gradient(105deg,transparent 35%,color-mix(in srgb,var(--accent) 22%,transparent) 50%,transparent 65%)}
+.btn:hover:not(:disabled)::after{transition:transform .7s cubic-bezier(.2,.8,.2,1);transform:translateX(120%)}
+.ripple{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.22;transform:scale(0);animation:ripple .6s ease-out forwards;z-index:0}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+/* nút "Lên tàu" thở nhẹ và tự lóe sáng định kỳ */
+.bd-f .btn.go{animation:goBreath 2.8s ease-in-out infinite}
+.bd-f .btn.go::after{animation:goSheen 4.5s cubic-bezier(.3,.6,.2,1) 1.2s infinite}
+@keyframes goBreath{50%{box-shadow:0 10px 38px -6px rgba(61,220,151,1),inset 0 1px 0 rgba(255,255,255,.4)}}
+@keyframes goSheen{0%{transform:translateX(-120%)}35%,100%{transform:translateX(120%)}}
+
+/* bảng giờ tàu: vạch quét sáng chạy dọc, dấu hai chấm của đồng hồ nhấp nháy */
+.board::before{content:"";position:absolute;left:0;right:0;top:0;height:90px;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(255,178,36,.06) 50%,transparent);animation:scan 7s linear infinite}
+@keyframes scan{from{transform:translateY(-90px)}to{transform:translateY(700px)}}
+.bd-clock i{font-style:normal;animation:blink 1s steps(2) infinite}
+.bd-ring{animation:ringGlow 2.4s ease-in-out infinite}
+@keyframes ringGlow{50%{box-shadow:0 0 22px 2px rgba(255,178,36,.75)}}
+.kpi.hot b{animation:hotPulse 2s ease-in-out infinite}
+@keyframes hotPulse{50%{text-shadow:0 0 26px color-mix(in srgb,var(--accent) 90%,transparent)}}
+
+/* menu: vạch chọn mọc ra, biểu tượng nảy khi rê */
+.navi .ico,.bni .ico{transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.navi:hover .ico{transform:translateY(-2px) scale(1.08)}
+.navi[aria-selected="true"]::before{animation:navIn .4s cubic-bezier(.3,1.5,.5,1)}
+@keyframes navIn{from{transform:scaleY(0);opacity:0}}
+.navi[aria-selected="true"] .ico,.bni[aria-selected="true"] .ico{animation:icoPop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes icoPop{40%{transform:scale(1.25) translateY(-2px)}}
+
+/* màn học: thẻ câu hỏi trượt vào như tàu vào ga, đáp án hiện lần lượt */
+.player.fresh .pcard{animation:cardIn .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateX(40px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.player.fresh .popt{animation:rvIn .45s cubic-bezier(.2,.8,.2,1) both}
+.player.fresh .popt:nth-child(1){animation-delay:.12s}.player.fresh .popt:nth-child(2){animation-delay:.18s}
+.player.fresh .popt:nth-child(3){animation-delay:.24s}.player.fresh .popt:nth-child(4){animation-delay:.3s}
+.player.fresh .popt:nth-child(n+5){animation-delay:.34s}
+.player.just-ok .pcard{animation:okGlow .9s ease-out}
+@keyframes okGlow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 70%,transparent)}100%{box-shadow:0 0 0 18px transparent}}
+.player.just-bad .pcard{animation:shake .45s ease}
+.prail .ptrain::before{content:"";position:absolute;right:100%;top:50%;width:46px;height:4px;margin-top:-2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,178,36,.8));filter:blur(1px)}
+.player.just-ok .ptrain{animation:trainKick .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes trainKick{40%{transform:translateY(-50%) scale(1.25)}}
+.phead .pcount{transition:color .2s}
+.pcombo{animation:icoPop .5s cubic-bezier(.3,1.6,.5,1)}
+
+/* pháo sáng */
+.burst{position:fixed;width:0;height:0;z-index:60;pointer-events:none}
+.burst i{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;box-shadow:0 0 10px currentColor;animation:spark .8s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  body::after,.board::before,.bd-f .btn.go,.bd-f .btn.go::after,.bd-ring,.kpi.hot b{animation:none}
+  .rv,.player .pcard,.player .popt{animation:none!important}
+}

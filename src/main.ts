@@ -12,6 +12,8 @@ import { $$ } from "./core/util";
 import "./styles/journey.css";
 import "./styles/michi.css";
 import "./styles/linear.css";
+import "./styles/motion.css";
+import { initMotion } from "./core/motion";
 import { icon, peng } from "./core/brand";
 import { openCmd } from "./views/cmdk";
 import { openStation } from "./views/station";
@@ -20,6 +22,7 @@ import { bindGate, renderGate } from "./views/gate";
 import { updateMe } from "./app/shell";
 
 applyTheme();
+initMotion();
 
 // logo chim cánh cụt + icon nét mảnh cho menu
 $$(".logo").forEach(el => { el.innerHTML = peng(30, "Michi"); });

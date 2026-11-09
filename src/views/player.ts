@@ -9,6 +9,7 @@ import { ancientHTML, tipHTML, vPic } from "../core/cards";
 import { gradeTrack, introduce } from "../core/grade";
 import { kanaToRomaji, norm, pvText, showKana } from "../core/kana";
 import { penguin, penLine } from "../core/mascot";
+import { burst } from "../core/motion";
 import { pathState, STEP_NAMES, getPart, markStepDone, nextStep, currentStation, setPart, stampStation, type StepNo } from "../core/path";
 import { adviceStep, isGradable, type Q } from "../core/q";
 import { buildReview } from "../core/reviewq";
@@ -194,12 +195,16 @@ function feedback(): string {
     ${ans ? `<div>Đáp án: <b class="jp">${esc(ans)}</b></div>` : ""}${why ? `<div class="tip">${esc(why)}</div>` : ""}${R!.combo >= 3 && ok ? `<div class="pcombo">${R!.combo} câu đúng liên tiếp</div>` : ""}</div>
     <button class="btn ${ok ? "accent" : ""} big" id="pNext">Tiếp →</button></div>`;
 }
+let lastKey = "";
 export function renderPlayer() {
   if (!R) { if (lastSummary) { $("#main").innerHTML = lastSummary; return; } setView("home"); return; }
   if (R.pos >= R.items.length) return finish();
   const q = R.items[R.pos].q;
   if (q.kind === "match" && !R.match) { const ix = q.pairs.map((_, i) => i); R.match = { sel: null, done: new Set(), miss: new Set(), L: shuffle(ix), R: shuffle(ix) }; }
-  $("#main").innerHTML = `<div class="player">${head()}${body(q)}${feedback()}</div>`;
+  const key = `${R.pos}:${R.ok}`, fx = key === lastKey ? "" : R.ok === null ? " fresh" : R.ok ? " just-ok" : " just-bad";
+  lastKey = key;
+  $("#main").innerHTML = `<div class="player${fx}">${head()}${body(q)}${feedback()}</div>`;
+  if (fx === " just-ok") burst($(".pcard"));
   if (R.ok === null) {
     if (q.kind === "word-intro") say(q.w[0]);
     if (q.kind === "listen") say(q.say);

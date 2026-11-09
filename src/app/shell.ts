@@ -2,6 +2,7 @@
 import { pvText } from "../core/kana";
 import { LS_KEY, S, dailyGet } from "../core/store";
 import { say } from "../core/tts";
+import { enterView } from "../core/motion";
 import { $, $$, esc, toast } from "../core/util";
 import * as today from "../views/today";
 import * as learn from "../views/learn";
@@ -81,6 +82,7 @@ export function setView(v: string) {
   const cs = $("#crumbSub"); if (cs) cs.textContent = SUBTITLE[v] ? SUBTITLE[v]() : "";
   updateRevBadge(); updateMe();
   RENDER[v]();
+  enterView();
   // giữ đường link …/#tab khớp tab đang mở (tải lại trang vẫn ở đúng tab)
   if (location.hash.slice(1) !== v) history.replaceState(null, "", "#" + v);
   window.scrollTo({ top: 0 });
